@@ -693,12 +693,10 @@
     </div>
     
     <script>
-        // Add timestamp to logs
+        // Add timestamp to logs (console only since no log area in UI)
         function addLog(message) {
-            const logArea = document.getElementById('logArea');
             const timestamp = new Date().toLocaleString();
-            logArea.innerHTML += `[${timestamp}] ${message}<br>`;
-            logArea.scrollTop = logArea.scrollHeight;
+            console.log(`[${timestamp}] ${message}`);
         }
         
         // Simulate backup download
