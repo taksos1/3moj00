@@ -1,0 +1,1455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Developer Panel - 3moj00</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .developer-panel {
+            min-height: 100vh;
+            background: #0a0a0a;
+            padding: 2rem;
+        }
+        
+        .dev-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: #111111;
+            border-radius: 15px;
+            border: 2px solid #ff6b35;
+        }
+        
+        .dev-title {
+            color: #ff6b35;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .dev-subtitle {
+            color: #cccccc;
+            font-size: 1.2rem;
+        }
+        
+        .dev-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .dev-card {
+            background: #1a1a1a;
+            padding: 2rem;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 107, 53, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .dev-card:hover {
+            border-color: #ff6b35;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(255, 107, 53, 0.2);
+        }
+        
+        .dev-card h3 {
+            color: #ff6b35;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        
+        .dev-card p {
+            color: #cccccc;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+        
+        .dev-button {
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        
+        .dev-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 53, 0.3);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .stat-item {
+            background: rgba(255, 107, 53, 0.1);
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #ff6b35;
+            display: block;
+        }
+        
+        .stat-label {
+            color: #cccccc;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+        
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 107, 53, 0.2);
+            border: 1px solid #ff6b35;
+            color: #ff6b35;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .back-button:hover {
+            background: #ff6b35;
+            color: white;
+        }
+        
+        .log-area {
+            background: #000000;
+            border: 1px solid #333333;
+            border-radius: 10px;
+            padding: 1rem;
+            height: 200px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: #00ff00;
+        }
+        
+        .warning-banner {
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .portfolio-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 10000;
+            display: none;
+            backdrop-filter: blur(5px);
+        }
+        
+        .portfolio-modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #1a1a1a;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 1000px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 2px solid #ff6b35;
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 13px 13px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: background 0.3s ease;
+        }
+        
+        .modal-close:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .tab-container {
+            display: flex;
+            background: #111111;
+            border-bottom: 1px solid #333333;
+        }
+        
+        .tab-button {
+            background: none;
+            border: none;
+            color: #cccccc;
+            padding: 1rem 2rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab-button.active {
+            color: #ff6b35;
+            border-bottom-color: #ff6b35;
+            background: rgba(255, 107, 53, 0.1);
+        }
+        
+        .tab-button:hover {
+            background: rgba(255, 107, 53, 0.05);
+        }
+        
+        .tab-content {
+            padding: 2rem;
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .video-form {
+            background: #222222;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            color: #ff6b35;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            background: #333333;
+            border: 1px solid #555555;
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #ff6b35;
+        }
+        
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .video-item {
+            background: #222222;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #333333;
+            transition: transform 0.3s ease;
+        }
+        
+        .video-item:hover {
+            transform: translateY(-5px);
+            border-color: #ff6b35;
+        }
+        
+        .video-thumbnail {
+            width: 100%;
+            height: 200px;
+            background: #333333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .video-info {
+            padding: 1rem;
+        }
+        
+        .video-title {
+            color: white;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .video-description {
+            color: #cccccc;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        
+        .video-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            border-radius: 15px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-edit {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .btn-delete {
+            background: #f44336;
+            color: white;
+        }
+        
+        .btn-preview {
+            background: #2196F3;
+            color: white;
+        }
+        
+        .video-player {
+            width: 100%;
+            height: 200px;
+            border-radius: 8px;
+        }
+        
+        .dynamic-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .add-tab-btn {
+            background: rgba(255, 107, 53, 0.1) !important;
+            border: 2px dashed #ff6b35 !important;
+            color: #ff6b35 !important;
+        }
+        
+        .add-tab-btn:hover {
+            background: rgba(255, 107, 53, 0.2) !important;
+        }
+        
+        .tab-actions {
+            display: none;
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: #333;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.8rem;
+            color: #ff6b35;
+            border: 2px solid #ff6b35;
+        }
+        
+        .tab-wrapper {
+            position: relative;
+        }
+        
+        .tab-wrapper:hover .tab-actions {
+            display: flex;
+        }
+        
+        .tab-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: #222;
+            border: 1px solid #555;
+            border-radius: 5px;
+            min-width: 120px;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .tab-dropdown.show {
+            display: block;
+        }
+        
+        .dropdown-item {
+            padding: 8px 12px;
+            cursor: pointer;
+            color: #ccc;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #444;
+        }
+        
+        .dropdown-item:hover {
+            background: #333;
+            color: #ff6b35;
+        }
+        
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+        
+        .tab-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 10001;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .tab-modal-content {
+            background: #1a1a1a;
+            border-radius: 10px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 400px;
+            border: 2px solid #ff6b35;
+        }
+        
+        .tab-modal h3 {
+            color: #ff6b35;
+            margin-bottom: 1rem;
+        }
+        
+        .tab-modal .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .tab-modal label {
+            display: block;
+            color: #ff6b35;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        
+        .tab-modal input, .tab-modal select {
+            width: 100%;
+            padding: 10px;
+            background: #333;
+            border: 1px solid #555;
+            border-radius: 5px;
+            color: white;
+        }
+        
+        .tab-modal-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+        }
+        
+        .btn-secondary {
+            background: #666;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .btn-secondary:hover {
+            background: #777;
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-button">
+        <i class="fas fa-arrow-left"></i> Back to Portfolio
+    </a>
+    
+    <div class="developer-panel">
+        <div class="dev-header">
+            <h1 class="dev-title">
+                <i class="fas fa-code"></i> Developer Panel
+            </h1>
+            <p class="dev-subtitle">Advanced portfolio management system</p>
+        </div>
+        
+        <div class="warning-banner">
+            <i class="fas fa-exclamation-triangle"></i>
+            RESTRICTED ACCESS - Developer Mode Active
+        </div>
+        
+        <div class="dev-grid">
+            <div class="dev-card">
+                <h3><i class="fas fa-chart-line"></i> Analytics</h3>
+                <p>View detailed website analytics and visitor statistics</p>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-number">1,247</span>
+                        <div class="stat-label">Total Visits</div>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">89</span>
+                        <div class="stat-label">Inquiries</div>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">23</span>
+                        <div class="stat-label">Projects</div>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">98%</span>
+                        <div class="stat-label">Uptime</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="dev-card">
+                <h3><i class="fas fa-folder-open"></i> Portfolio Manager</h3>
+                <p>Add, edit, or remove portfolio items and project showcases</p>
+                <button class="dev-button" onclick="openPortfolioManager()">
+                    Manage Portfolio
+                </button>
+            </div>
+            
+            <div class="dev-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-users"></i> Client Management</h3>
+                </div>
+                <div class="card-content">
+                    <p>Manage your client showcase by adding YouTube channels to display their information.</p>
+                    <button class="dev-button" onclick="openClientManager()">
+                        <i class="fas fa-users"></i> Manage Clients
+                    </button>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    
+    <!-- Portfolio Manager Modal -->
+    <div id="portfolioModal" class="portfolio-modal">
+        <div class="portfolio-modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-video"></i> Portfolio Manager</h2>
+                <button class="modal-close" onclick="closePortfolioManager()">&times;</button>
+            </div>
+            
+            <div class="tab-container">
+                <div id="dynamicTabs" class="dynamic-tabs">
+                    <!-- Dynamic tabs will be rendered here -->
+                </div>
+                <button class="tab-button add-tab-btn" onclick="showAddTabModal()">
+                    <i class="fas fa-plus"></i> Add Category
+                </button>
+            </div>
+            
+            <!-- Dynamic tab content will be generated here -->
+            <div id="dynamicTabContent">
+                <!-- Tab content panels will be dynamically created -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Tab Management Modal -->
+    <div id="tabModal" class="tab-modal">
+        <div class="tab-modal-content">
+            <h3 id="tabModalTitle">Add New Category</h3>
+            <form id="tabForm">
+                <div class="form-group">
+                    <label for="tabName">Category Name</label>
+                    <input type="text" id="tabName" name="name" placeholder="e.g., Music Videos" required>
+                </div>
+                <div class="form-group">
+                    <label for="tabIcon">Icon (FontAwesome class)</label>
+                    <select id="tabIcon" name="icon">
+                        <option value="fas fa-cut">Cut (Edits)</option>
+                        <option value="fas fa-magic">Magic (Motion Graphics)</option>
+                        <option value="fas fa-bullhorn">Bullhorn (Commercials)</option>
+                        <option value="fas fa-music">Music (Music Videos)</option>
+                        <option value="fas fa-video">Video</option>
+                        <option value="fas fa-film">Film</option>
+                        <option value="fas fa-camera">Camera</option>
+                        <option value="fas fa-play">Play</option>
+                        <option value="fas fa-star">Star</option>
+                        <option value="fas fa-heart">Heart</option>
+                    </select>
+                </div>
+                <div class="tab-modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeTabModal()">Cancel</button>
+                    <button type="submit" class="dev-button">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Client Manager Modal -->
+    <div id="clientModal" class="portfolio-modal">
+        <div class="portfolio-modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-users"></i> Client Manager</h2>
+                <button class="modal-close" onclick="closeClientManager()">&times;</button>
+            </div>
+            
+            <div class="video-form">
+                <h3 style="color: #ff6b35; margin-bottom: 1.5rem;">
+                    <i class="fas fa-plus"></i> Add New Client
+                </h3>
+                
+                <form id="clientForm">
+                    <div class="form-group">
+                        <label for="clientChannelUrl">YouTube Channel URL</label>
+                        <input type="url" id="clientChannelUrl" name="channelUrl" placeholder="https://youtube.com/@channelname or https://youtube.com/c/channelname" required>
+                        <small style="color: #888; font-size: 0.9rem;">Used for generating logo and linking to channel</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="clientName">Client/Channel Name</label>
+                        <input type="text" id="clientName" name="name" placeholder="Enter the channel or client name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="clientImageUrl">Custom Logo/Image URL (Optional)</label>
+                        <input type="url" id="clientImageUrl" name="imageUrl" placeholder="https://example.com/logo.jpg (Leave empty for auto-generated logo)">
+                        <small style="color: #888; font-size: 0.9rem;">If provided, this will be used instead of the auto-generated logo</small>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="clientSubscribers">Subscriber Count (Optional)</label>
+                            <input type="number" id="clientSubscribers" name="subscribers" placeholder="e.g., 500000" min="1000">
+                        </div>
+                        <div class="form-group">
+                            <label for="clientVideos">Video Count (Optional)</label>
+                            <input type="number" id="clientVideos" name="videos" placeholder="e.g., 1200" min="10">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="clientViews">Total Views (Optional)</label>
+                        <input type="number" id="clientViews" name="views" placeholder="e.g., 150000000" min="10000">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="clientDescription">Work Description (Optional)</label>
+                        <textarea id="clientDescription" name="description" rows="3" placeholder="Brief description of work done for this client..."></textarea>
+                    </div>
+                    
+                    <button type="submit" class="dev-button">
+                        <i class="fas fa-plus"></i> Add Client
+                    </button>
+                </form>
+            </div>
+            
+            <div id="clientGrid" class="video-grid">
+                <!-- Client cards will be dynamically added here -->
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Add timestamp to logs
+        function addLog(message) {
+            const logArea = document.getElementById('logArea');
+            const timestamp = new Date().toLocaleString();
+            logArea.innerHTML += `[${timestamp}] ${message}<br>`;
+            logArea.scrollTop = logArea.scrollHeight;
+        }
+        
+        // Simulate backup download
+        function downloadBackup() {
+            addLog('Backup process initiated...');
+            setTimeout(() => {
+                addLog('Portfolio data exported successfully');
+                alert('Backup created successfully!');
+            }, 2000);
+        }
+        
+        // Add some dynamic logs
+        setInterval(() => {
+            const messages = [
+                'Monitoring system performance...',
+                'Checking video background status...',
+                'Contact form submissions: 0 new',
+                'Portfolio views: +3',
+                'System health: Optimal'
+            ];
+            const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+            addLog(randomMessage);
+        }, 10000);
+        
+        // Welcome message
+        setTimeout(() => {
+            addLog('Welcome to the developer panel, 3moj00!');
+        }, 1000);
+        
+        // Client Management System
+        let clientData = [];
+        
+        // Load client data from localStorage
+        function loadClientData() {
+            const saved = localStorage.getItem('clientData');
+            if (saved) {
+                clientData = JSON.parse(saved);
+            }
+            renderClients();
+        }
+        
+        // Save client data to localStorage
+        function saveClientData() {
+            localStorage.setItem('clientData', JSON.stringify(clientData));
+        }
+        
+        // Open Client Manager
+        function openClientManager() {
+            document.getElementById('clientModal').style.display = 'block';
+            loadClientData();
+        }
+        
+        // Close Client Manager
+        function closeClientManager() {
+            document.getElementById('clientModal').style.display = 'none';
+        }
+        
+        // Extract channel ID from YouTube URL
+        function extractChannelId(url) {
+            // Handle different YouTube URL formats
+            const patterns = [
+                /youtube\.com\/channel\/([a-zA-Z0-9_-]+)/,
+                /youtube\.com\/c\/([a-zA-Z0-9_-]+)/,
+                /youtube\.com\/@([a-zA-Z0-9_-]+)/,
+                /youtube\.com\/user\/([a-zA-Z0-9_-]+)/
+            ];
+            
+            for (const pattern of patterns) {
+                const match = url.match(pattern);
+                if (match) {
+                    return { type: 'handle', id: match[1] };
+                }
+            }
+            return null;
+        }
+        
+        // Generate logo based on channel name and URL
+        function generateClientLogo(channelName, channelUrl) {
+            console.log('Generating logo for:', channelName); // Debug log
+            
+            // Create a hash for consistent color generation
+            let hash = 0;
+            const str = channelName.toLowerCase();
+            for (let i = 0; i < str.length; i++) {
+                const char = str.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash;
+            }
+            hash = Math.abs(hash);
+            
+            // Generate initials from the channel name
+            const initials = channelName.split(' ')
+                .filter(word => word.length > 0)
+                .map(word => word[0].toUpperCase())
+                .slice(0, 2)
+                .join('');
+            
+            console.log('Generated initials:', initials); // Debug log
+            
+            // Choose color based on channel content type (detected from name)
+            const isGaming = /gaming|game|boss|vampire|play|stream|fps|rpg|minecraft|fortnite/i.test(channelName);
+            const isTech = /tech|review|unbox|gadget|phone|laptop|apple|samsung/i.test(channelName);
+            const isMusic = /music|song|beat|audio|rap|hip|rock|pop|dj/i.test(channelName);
+            
+            let avatarColor;
+            if (isGaming) {
+                const gamingColors = ['ff6b35', 'FF4444', '9C27B0', '673AB7', 'E91E63'];
+                avatarColor = gamingColors[hash % gamingColors.length];
+            } else if (isTech) {
+                const techColors = ['2196F3', '00BCD4', '4CAF50', '607D8B', '009688'];
+                avatarColor = techColors[hash % techColors.length];
+            } else if (isMusic) {
+                const musicColors = ['FF9800', 'FF5722', '795548', 'FFC107', 'CDDC39'];
+                avatarColor = musicColors[hash % musicColors.length];
+            } else {
+                const defaultColors = ['ff6b35', '4CAF50', '2196F3', 'FF9800', 'F44336', '9C27B0'];
+                avatarColor = defaultColors[hash % defaultColors.length];
+            }
+            
+            console.log('Selected color:', avatarColor); // Debug log
+            
+            // Create logo URL with fallback options
+            const logoUrl = `https://placehold.co/120x120/${avatarColor}/ffffff?text=${encodeURIComponent(initials)}&font=roboto`;
+            console.log('Generated logo URL:', logoUrl); // Debug log
+            
+            return logoUrl;
+        }
+        
+        // Format numbers with K, M, B suffixes
+        function formatNumber(num) {
+            if (num >= 1000000000) {
+                return (num / 1000000000).toFixed(1) + 'B';
+            }
+            if (num >= 1000000) {
+                return (num / 1000000).toFixed(1) + 'M';
+            }
+            if (num >= 1000) {
+                return (num / 1000).toFixed(1) + 'K';
+            }
+            return num.toString();
+        }
+        
+        // Create client card HTML
+        function createClientCard(client, index) {
+            return `
+                <div class="video-item" style="background: linear-gradient(135deg, #2a2a2a, #1a1a1a); border: 1px solid #444;">
+                    <div class="video-thumbnail" style="height: auto; padding: 1rem;">
+                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                            <img src="${client.thumbnailUrl}" alt="${client.name}" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; background: #ff6b35;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div style="display: none; width: 60px; height: 60px; border-radius: 50%; background: #ff6b35; color: white; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem;">${client.name.split(' ').filter(w => w.length > 0).map(w => w[0]).join('').substring(0,2).toUpperCase()}</div>
+                            <div>
+                                <h4 style="color: #ff6b35; margin: 0; font-size: 1.1rem;">${client.name}</h4>
+                                <a href="${client.channelUrl}" target="_blank" style="color: #888; font-size: 0.9rem; text-decoration: none;">
+                                    <i class="fab fa-youtube"></i> View Channel
+                                </a>
+                            </div>
+                        </div>
+                        
+                        ${(client.subscriberCount || client.videoCount || client.viewCount) ? `
+                        <div style="display: grid; grid-template-columns: repeat(${[client.subscriberCount, client.videoCount, client.viewCount].filter(Boolean).length}, 1fr); gap: 0.5rem; margin-bottom: 1rem;">
+                            ${client.subscriberCount ? `
+                            <div style="text-align: center; padding: 0.5rem; background: rgba(255,107,53,0.1); border-radius: 5px;">
+                                <div style="color: #ff6b35; font-weight: bold; font-size: 1.1rem;">${formatNumber(client.subscriberCount)}</div>
+                                <div style="color: #888; font-size: 0.8rem;">Subscribers</div>
+                            </div>` : ''}
+                            ${client.videoCount ? `
+                            <div style="text-align: center; padding: 0.5rem; background: rgba(255,107,53,0.1); border-radius: 5px;">
+                                <div style="color: #ff6b35; font-weight: bold; font-size: 1.1rem;">${formatNumber(client.videoCount)}</div>
+                                <div style="color: #888; font-size: 0.8rem;">Videos</div>
+                            </div>` : ''}
+                            ${client.viewCount ? `
+                            <div style="text-align: center; padding: 0.5rem; background: rgba(255,107,53,0.1); border-radius: 5px;">
+                                <div style="color: #ff6b35; font-weight: bold; font-size: 1.1rem;">${formatNumber(client.viewCount)}</div>
+                                <div style="color: #888; font-size: 0.8rem;">Views</div>
+                            </div>` : ''}
+                        </div>` : ''}
+                        
+                        ${client.description ? `<p style="color: #ccc; font-size: 0.9rem; margin-bottom: 1rem; line-height: 1.4;">${client.description}</p>` : ''}
+                    </div>
+                    <div class="video-info">
+                        <div class="video-actions" style="justify-content: center;">
+                            <button class="btn-small btn-delete" onclick="deleteClient(${index})" style="background: #f44336;">
+                                <i class="fas fa-trash"></i> Remove
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Render clients
+        function renderClients() {
+            const grid = document.getElementById('clientGrid');
+            
+            if (clientData.length === 0) {
+                grid.innerHTML = '<div style="text-align: center; color: #888; padding: 2rem;">No clients added yet. Add your first client using the form above!</div>';
+                return;
+            }
+            
+            grid.innerHTML = clientData.map((client, index) => createClientCard(client, index)).join('');
+        }
+        
+        // Add client
+        function addClient(clientInfo) {
+            clientData.push(clientInfo);
+            saveClientData();
+            renderClients();
+        }
+        
+        // Delete client
+        function deleteClient(index) {
+            if (confirm('Are you sure you want to remove this client?')) {
+                const client = clientData[index];
+                clientData.splice(index, 1);
+                saveClientData();
+                renderClients();
+            }
+        }
+        
+        // Portfolio Manager Functions
+        let portfolioData = {};
+        let portfolioTabs = {
+            'edits': { name: 'Edits', icon: 'fas fa-cut' },
+            'motion-graphics': { name: 'Motion Graphics', icon: 'fas fa-magic' },
+            'commercials': { name: 'Commercials', icon: 'fas fa-bullhorn' },
+            'music-videos': { name: 'Music Videos', icon: 'fas fa-music' }
+        };
+        let activeTab = 'edits';
+        let editingTab = null;
+        
+        // Load data from localStorage
+        function loadPortfolioData() {
+            const savedData = localStorage.getItem('portfolioData');
+            const savedTabs = localStorage.getItem('portfolioTabs');
+            
+            if (savedData) {
+                portfolioData = JSON.parse(savedData);
+            }
+            
+            if (savedTabs) {
+                portfolioTabs = JSON.parse(savedTabs);
+            }
+            
+            // Initialize empty arrays for any missing categories
+            Object.keys(portfolioTabs).forEach(tabId => {
+                if (!portfolioData[tabId]) {
+                    portfolioData[tabId] = [];
+                }
+            });
+            
+            // Set active tab to first available tab if not set or invalid
+            if (!activeTab || !portfolioTabs[activeTab]) {
+                activeTab = Object.keys(portfolioTabs)[0] || 'edits';
+            }
+            
+            renderTabs();
+            renderTabContent();
+        }
+        
+        // Save data to localStorage
+        function savePortfolioData() {
+            localStorage.setItem('portfolioData', JSON.stringify(portfolioData));
+            localStorage.setItem('portfolioTabs', JSON.stringify(portfolioTabs));
+        }
+        
+        // Open Portfolio Manager
+        function openPortfolioManager() {
+            document.getElementById('portfolioModal').style.display = 'block';
+            loadPortfolioData();
+            addLog('Portfolio manager opened');
+        }
+        
+        // Close Portfolio Manager
+        function closePortfolioManager() {
+            document.getElementById('portfolioModal').style.display = 'none';
+            addLog('Portfolio manager closed');
+        }
+        
+        // Render tabs
+        function renderTabs() {
+            const tabsContainer = document.getElementById('dynamicTabs');
+            tabsContainer.innerHTML = '';
+            
+            Object.keys(portfolioTabs).forEach(tabId => {
+                const tab = portfolioTabs[tabId];
+                const tabWrapper = document.createElement('div');
+                tabWrapper.className = 'tab-wrapper';
+                
+                const tabButton = document.createElement('button');
+                tabButton.className = `tab-button ${activeTab === tabId ? 'active' : ''}`;
+                tabButton.onclick = () => switchTab(tabId);
+                tabButton.innerHTML = `<i class="${tab.icon}"></i> ${tab.name}`;
+                
+                const tabActions = document.createElement('div');
+                tabActions.className = 'tab-actions';
+                tabActions.innerHTML = '⋮';
+                tabActions.onclick = (e) => {
+                    e.stopPropagation();
+                    showTabDropdown(tabId, e.target);
+                };
+                
+                tabWrapper.appendChild(tabButton);
+                tabWrapper.appendChild(tabActions);
+                tabsContainer.appendChild(tabWrapper);
+            });
+        }
+        
+        // Switch tabs
+        function switchTab(tabId) {
+            activeTab = tabId;
+            renderTabs();
+            renderTabContent();
+        }
+        
+        // Extract video ID from URL
+        function extractVideoId(url) {
+            // YouTube only
+            const youtubeMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/);
+            if (youtubeMatch) {
+                return { type: 'youtube', id: youtubeMatch[1] };
+            }
+            
+            return null;
+        }
+        
+        // Create embedded player
+        function createPlayer(videoInfo, videoUrl) {
+            if (videoInfo && videoInfo.type === 'youtube') {
+                return `<iframe class="video-player" src="https://www.youtube.com/embed/${videoInfo.id}" frameborder="0" allowfullscreen></iframe>`;
+            }
+            return '<div class="video-player" style="background: #333; display: flex; align-items: center; justify-content: center; color: #ccc;">Invalid YouTube URL</div>';
+        }
+        
+        // Create video item HTML
+        function createVideoItem(video, category, index) {
+            const videoInfo = extractVideoId(video.url);
+            const player = videoInfo ? createPlayer(videoInfo, video.url) : '';
+            
+            return `
+                <div class="video-item">
+                    <div class="video-thumbnail">
+                        ${player}
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">${video.title}</div>
+                        <div class="video-description">${video.description || 'No description'}</div>
+                        <div style="font-size: 0.8rem; color: #888; margin-bottom: 1rem;">
+                            ${video.client ? `Client: ${video.client} | ` : ''}
+                            ${video.brand ? `Brand: ${video.brand} | ` : ''}
+                            ${video.artist ? `Artist: ${video.artist} | ` : ''}
+                            ${video.duration ? `Duration: ${video.duration}` : ''}
+                        </div>
+                        <div class="video-actions">
+                            <button class="btn-small btn-preview" onclick="previewVideo('${video.url}')">
+                                <i class="fas fa-play"></i> Preview
+                            </button>
+                            <button class="btn-small btn-edit" onclick="editVideo('${category}', ${index})">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button class="btn-small btn-delete" onclick="deleteVideo('${category}', ${index})">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Render tab content
+        function renderTabContent() {
+            const contentContainer = document.getElementById('dynamicTabContent');
+            contentContainer.innerHTML = '';
+            
+            if (!portfolioTabs[activeTab]) return;
+            
+            const tabContent = document.createElement('div');
+            tabContent.className = 'tab-content active';
+            tabContent.id = `${activeTab}-tab`;
+            
+            const tabName = portfolioTabs[activeTab].name;
+            
+            tabContent.innerHTML = `
+                <div class="video-form">
+                    <h3 style="color: #ff6b35; margin-bottom: 1.5rem;">
+                        <i class="fas fa-plus"></i> Add New ${tabName}
+                    </h3>
+                    
+                    <form id="${activeTab}Form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="${activeTab}Title">Video Title</label>
+                                <input type="text" id="${activeTab}Title" name="title" placeholder="Enter video title" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="${activeTab}Category">Category</label>
+                                <input type="text" id="${activeTab}Category" name="category" placeholder="e.g., Short Form, Commercial, etc.">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="${activeTab}Url">YouTube Video URL</label>
+                            <input type="url" id="${activeTab}Url" name="url" placeholder="https://youtube.com/watch?v=... or https://youtu.be/..." required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="${activeTab}Thumbnail">Custom Thumbnail URL (Optional)</label>
+                            <input type="url" id="${activeTab}Thumbnail" name="thumbnail" placeholder="https://example.com/thumbnail.jpg (Leave empty to use auto-generated)">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="${activeTab}Description">Description</label>
+                            <textarea id="${activeTab}Description" name="description" rows="3" placeholder="Describe the video project..."></textarea>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="${activeTab}Client">Client/Brand/Artist</label>
+                                <input type="text" id="${activeTab}Client" name="client" placeholder="Client name (optional)">
+                            </div>
+                            <div class="form-group">
+                                <label for="${activeTab}Duration">Duration</label>
+                                <input type="text" id="${activeTab}Duration" name="duration" placeholder="e.g., 2:30">
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="dev-button">
+                            <i class="fas fa-plus"></i> Add Video
+                        </button>
+                    </form>
+                </div>
+                
+                <div id="${activeTab}Grid" class="video-grid">
+                    <!-- Videos will be dynamically added here -->
+                </div>
+            `;
+            
+            contentContainer.appendChild(tabContent);
+            
+            // Add form event listener after DOM insertion
+            setTimeout(() => {
+                const form = document.getElementById(`${activeTab}Form`);
+                if (form) {
+                    form.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        const formData = new FormData(e.target);
+                        const videoData = Object.fromEntries(formData);
+                        addVideo(activeTab, videoData);
+                        e.target.reset();
+                    });
+                }
+            }, 0);
+            
+            // Render existing videos
+            renderVideos(activeTab);
+        }
+        
+        // Render videos for a specific category
+        function renderVideos(category) {
+            const grid = document.getElementById(`${category}Grid`);
+            
+            if (!grid) {
+                console.error(`Grid not found for category: ${category}`);
+                return;
+            }
+            
+            const videos = portfolioData[category] || [];
+            
+            if (videos.length === 0) {
+                grid.innerHTML = '<div style="text-align: center; color: #888; padding: 2rem;">No videos added yet. Use the form above to add your first video!</div>';
+                return;
+            }
+            
+            grid.innerHTML = videos.map((video, index) => createVideoItem(video, category, index)).join('');
+        }
+        
+        // Render all tabs
+        function renderAllTabs() {
+            // Only render videos for the active tab since other tab content doesn't exist yet
+            if (activeTab && portfolioTabs[activeTab]) {
+                renderTabContent();
+            }
+        }
+        
+        // Add video
+        function addVideo(category, videoData) {
+            portfolioData[category].push(videoData);
+            savePortfolioData();
+            renderVideos(category);
+            addLog(`Added new video: ${videoData.title} to ${category}`);
+        }
+        
+        // Delete video
+        function deleteVideo(category, index) {
+            if (confirm('Are you sure you want to delete this video?')) {
+                const video = portfolioData[category][index];
+                portfolioData[category].splice(index, 1);
+                savePortfolioData();
+                renderVideos(category);
+                addLog(`Deleted video: ${video.title} from ${category}`);
+            }
+        }
+        
+        // Preview video
+        function previewVideo(url) {
+            window.open(url, '_blank');
+        }
+        
+        // Edit video function
+        function editVideo(category, index) {
+            const video = portfolioData[category][index];
+            if (!video) return;
+            
+            // Switch to the correct tab first
+            if (activeTab !== category) {
+                switchTab(category);
+            }
+            
+            // Wait for tab to render, then populate form
+            setTimeout(() => {
+                const form = document.getElementById(`${category}Form`);
+                if (form) {
+                    document.getElementById(`${category}Title`).value = video.title || '';
+                    document.getElementById(`${category}Category`).value = video.category || '';
+                    document.getElementById(`${category}Url`).value = video.url || '';
+                    document.getElementById(`${category}Thumbnail`).value = video.thumbnail || '';
+                    document.getElementById(`${category}Description`).value = video.description || '';
+                    document.getElementById(`${category}Client`).value = video.client || video.brand || video.artist || '';
+                    document.getElementById(`${category}Duration`).value = video.duration || '';
+                    
+                    // Remove the video from array (will be re-added when form is submitted)
+                    portfolioData[category].splice(index, 1);
+                    savePortfolioData();
+                    renderVideos(category);
+                    
+                    // Scroll to form
+                    form.scrollIntoView({ behavior: 'smooth' });
+                }
+            }, 100);
+        }
+        
+        // Form submissions are now handled dynamically in renderTabContent()
+        
+        // Tab management functions
+        function showTabDropdown(tabId, element) {
+            // Remove any existing dropdowns
+            document.querySelectorAll('.tab-dropdown').forEach(d => d.remove());
+            
+            const dropdown = document.createElement('div');
+            dropdown.className = 'tab-dropdown show';
+            dropdown.innerHTML = `
+                <div class="dropdown-item" onclick="editTab('${tabId}')">
+                    <i class="fas fa-edit"></i> Edit
+                </div>
+                <div class="dropdown-item" onclick="deleteTab('${tabId}')" style="color: #f44336;">
+                    <i class="fas fa-trash"></i> Delete
+                </div>
+            `;
+            
+            element.parentElement.appendChild(dropdown);
+            
+            // Close dropdown when clicking outside
+            setTimeout(() => {
+                document.addEventListener('click', function closeDropdown() {
+                    dropdown.remove();
+                    document.removeEventListener('click', closeDropdown);
+                });
+            }, 100);
+        }
+        
+        function showAddTabModal() {
+            editingTab = null;
+            document.getElementById('tabModalTitle').textContent = 'Add New Category';
+            document.getElementById('tabName').value = '';
+            document.getElementById('tabIcon').value = 'fas fa-video';
+            document.getElementById('tabModal').style.display = 'flex';
+        }
+        
+        function editTab(tabId) {
+            editingTab = tabId;
+            const tab = portfolioTabs[tabId];
+            document.getElementById('tabModalTitle').textContent = 'Edit Category';
+            document.getElementById('tabName').value = tab.name;
+            document.getElementById('tabIcon').value = tab.icon;
+            document.getElementById('tabModal').style.display = 'flex';
+        }
+        
+        function deleteTab(tabId) {
+            if (Object.keys(portfolioTabs).length <= 1) {
+                alert('You must have at least one category!');
+                return;
+            }
+            
+            const tabName = portfolioTabs[tabId].name;
+            
+            if (confirm(`Are you sure you want to delete "${tabName}" and all its videos?`)) {
+                delete portfolioTabs[tabId];
+                delete portfolioData[tabId];
+                
+                // Switch to first available tab
+                activeTab = Object.keys(portfolioTabs)[0];
+                
+                savePortfolioData();
+                renderTabs();
+                renderTabContent();
+                addLog(`Deleted category: ${tabName}`);
+            }
+        }
+        
+        function closeTabModal() {
+            document.getElementById('tabModal').style.display = 'none';
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab form submission
+            const tabForm = document.getElementById('tabForm');
+            if (tabForm) {
+                tabForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const name = document.getElementById('tabName').value.trim();
+                    const icon = document.getElementById('tabIcon').value;
+                    
+                    if (!name) {
+                        alert('Please enter a category name');
+                        return;
+                    }
+                    
+                    if (editingTab) {
+                        // Edit existing tab
+                        portfolioTabs[editingTab] = { name, icon };
+                        addLog(`Updated category: ${name}`);
+                    } else {
+                        // Add new tab
+                        const tabId = name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
+                        
+                        if (portfolioTabs[tabId]) {
+                            alert('A category with this name already exists!');
+                            return;
+                        }
+                        
+                        portfolioTabs[tabId] = { name, icon };
+                        portfolioData[tabId] = [];
+                        activeTab = tabId;
+                        addLog(`Added new category: ${name}`);
+                    }
+                    
+                    savePortfolioData();
+                    renderTabs();
+                    renderTabContent();
+                    closeTabModal();
+                });
+            }
+            
+            // Close modal when clicking outside
+            const portfolioModal = document.getElementById('portfolioModal');
+            if (portfolioModal) {
+                portfolioModal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        closePortfolioManager();
+                    }
+                });
+            }
+            
+            // Client form submission
+            const clientForm = document.getElementById('clientForm');
+            if (clientForm) {
+                clientForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const formData = new FormData(e.target);
+                    const channelUrl = formData.get('channelUrl');
+                    const clientName = formData.get('name');
+                    const customImageUrl = formData.get('imageUrl');
+                    const subscribers = parseInt(formData.get('subscribers'));
+                    const videos = parseInt(formData.get('videos'));
+                    const views = parseInt(formData.get('views'));
+                    const description = formData.get('description');
+                    
+                    // Validate required fields
+                    if (!channelUrl) {
+                        alert('Please enter a YouTube channel URL');
+                        return;
+                    }
+                    
+                    if (!clientName || !clientName.trim()) {
+                        alert('Please enter a client/channel name');
+                        return;
+                    }
+                    
+                    // Validate optional numeric fields only if provided
+                    if (subscribers && subscribers < 1000) {
+                        alert('Subscriber count must be at least 1,000 if provided');
+                        return;
+                    }
+                    
+                    if (videos && videos < 10) {
+                        alert('Video count must be at least 10 if provided');
+                        return;
+                    }
+                    
+                    if (views && views < 10000) {
+                        alert('View count must be at least 10,000 if provided');
+                        return;
+                    }
+                    
+                    // Validate URL format (optional - just for linking)
+                    const channelInfo = extractChannelId(channelUrl);
+                    let finalChannelUrl = channelUrl;
+                    if (!channelInfo && !channelUrl.includes('youtube.com')) {
+                        alert('Invalid YouTube channel URL. Please use a valid format like:\\n- https://youtube.com/@channelname\\n- https://youtube.com/c/channelname\\n- https://youtube.com/channel/CHANNEL_ID');
+                        return;
+                    }
+                    
+                    // Create client data object with manual inputs
+                    const clientData = {
+                        name: clientName.trim(),
+                        subscriberCount: subscribers || null,
+                        videoCount: videos || null,
+                        viewCount: views || null,
+                        description: description || '',
+                        channelUrl: finalChannelUrl,
+                        thumbnailUrl: customImageUrl && customImageUrl.trim() ? 
+                            customImageUrl.trim() : 
+                            generateClientLogo(clientName.trim(), finalChannelUrl),
+                        originalUrl: channelUrl,
+                        customImage: customImageUrl && customImageUrl.trim() ? true : false
+                    };
+                    
+                    // Add to client list
+                    addClient(clientData);
+                    
+                    // Reset form
+                    e.target.reset();
+                    
+                    alert(`Client "${clientData.name}" added successfully!`);
+                });
+            }
+            
+            // Close client modal when clicking outside
+            const clientModal = document.getElementById('clientModal');
+            if (clientModal) {
+                clientModal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        closeClientManager();
+                    }
+                });
+            }
+            
+            loadPortfolioData();
+        });
+    </script>
+</body>
+</html>
