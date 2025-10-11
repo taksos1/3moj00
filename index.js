@@ -475,6 +475,12 @@ async function loadPortfolioFromJSON() {
     try {
         const response = await fetch('./data/portfolio.json');
         const data = await response.json();
+        
+        // Auto-sync tabs to localStorage
+        if (data.portfolioTabs) {
+            localStorage.setItem('portfolioTabs', JSON.stringify(data.portfolioTabs));
+        }
+        
         return data.portfolioData;
     } catch (error) {
         console.log('Could not load portfolio from JSON file:', error);
@@ -645,6 +651,7 @@ async function renderPortfolio(filterCategory = 'all') {
 // Render portfolio tabs dynamically
 async function renderPortfolioTabs() {
     const portfolioData = await loadPortfolioFromStorage();
+    const tabs = loadPortfolioTabs();
     const tabsContainer = document.querySelector('.portfolio-tabs');
     
     if (!tabsContainer) return;

@@ -929,27 +929,57 @@
         let activeTab = 'edits';
         let editingTab = null;
         
-        // Load data from localStorage
-        function loadPortfolioData() {
-            const savedData = localStorage.getItem('portfolioData');
-            const savedTabs = localStorage.getItem('portfolioTabs');
-            
-            if (savedData) {
-                portfolioData = JSON.parse(savedData);
-            }
-            
-            if (savedTabs) {
-                portfolioTabs = JSON.parse(savedTabs);
-            }
-            
-            // Initialize empty arrays for any missing categories
-            Object.keys(portfolioTabs).forEach(tabId => {
-                if (!portfolioData[tabId]) {
-                    portfolioData[tabId] = [];
+        // Load portfolio data with automatic JSON sync
+        async function loadPortfolioData() {
+            // Try to load from JSON first to get latest tabs
+            try {
+                const response = await fetch('./data/portfolio.json');
+                const jsonData = await response.json();
+                
+                // Auto-sync tabs from JSON to localStorage
+                if (jsonData.portfolioTabs) {
+                    window.portfolioTabs = jsonData.portfolioTabs;
+                    localStorage.setItem('portfolioTabs', JSON.stringify(jsonData.portfolioTabs));
                 }
-            });
-            
-            // Set active tab to first available tab if not set or invalid
+                
+                // Load portfolio data from localStorage (user additions)
+                const portfolioData = localStorage.getItem('portfolioData');
+                if (portfolioData) {
+                    window.portfolioData = JSON.parse(portfolioData);
+                } else if (jsonData.portfolioData) {
+                    // Fallback to JSON data and sync to localStorage
+                    window.portfolioData = jsonData.portfolioData;
+                    localStorage.setItem('portfolioData', JSON.stringify(jsonData.portfolioData));
+                } else {
+                    window.portfolioData = {};
+                }
+                
+            } catch (error) {
+                console.log('Could not load from JSON, using localStorage only:', error);
+                
+                // Fallback to localStorage only
+                const portfolioData = localStorage.getItem('portfolioData');
+                const portfolioTabs = localStorage.getItem('portfolioTabs');
+                
+                if (portfolioData) {
+                    window.portfolioData = JSON.parse(portfolioData);
+                } else {
+                    window.portfolioData = {};
+                }
+                
+                if (portfolioTabs) {
+                    window.portfolioTabs = JSON.parse(portfolioTabs);
+                } else {
+                    // Default tabs
+                    window.portfolioTabs = {
+                        'gaming': { name: 'Gaming', icon: 'fas fa-gamepad' },
+                        'music': { name: 'Music Videos', icon: 'fas fa-music' },
+                        'commercial': { name: 'Commercial', icon: 'fas fa-briefcase' },
+                        'social': { name: 'Social Media', icon: 'fab fa-instagram' }
+                    };
+                    localStorage.setItem('portfolioTabs', JSON.stringify(window.portfolioTabs));
+                }
+            }
             if (!activeTab || !portfolioTabs[activeTab]) {
                 activeTab = Object.keys(portfolioTabs)[0] || 'edits';
             }
@@ -1540,7 +1570,9 @@
                 document.body.appendChild(modal);
             }
             
-            loadPortfolioData();
+            loadPortfolioData().then(() => {
+                console.log('Portfolio data loaded and synced');
+            });
         });
     </script>
 </body>
