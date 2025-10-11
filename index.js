@@ -473,23 +473,28 @@ initDeveloperAccess();
 // Load portfolio from JSON file as fallback
 async function loadPortfolioFromJSON() {
     try {
+        console.log('Attempting to load portfolio.json...');
         const response = await fetch('./data/portfolio.json');
+        console.log('Response status:', response.status, response.statusText);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
+        console.log('Portfolio JSON loaded successfully:', data);
         
         // Auto-sync tabs to localStorage
         if (data.portfolioTabs) {
             localStorage.setItem('portfolioTabs', JSON.stringify(data.portfolioTabs));
+            console.log('Tabs synced to localStorage');
         }
         
         return data.portfolioData;
     } catch (error) {
-        console.log('Could not load portfolio from JSON file:', error);
-        return {
-            gaming: [],
-            music: [],
-            commercial: [],
-            social: []
-        };
+        console.error('Could not load portfolio from JSON file:', error);
+        console.log('Using fallback portfolio structure');
+        return DEFAULT_PORTFOLIO_CONFIG.data;
     }
 }
 
@@ -510,22 +515,37 @@ async function loadPortfolioFromStorage() {
     }
 }
 
+// Default portfolio configuration (fallback)
+const DEFAULT_PORTFOLIO_CONFIG = {
+    tabs: {
+        'gaming': { name: 'Gaming', icon: 'fas fa-gamepad' },
+        'music': { name: 'Music Videos', icon: 'fas fa-music' },
+        'commercial': { name: 'Commercial', icon: 'fas fa-briefcase' },
+        'social': { name: 'Social Media', icon: 'fab fa-instagram' }
+    },
+    data: {
+        gaming: [],
+        music: [],
+        commercial: [],
+        social: []
+    }
+};
+
 // Portfolio Display Functions
 function loadPortfolioTabs() {
     const portfolioTabs = localStorage.getItem('portfolioTabs');
     
-    let tabs = {
-        'edits': { name: 'Edits', icon: 'fas fa-cut' },
-        'motion-graphics': { name: 'Motion Graphics', icon: 'fas fa-magic' },
-        'commercials': { name: 'Commercials', icon: 'fas fa-bullhorn' },
-        'music-videos': { name: 'Music Videos', icon: 'fas fa-music' }
-    };
-    
     if (portfolioTabs) {
-        tabs = JSON.parse(portfolioTabs);
+        try {
+            return JSON.parse(portfolioTabs);
+        } catch (error) {
+            console.error('Error parsing portfolio tabs from localStorage:', error);
+        }
     }
     
-    return tabs;
+    // Return default tabs
+    console.log('Using default portfolio tabs');
+    return DEFAULT_PORTFOLIO_CONFIG.tabs;
 }
 
 // Extract video ID from URL for main page
@@ -826,11 +846,20 @@ function generateClientLogoMain(channelName) {
 // Load clients from JSON file as fallback
 async function loadClientsFromJSON() {
     try {
+        console.log('Attempting to load clients.json...');
         const response = await fetch('./data/clients.json');
+        console.log('Clients response status:', response.status, response.statusText);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
+        console.log('Clients JSON loaded successfully:', data);
         return data.clients;
     } catch (error) {
-        console.log('Could not load clients from JSON file:', error);
+        console.error('Could not load clients from JSON file:', error);
+        console.log('Using empty clients array');
         return [];
     }
 }

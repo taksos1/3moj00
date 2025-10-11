@@ -931,8 +931,16 @@
         async function loadPortfolioData() {
             // Try to load from JSON first to get latest tabs
             try {
+                console.log('Developer panel: Loading portfolio.json...');
                 const response = await fetch('./data/portfolio.json');
+                console.log('Developer panel response:', response.status, response.statusText);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
                 const jsonData = await response.json();
+                console.log('Developer panel: Portfolio JSON loaded:', jsonData);
                 
                 // Auto-sync tabs from JSON to localStorage
                 if (jsonData.portfolioTabs) {
