@@ -470,12 +470,44 @@ function showDeveloperAccess() {
 // Initialize developer access
 initDeveloperAccess();
 
-// Portfolio Display Functions
-function loadPortfolioFromStorage() {
+// Load portfolio from JSON file as fallback
+async function loadPortfolioFromJSON() {
+    try {
+        const response = await fetch('./data/portfolio.json');
+        const data = await response.json();
+        return data.portfolioData;
+    } catch (error) {
+        console.log('Could not load portfolio from JSON file:', error);
+        return {
+            gaming: [],
+            music: [],
+            commercial: [],
+            social: []
+        };
+    }
+}
+
+// Load portfolio data from localStorage with JSON fallback
+async function loadPortfolioFromStorage() {
     const portfolioData = localStorage.getItem('portfolioData');
+    
+    if (portfolioData) {
+        return JSON.parse(portfolioData);
+    } else {
+        // Fallback to JSON file if no localStorage data
+        const jsonData = await loadPortfolioFromJSON();
+        if (Object.keys(jsonData).length > 0) {
+            // Save to localStorage for future use
+            localStorage.setItem('portfolioData', JSON.stringify(jsonData));
+        }
+        return jsonData;
+    }
+}
+
+// Portfolio Display Functions
+function loadPortfolioTabs() {
     const portfolioTabs = localStorage.getItem('portfolioTabs');
     
-    let data = {};
     let tabs = {
         'edits': { name: 'Edits', icon: 'fas fa-cut' },
         'motion-graphics': { name: 'Motion Graphics', icon: 'fas fa-magic' },
@@ -483,22 +515,11 @@ function loadPortfolioFromStorage() {
         'music-videos': { name: 'Music Videos', icon: 'fas fa-music' }
     };
     
-    if (portfolioData) {
-        data = JSON.parse(portfolioData);
-    }
-    
     if (portfolioTabs) {
         tabs = JSON.parse(portfolioTabs);
     }
     
-    // Initialize empty arrays for any missing categories
-    Object.keys(tabs).forEach(tabId => {
-        if (!data[tabId]) {
-            data[tabId] = [];
-        }
-    });
-    
-    return { data, tabs };
+    return tabs;
 }
 
 // Extract video ID from URL for main page
@@ -578,8 +599,9 @@ function createPortfolioItem(video, category) {
 }
 
 // Render portfolio items
-function renderPortfolio(filterCategory = 'all') {
-    const { data: portfolioData, tabs } = loadPortfolioFromStorage();
+async function renderPortfolio(filterCategory = 'all') {
+    const portfolioData = await loadPortfolioFromStorage();
+    const tabs = loadPortfolioTabs();
     const portfolioGrid = document.getElementById('portfolioGrid');
     
     let allVideos = [];
@@ -621,8 +643,8 @@ function renderPortfolio(filterCategory = 'all') {
 }
 
 // Render portfolio tabs dynamically
-function renderPortfolioTabs() {
-    const { tabs } = loadPortfolioFromStorage();
+async function renderPortfolioTabs() {
+    const portfolioData = await loadPortfolioFromStorage();
     const tabsContainer = document.querySelector('.portfolio-tabs');
     
     if (!tabsContainer) return;
@@ -794,19 +816,37 @@ function generateClientLogoMain(channelName) {
     return `https://placehold.co/120x120/${avatarColor}/ffffff?text=${encodeURIComponent(initials)}&font=roboto`;
 }
 
+// Load clients from JSON file as fallback
+async function loadClientsFromJSON() {
+    try {
+        const response = await fetch('./data/clients.json');
+        const data = await response.json();
+        return data.clients;
+    } catch (error) {
+        console.log('Could not load clients from JSON file:', error);
+        return [];
+    }
+}
+
 // Load and render clients
-function loadAndRenderClients() {
+async function loadAndRenderClients() {
     const clientData = localStorage.getItem('clientData');
     const clientsGrid = document.getElementById('clientsGrid');
     
     if (!clientsGrid) return;
     
-    if (!clientData) {
-        clientsGrid.innerHTML = '<div style="text-align: center; color: #888; padding: 2rem; grid-column: 1 / -1;">No clients added yet.</div>';
-        return;
-    }
+    let clients = [];
     
-    let clients = JSON.parse(clientData);
+    if (clientData) {
+        clients = JSON.parse(clientData);
+    } else {
+        // Fallback to JSON file if no localStorage data
+        clients = await loadClientsFromJSON();
+        if (clients.length > 0) {
+            // Save to localStorage for future use
+            localStorage.setItem('clientData', JSON.stringify(clients));
+        }
+    }
     
     if (clients.length === 0) {
         clientsGrid.innerHTML = '<div style="text-align: center; color: #888; padding: 2rem; grid-column: 1 / -1;">No clients added yet.</div>';
@@ -880,15 +920,15 @@ function loadAndRenderClients() {
 }
 
 // Initialize portfolio on page load
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
     // Render dynamic portfolio tabs
     renderPortfolioTabs();
     
     // Load and render portfolio
-    renderPortfolio();
+    await renderPortfolio();
     
     // Load and render clients
-    loadAndRenderClients();
+    await loadAndRenderClients();
     
     // Listen for storage changes (when videos are added in developer panel)
     window.addEventListener('storage', function(e) {

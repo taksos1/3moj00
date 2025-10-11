@@ -1076,11 +1076,31 @@
             
             const tabContent = document.createElement('div');
             tabContent.className = 'tab-content active';
-            tabContent.id = `${activeTab}-tab`;
             
             const tabName = portfolioTabs[activeTab].name;
             
             tabContent.innerHTML = `
+                <div class="dev-section">
+                    <h3 style="color: #ff6b35; margin-bottom: 1rem;">
+                        <i class="fas fa-users"></i> Client Management
+                    </h3>
+                    <button onclick="openClientManager()" class="dev-button">
+                        <i class="fas fa-edit"></i> Manage Clients
+                    </button>
+                </div>
+                
+                <div class="dev-section">
+                    <h3 style="color: #ff6b35; margin-bottom: 1rem;">
+                        <i class="fas fa-download"></i> Data Backup
+                    </h3>
+                    <button onclick="exportData()" class="dev-button">
+                        <i class="fas fa-file-export"></i> Export All Data
+                    </button>
+                    <button onclick="syncToJSON()" class="dev-button" style="margin-top: 0.5rem;">
+                        <i class="fas fa-sync"></i> Sync to JSON Files
+                    </button>
+                </div>
+                
                 <div class="video-form">
                     <h3 style="color: #ff6b35; margin-bottom: 1.5rem;">
                         <i class="fas fa-plus"></i> Add New ${tabName}
@@ -1446,6 +1466,78 @@
                         closeClientManager();
                     }
                 });
+            }
+            
+            // Export all data as JSON
+            function exportData() {
+                const portfolioData = localStorage.getItem('portfolioData');
+                const portfolioTabs = localStorage.getItem('portfolioTabs');
+                const clientData = localStorage.getItem('clientData');
+                
+                const exportData = {
+                    portfolioData: portfolioData ? JSON.parse(portfolioData) : {},
+                    portfolioTabs: portfolioTabs ? JSON.parse(portfolioTabs) : {},
+                    clientData: clientData ? JSON.parse(clientData) : [],
+                    exportDate: new Date().toISOString()
+                };
+                
+                const dataStr = JSON.stringify(exportData, null, 2);
+                const dataBlob = new Blob([dataStr], {type: 'application/json'});
+                
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(dataBlob);
+                link.download = `3moj00-website-backup-${new Date().toISOString().split('T')[0]}.json`;
+                link.click();
+                
+                alert('Data exported successfully!');
+            }
+            
+            // Sync localStorage data to JSON files (display instructions)
+            function syncToJSON() {
+                const portfolioData = localStorage.getItem('portfolioData');
+                const clientData = localStorage.getItem('clientData');
+                
+                if (!portfolioData && !clientData) {
+                    alert('No data to sync!');
+                    return;
+                }
+                
+                let message = 'To sync your data to the JSON files:\n\n';
+                
+                if (portfolioData) {
+                    message += '1. Copy this portfolio data to data/portfolio.json:\n';
+                    message += JSON.stringify({portfolioData: JSON.parse(portfolioData)}, null, 2);
+                    message += '\n\n';
+                }
+                
+                if (clientData) {
+                    message += '2. Copy this client data to data/clients.json:\n';
+                    message += JSON.stringify({clients: JSON.parse(clientData)}, null, 2);
+                }
+                
+                // Create a modal to show the data
+                const modal = document.createElement('div');
+                modal.style.cssText = `
+                    position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+                    background: rgba(0,0,0,0.8); z-index: 10000; display: flex; 
+                    align-items: center; justify-content: center; padding: 2rem;
+                `;
+                
+                const content = document.createElement('div');
+                content.style.cssText = `
+                    background: #1a1a1a; padding: 2rem; border-radius: 10px; 
+                    max-width: 80%; max-height: 80%; overflow: auto; color: white;
+                `;
+                
+                content.innerHTML = `
+                    <h3 style="color: #ff6b35; margin-bottom: 1rem;">Sync Data to JSON Files</h3>
+                    <p>Copy the data below to your respective JSON files:</p>
+                    <textarea style="width: 100%; height: 400px; background: #2a2a2a; color: white; border: 1px solid #444; padding: 1rem; font-family: monospace;" readonly>${message}</textarea>
+                    <button onclick="this.parentElement.parentElement.remove()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: #ff6b35; color: white; border: none; border-radius: 5px; cursor: pointer;">Close</button>
+                `;
+                
+                modal.appendChild(content);
+                document.body.appendChild(modal);
             }
             
             loadPortfolioData();
