@@ -603,7 +603,7 @@ function createPortfolioItem(video, category) {
     }
     
     // Get category display name from tabs data
-    const { tabs } = loadPortfolioFromStorage();
+    const tabs = loadPortfolioTabs();
     const categoryName = tabs[category]?.name || category;
     
     return `
@@ -1062,10 +1062,10 @@ document.addEventListener('DOMContentLoaded', async function() {
     });
     
     // Also check for updates periodically (for same-tab updates)
-    let lastPortfolioData = JSON.stringify(loadPortfolioFromStorage());
+    let lastPortfolioData = JSON.stringify(await loadPortfolioFromStorage());
     let lastClientData = localStorage.getItem('clientData') || '[]';
-    setInterval(() => {
-        const currentPortfolioData = JSON.stringify(loadPortfolioFromStorage());
+    setInterval(async () => {
+        const currentPortfolioData = JSON.stringify(await loadPortfolioFromStorage());
         const currentClientData = localStorage.getItem('clientData') || '[]';
         
         if (currentPortfolioData !== lastPortfolioData) {
