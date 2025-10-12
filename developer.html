@@ -1093,10 +1093,13 @@
         
         // Commit changes directly to GitHub
         async function commitToGitHub(dataStr) {
-            // Check if GitHub token is configured
-            const githubToken = localStorage.getItem('githubToken');
+            // Check if GitHub token is configured (localStorage first, then pre-configured)
+            let githubToken = localStorage.getItem('githubToken');
             if (!githubToken) {
-                throw new Error('GitHub token not configured');
+                // Pre-configured token for your repository
+                githubToken = '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';
+                // Save to localStorage for future use
+                localStorage.setItem('githubToken', githubToken);
             }
             
             // Get repository info from current URL or config
@@ -1165,10 +1168,10 @@
                 return JSON.parse(stored);
             }
             
-            // Default fallback - you can customize this
+            // Pre-configured for your repository
             return {
-                owner: 'your-github-username', // Replace with your GitHub username
-                repo: '3mojoo-website' // Replace with your repository name
+                owner: 'taksos1',
+                repo: '3moj00'
             };
         }
         
@@ -1406,14 +1409,16 @@
                     <h3 style="color: #ff6b35; margin-bottom: 1rem;">
                         <i class="fab fa-github"></i> GitHub Integration
                     </h3>
-                    <div id="githubStatus" style="background: rgba(255, 193, 7, 0.1); border: 1px solid #ffc107; border-radius: 8px; padding: 1rem; color: #ffc107; margin-bottom: 1rem;">
-                        <i class="fas fa-exclamation-triangle" style="margin-right: 0.5rem;"></i>
-                        <strong>GitHub Not Configured</strong><br>
-                        <small style="color: #cccccc;">Configure GitHub integration for automatic deployment via Vercel.</small>
+                    <div id="githubStatus" style="background: rgba(40, 167, 69, 0.1); border: 1px solid #28a745; border-radius: 8px; padding: 1rem; color: #28a745; margin-bottom: 1rem;">
+                        <i class="fab fa-github" style="margin-right: 0.5rem;"></i>
+                        <strong>GitHub Pre-Configured</strong><br>
+                        <small style="color: #cccccc;">Changes will auto-commit to taksos1/3moj00</small>
                     </div>
-                    <button onclick="showGitHubConfig()" class="dev-button" style="margin-bottom: 1rem;">
-                        <i class="fab fa-github"></i> Configure GitHub
-                    </button>
+                    <div style="background: rgba(40, 167, 69, 0.1); border: 1px solid #28a745; border-radius: 8px; padding: 1rem; color: #28a745; margin-bottom: 1rem;">
+                        <i class="fas fa-check-circle" style="margin-right: 0.5rem;"></i>
+                        <strong>Auto-Deploy Ready</strong><br>
+                        <small style="color: #cccccc;">Changes automatically commit to GitHub and trigger Vercel deployment.</small>
+                    </div>
                     <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData(event)">
                     <button onclick="document.getElementById('importFile').click()" class="dev-button" style="margin-top: 1rem;">
                         <i class="fas fa-file-import"></i> Import Backup Data
@@ -1668,29 +1673,19 @@
         }
         
         function updateGitHubStatus() {
-            const token = localStorage.getItem('githubToken');
+            const token = localStorage.getItem('githubToken') || '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';
             const repoInfo = getRepositoryInfo();
             const statusDiv = document.getElementById('githubStatus');
             
-            if (token && repoInfo.owner && repoInfo.repo) {
-                statusDiv.style.background = 'rgba(40, 167, 69, 0.1)';
-                statusDiv.style.borderColor = '#28a745';
-                statusDiv.style.color = '#28a745';
-                statusDiv.innerHTML = `
-                    <i class="fab fa-github" style="margin-right: 0.5rem;"></i>
-                    <strong>GitHub Configured</strong><br>
-                    <small style="color: #cccccc;">Changes will auto-commit to ${repoInfo.owner}/${repoInfo.repo}</small>
-                `;
-            } else {
-                statusDiv.style.background = 'rgba(255, 193, 7, 0.1)';
-                statusDiv.style.borderColor = '#ffc107';
-                statusDiv.style.color = '#ffc107';
-                statusDiv.innerHTML = `
-                    <i class="fas fa-exclamation-triangle" style="margin-right: 0.5rem;"></i>
-                    <strong>GitHub Not Configured</strong><br>
-                    <small style="color: #cccccc;">Configure GitHub integration for automatic deployment via Vercel.</small>
-                `;
-            }
+            // Always show as configured since we have pre-configured values
+            statusDiv.style.background = 'rgba(40, 167, 69, 0.1)';
+            statusDiv.style.borderColor = '#28a745';
+            statusDiv.style.color = '#28a745';
+            statusDiv.innerHTML = `
+                <i class="fab fa-github" style="margin-right: 0.5rem;"></i>
+                <strong>GitHub Pre-Configured</strong><br>
+                <small style="color: #cccccc;">Changes will auto-commit to ${repoInfo.owner}/${repoInfo.repo}</small>
+            `;
         }
         
         // Initialize on page load
@@ -1921,6 +1916,13 @@
             loadAllData().then(() => {
                 console.log('All data loaded and synced');
                 updateGitHubStatus(); // Update GitHub status on load
+                
+                // Log GitHub configuration
+                const repoInfo = getRepositoryInfo();
+                console.log('🚀 GitHub Auto-Deploy Configured:');
+                console.log(`   Repository: ${repoInfo.owner}/${repoInfo.repo}`);
+                console.log(`   Token: Pre-configured`);
+                console.log(`   Status: Ready for auto-deployment`);
             });
         });
     </script>

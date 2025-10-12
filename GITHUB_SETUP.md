@@ -1,33 +1,29 @@
 # 🚀 GitHub Auto-Deploy Setup Guide
 
 ## Overview
-Your developer panel now supports automatic GitHub commits! When you make changes, they'll automatically commit to GitHub and trigger Vercel deployment.
+Your developer panel is **pre-configured** for automatic GitHub commits! When you make changes, they'll automatically commit to GitHub and trigger Vercel deployment.
 
-## Setup Steps
+## ✅ Pre-Configured Settings
+- **GitHub Repository**: [taksos1/3moj00](https://github.com/taksos1/3moj00)
+- **GitHub Token**: Pre-configured in code
+- **Auto-Deploy**: Ready to use immediately
 
-### 1. Create GitHub Personal Access Token
-1. Go to [GitHub Settings > Personal Access Tokens](https://github.com/settings/tokens/new)
-2. Click "Generate new token (classic)"
-3. Give it a name like "3mojoo-website-deploy"
-4. Select **"repo"** permission (full control of private repositories)
-5. Click "Generate token"
-6. **Copy the token** (starts with `ghp_`)
+## 🎯 How to Use
 
-### 2. Configure in Developer Panel
-1. Open your website
+### 1. Access Developer Panel
+1. Open your website at [3moj00.vercel.app](https://3moj00.vercel.app)
 2. Press `Ctrl + 15987530` to access developer panel
-3. Click "Configure GitHub" button
-4. Enter:
-   - **GitHub Token**: Your personal access token
-   - **GitHub Username**: Your GitHub username
-   - **Repository Name**: Your repository name (e.g., `3mojoo-website`)
-5. Click "Save Configuration"
+3. You'll see "GitHub Pre-Configured" status
 
-### 3. Test the System
-1. Add a new portfolio item or client
-2. You should see: "Changes committed to GitHub! Vercel will auto-deploy in ~2 minutes"
-3. Check your GitHub repository - you'll see the commit
-4. Wait ~2 minutes and refresh your live site - changes should appear!
+### 2. Make Changes
+1. Add new portfolio items or clients
+2. Edit existing content
+3. Changes are automatically saved
+
+### 3. Watch the Magic
+1. You'll see: "Changes committed to GitHub! Vercel will auto-deploy in ~2 minutes"
+2. Check your [GitHub repository](https://github.com/taksos1/3moj00) - you'll see the commit
+3. Wait ~2 minutes and refresh your live site - changes appear automatically!
 
 ## How It Works
 
