@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Developer Panel - 3moj00</title>
-    <link rel="icon" type="image/png" href="icon.png">
+    <link rel="icon" type="image/png" href="logo.png">
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -730,12 +730,10 @@
         // Client Management System
         let clientData = [];
         
-        // Load client data from localStorage
+        // Load client data (now handled by loadAllData)
         function loadClientData() {
-            const saved = localStorage.getItem('clientData');
-            if (saved) {
-                clientData = JSON.parse(saved);
-            }
+            // Client data is now loaded by loadAllData()
+            // This function is kept for compatibility
             renderClients();
         }
         
@@ -747,7 +745,9 @@
         // Open Client Manager
         function openClientManager() {
             document.getElementById('clientModal').style.display = 'block';
-            loadClientData();
+            loadAllData().then(() => {
+                renderClients();
+            });
         }
         
         // Close Client Manager
@@ -928,12 +928,11 @@
         let activeTab = 'edits';
         let editingTab = null;
         
-        // Load portfolio data with automatic JSON sync
-        async function loadPortfolioData() {
-            // Try to load from JSON first to get latest tabs
+        // Load all data from unified data.json
+        async function loadAllData() {
             try {
-                console.log('Developer panel: Loading portfolio.json...');
-                const response = await fetch('./data/portfolio.json');
+                console.log('Developer panel: Loading unified data.json...');
+                const response = await fetch('./data/data.json');
                 console.log('Developer panel response:', response.status, response.statusText);
                 
                 if (!response.ok) {
@@ -941,24 +940,45 @@
                 }
                 
                 const jsonData = await response.json();
-                console.log('Developer panel: Portfolio JSON loaded:', jsonData);
+                console.log('Developer panel: Unified data loaded:', jsonData);
                 
-                // Auto-sync tabs from JSON to localStorage
-                if (jsonData.portfolioTabs) {
+                // Load or sync portfolio tabs
+                const storedTabs = localStorage.getItem('portfolioTabs');
+                if (storedTabs) {
+                    window.portfolioTabs = JSON.parse(storedTabs);
+                } else if (jsonData.portfolioTabs) {
                     window.portfolioTabs = jsonData.portfolioTabs;
                     localStorage.setItem('portfolioTabs', JSON.stringify(jsonData.portfolioTabs));
+                } else {
+                    window.portfolioTabs = {
+                        'gaming': { name: 'Gaming', icon: 'fas fa-gamepad' },
+                        'music': { name: 'Music Videos', icon: 'fas fa-music' },
+                        'commercial': { name: 'Commercial', icon: 'fas fa-briefcase' },
+                        'social': { name: 'Social Media', icon: 'fab fa-instagram' }
+                    };
+                    localStorage.setItem('portfolioTabs', JSON.stringify(window.portfolioTabs));
                 }
                 
-                // Load portfolio data from localStorage (user additions)
-                const portfolioData = localStorage.getItem('portfolioData');
-                if (portfolioData) {
-                    window.portfolioData = JSON.parse(portfolioData);
+                // Load or sync portfolio data
+                const storedPortfolioData = localStorage.getItem('portfolioData');
+                if (storedPortfolioData) {
+                    window.portfolioData = JSON.parse(storedPortfolioData);
                 } else if (jsonData.portfolioData) {
-                    // Fallback to JSON data and sync to localStorage
                     window.portfolioData = jsonData.portfolioData;
                     localStorage.setItem('portfolioData', JSON.stringify(jsonData.portfolioData));
                 } else {
                     window.portfolioData = {};
+                }
+                
+                // Load or sync client data
+                const storedClientData = localStorage.getItem('clientData');
+                if (storedClientData) {
+                    window.clientData = JSON.parse(storedClientData);
+                } else if (jsonData.clients) {
+                    window.clientData = jsonData.clients;
+                    localStorage.setItem('clientData', JSON.stringify(jsonData.clients));
+                } else {
+                    window.clientData = [];
                 }
                 
             } catch (error) {
@@ -967,24 +987,23 @@
                 // Fallback to localStorage only
                 const portfolioData = localStorage.getItem('portfolioData');
                 const portfolioTabs = localStorage.getItem('portfolioTabs');
+                const clientData = localStorage.getItem('clientData');
                 
-                if (portfolioData) {
-                    window.portfolioData = JSON.parse(portfolioData);
-                } else {
-                    window.portfolioData = {};
-                }
+                window.portfolioData = portfolioData ? JSON.parse(portfolioData) : {};
+                window.portfolioTabs = portfolioTabs ? JSON.parse(portfolioTabs) : {
+                    'gaming': { name: 'Gaming', icon: 'fas fa-gamepad' },
+                    'music': { name: 'Music Videos', icon: 'fas fa-music' },
+                    'commercial': { name: 'Commercial', icon: 'fas fa-briefcase' },
+                    'social': { name: 'Social Media', icon: 'fab fa-instagram' }
+                };
+                window.clientData = clientData ? JSON.parse(clientData) : [];
                 
-                if (portfolioTabs) {
-                    window.portfolioTabs = JSON.parse(portfolioTabs);
-                } else {
-                    // Default tabs
-                    window.portfolioTabs = {
-                        'gaming': { name: 'Gaming', icon: 'fas fa-gamepad' },
-                        'music': { name: 'Music Videos', icon: 'fas fa-music' },
-                        'commercial': { name: 'Commercial', icon: 'fas fa-briefcase' },
-                        'social': { name: 'Social Media', icon: 'fab fa-instagram' }
-                    };
+                // Save defaults if nothing exists
+                if (!portfolioTabs) {
                     localStorage.setItem('portfolioTabs', JSON.stringify(window.portfolioTabs));
+                }
+                if (!clientData) {
+                    localStorage.setItem('clientData', JSON.stringify(window.clientData));
                 }
             }
             if (!activeTab || !portfolioTabs[activeTab]) {
@@ -995,16 +1014,111 @@
             renderTabContent();
         }
         
-        // Save data to localStorage
-        function savePortfolioData() {
+        // Save all data to localStorage and auto-generate data.json
+        function saveAllData() {
             localStorage.setItem('portfolioData', JSON.stringify(portfolioData));
             localStorage.setItem('portfolioTabs', JSON.stringify(portfolioTabs));
+            localStorage.setItem('clientData', JSON.stringify(clientData));
+            console.log('All data saved to localStorage');
+            
+            // Auto-generate updated data.json file
+            autoGenerateDataFile();
+        }
+        
+        // Automatically generate and download updated data.json
+        function autoGenerateDataFile() {
+            const unifiedData = {
+                portfolioTabs: portfolioTabs,
+                portfolioData: portfolioData,
+                clients: clientData,
+                lastUpdated: new Date().toISOString()
+            };
+            
+            const dataStr = JSON.stringify(unifiedData, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            // Create download link
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = 'data.json';
+            
+            // Auto-download the file
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Show notification
+            showAutoSaveNotification();
+            
+            console.log('Auto-generated data.json file');
+        }
+        
+        // Show auto-save notification
+        function showAutoSaveNotification() {
+            // Remove existing notification if any
+            const existing = document.querySelector('.auto-save-notification');
+            if (existing) {
+                existing.remove();
+            }
+            
+            const notification = document.createElement('div');
+            notification.className = 'auto-save-notification';
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, #4CAF50, #45a049);
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 10px;
+                box-shadow: 0 4px 20px rgba(76, 175, 80, 0.3);
+                z-index: 10000;
+                font-weight: 600;
+                animation: slideIn 0.3s ease-out;
+            `;
+            
+            notification.innerHTML = `
+                <i class="fas fa-check-circle" style="margin-right: 0.5rem;"></i>
+                Data auto-saved! Replace data/data.json with the downloaded file.
+            `;
+            
+            // Add animation keyframes
+            if (!document.querySelector('#autoSaveStyles')) {
+                const style = document.createElement('style');
+                style.id = 'autoSaveStyles';
+                style.textContent = `
+                    @keyframes slideIn {
+                        from { transform: translateX(100%); opacity: 0; }
+                        to { transform: translateX(0); opacity: 1; }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+            
+            document.body.appendChild(notification);
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.style.animation = 'slideIn 0.3s ease-out reverse';
+                    setTimeout(() => {
+                        if (notification.parentNode) {
+                            notification.remove();
+                        }
+                    }, 300);
+                }
+            }, 5000);
+        }
+        
+        // Legacy function for compatibility
+        function savePortfolioData() {
+            saveAllData();
         }
         
         // Open Portfolio Manager
         function openPortfolioManager() {
             document.getElementById('portfolioModal').style.display = 'block';
-            loadPortfolioData();
+            loadAllData();
             addLog('Portfolio manager opened');
         }
         
@@ -1128,13 +1242,16 @@
                 
                 <div class="dev-section">
                     <h3 style="color: #ff6b35; margin-bottom: 1rem;">
-                        <i class="fas fa-download"></i> Data Backup
+                        <i class="fas fa-info-circle"></i> Auto-Save Status
                     </h3>
-                    <button onclick="exportData()" class="dev-button">
-                        <i class="fas fa-file-export"></i> Export All Data
-                    </button>
-                    <button onclick="syncToJSON()" class="dev-button" style="margin-top: 0.5rem;">
-                        <i class="fas fa-sync"></i> Sync to JSON Files
+                    <div style="background: rgba(76, 175, 80, 0.1); border: 1px solid #4CAF50; border-radius: 8px; padding: 1rem; color: #4CAF50;">
+                        <i class="fas fa-check-circle" style="margin-right: 0.5rem;"></i>
+                        <strong>Auto-Save Enabled</strong><br>
+                        <small style="color: #cccccc;">Changes automatically download updated data.json file. Replace the file in your project and redeploy.</small>
+                    </div>
+                    <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData(event)">
+                    <button onclick="document.getElementById('importFile').click()" class="dev-button" style="margin-top: 1rem;">
+                        <i class="fas fa-file-import"></i> Import Backup Data
                     </button>
                 </div>
                 
@@ -1505,80 +1622,70 @@
                 });
             }
             
-            // Export all data as JSON
-            function exportData() {
-                const portfolioData = localStorage.getItem('portfolioData');
-                const portfolioTabs = localStorage.getItem('portfolioTabs');
-                const clientData = localStorage.getItem('clientData');
+            // Legacy functions removed - auto-save now handles data persistence
+            
+            // Import data from JSON file
+            function importData(event) {
+                const file = event.target.files[0];
+                if (!file) return;
                 
-                const exportData = {
-                    portfolioData: portfolioData ? JSON.parse(portfolioData) : {},
-                    portfolioTabs: portfolioTabs ? JSON.parse(portfolioTabs) : {},
-                    clientData: clientData ? JSON.parse(clientData) : [],
-                    exportDate: new Date().toISOString()
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const importedData = JSON.parse(e.target.result);
+                        
+                        // Validate the structure
+                        if (!importedData.portfolioTabs && !importedData.portfolioData && !importedData.clients) {
+                            alert('Invalid data format. Please ensure the JSON file contains portfolioTabs, portfolioData, and/or clients.');
+                            return;
+                        }
+                        
+                        // Confirm import
+                        if (!confirm('This will replace all current data. Are you sure you want to import?')) {
+                            return;
+                        }
+                        
+                        // Import the data
+                        if (importedData.portfolioTabs) {
+                            window.portfolioTabs = importedData.portfolioTabs;
+                            localStorage.setItem('portfolioTabs', JSON.stringify(importedData.portfolioTabs));
+                        }
+                        
+                        if (importedData.portfolioData) {
+                            window.portfolioData = importedData.portfolioData;
+                            localStorage.setItem('portfolioData', JSON.stringify(importedData.portfolioData));
+                        }
+                        
+                        if (importedData.clients) {
+                            window.clientData = importedData.clients;
+                            localStorage.setItem('clientData', JSON.stringify(importedData.clients));
+                        }
+                        
+                        // Refresh the UI
+                        if (window.portfolioTabs && Object.keys(window.portfolioTabs).length > 0) {
+                            activeTab = Object.keys(window.portfolioTabs)[0];
+                            renderTabs();
+                            renderTabContent();
+                        }
+                        
+                        renderClients();
+                        
+                        alert('Data imported successfully!');
+                        addLog('Data imported from file: ' + file.name);
+                        
+                    } catch (error) {
+                        alert('Error importing data: ' + error.message);
+                        console.error('Import error:', error);
+                    }
                 };
+                reader.readAsText(file);
                 
-                const dataStr = JSON.stringify(exportData, null, 2);
-                const dataBlob = new Blob([dataStr], {type: 'application/json'});
-                
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(dataBlob);
-                link.download = `3moj00-website-backup-${new Date().toISOString().split('T')[0]}.json`;
-                link.click();
-                
-                alert('Data exported successfully!');
+                // Reset the file input
+                event.target.value = '';
             }
             
-            // Sync localStorage data to JSON files (display instructions)
-            function syncToJSON() {
-                const portfolioData = localStorage.getItem('portfolioData');
-                const clientData = localStorage.getItem('clientData');
-                
-                if (!portfolioData && !clientData) {
-                    alert('No data to sync!');
-                    return;
-                }
-                
-                let message = 'To sync your data to the JSON files:\n\n';
-                
-                if (portfolioData) {
-                    message += '1. Copy this portfolio data to data/portfolio.json:\n';
-                    message += JSON.stringify({portfolioData: JSON.parse(portfolioData)}, null, 2);
-                    message += '\n\n';
-                }
-                
-                if (clientData) {
-                    message += '2. Copy this client data to data/clients.json:\n';
-                    message += JSON.stringify({clients: JSON.parse(clientData)}, null, 2);
-                }
-                
-                // Create a modal to show the data
-                const modal = document.createElement('div');
-                modal.style.cssText = `
-                    position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-                    background: rgba(0,0,0,0.8); z-index: 10000; display: flex; 
-                    align-items: center; justify-content: center; padding: 2rem;
-                `;
-                
-                const content = document.createElement('div');
-                content.style.cssText = `
-                    background: #1a1a1a; padding: 2rem; border-radius: 10px; 
-                    max-width: 80%; max-height: 80%; overflow: auto; color: white;
-                `;
-                
-                content.innerHTML = `
-                    <h3 style="color: #ff6b35; margin-bottom: 1rem;">Sync Data to JSON Files</h3>
-                    <p>Copy the data below to your respective JSON files:</p>
-                    <textarea style="width: 100%; height: 400px; background: #2a2a2a; color: white; border: 1px solid #444; padding: 1rem; font-family: monospace;" readonly>${message}</textarea>
-                    <button onclick="this.parentElement.parentElement.remove()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: #ff6b35; color: white; border: none; border-radius: 5px; cursor: pointer;">Close</button>
-                `;
-                
-                modal.appendChild(content);
-                document.body.appendChild(modal);
-            }
-            
-            loadPortfolioData().then(() => {
-                console.log('Portfolio data loaded and synced');
+            loadAllData().then(() => {
+                console.log('All data loaded and synced');
             });
         });
     </script>

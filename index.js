@@ -470,11 +470,11 @@ function showDeveloperAccess() {
 // Initialize developer access
 initDeveloperAccess();
 
-// Load portfolio from JSON file as fallback
+// Load portfolio from unified data.json file
 async function loadPortfolioFromJSON() {
     try {
-        console.log('Attempting to load portfolio.json...');
-        const response = await fetch('./data/portfolio.json');
+        console.log('🔄 Loading data from unified data.json...');
+        const response = await fetch('./data/data.json?t=' + Date.now()); // Cache busting
         console.log('Response status:', response.status, response.statusText);
         
         if (!response.ok) {
@@ -482,37 +482,50 @@ async function loadPortfolioFromJSON() {
         }
         
         const data = await response.json();
-        console.log('Portfolio JSON loaded successfully:', data);
+        console.log('✅ Unified data loaded successfully:', data);
         
         // Auto-sync tabs to localStorage
         if (data.portfolioTabs) {
             localStorage.setItem('portfolioTabs', JSON.stringify(data.portfolioTabs));
-            console.log('Tabs synced to localStorage');
+            console.log('📁 Tabs synced to localStorage');
         }
         
-        return data.portfolioData;
+        // Auto-sync clients to localStorage
+        if (data.clients) {
+            localStorage.setItem('clientData', JSON.stringify(data.clients));
+            console.log('👥 Clients synced to localStorage');
+        }
+        
+        return data.portfolioData || {};
     } catch (error) {
-        console.error('Could not load portfolio from JSON file:', error);
-        console.log('Using fallback portfolio structure');
+        console.error('❌ Could not load portfolio from unified data.json file:', error);
+        console.log('🔄 Using fallback portfolio structure');
         return DEFAULT_PORTFOLIO_CONFIG.data;
     }
 }
 
-// Load portfolio data from localStorage with JSON fallback
+// Load portfolio data with auto-refresh capability
 async function loadPortfolioFromStorage() {
-    const portfolioData = localStorage.getItem('portfolioData');
-    
-    if (portfolioData) {
-        return JSON.parse(portfolioData);
-    } else {
-        // Fallback to JSON file if no localStorage data
+    // Always try to load fresh data from JSON first
+    try {
         const jsonData = await loadPortfolioFromJSON();
         if (Object.keys(jsonData).length > 0) {
             // Save to localStorage for future use
             localStorage.setItem('portfolioData', JSON.stringify(jsonData));
+            return jsonData;
         }
-        return jsonData;
+    } catch (error) {
+        console.log('Could not load fresh data, using localStorage fallback');
     }
+    
+    // Fallback to localStorage if JSON loading fails
+    const portfolioData = localStorage.getItem('portfolioData');
+    if (portfolioData) {
+        return JSON.parse(portfolioData);
+    }
+    
+    // Final fallback to default config
+    return DEFAULT_PORTFOLIO_CONFIG.data;
 }
 
 // Default portfolio configuration (fallback)
@@ -955,13 +968,84 @@ async function loadAndRenderClients() {
     `).join('');
 }
 
+// Auto-refresh mechanism to check for data updates
+let lastDataUpdate = null;
+
+async function checkForDataUpdates() {
+    try {
+        const response = await fetch('./data/data.json');
+        if (response.ok) {
+            const data = await response.json();
+            const currentUpdate = data.lastUpdated;
+            
+            if (lastDataUpdate && currentUpdate && currentUpdate !== lastDataUpdate) {
+                console.log('Data update detected, refreshing portfolio...');
+                await renderPortfolioTabs();
+                await renderPortfolio();
+                showUpdateNotification();
+            }
+            
+            lastDataUpdate = currentUpdate;
+        }
+    } catch (error) {
+        console.log('Could not check for updates:', error);
+    }
+}
+
+// Show update notification
+function showUpdateNotification() {
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #ff6b35, #f7931e);
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(255, 107, 53, 0.3);
+        z-index: 10000;
+        font-weight: 600;
+        animation: slideIn 0.3s ease-out;
+    `;
+    
+    notification.innerHTML = `
+        <i class="fas fa-sync-alt" style="margin-right: 0.5rem;"></i>
+        Portfolio updated with latest changes!
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Auto-remove after 3 seconds
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.style.animation = 'slideIn 0.3s ease-out reverse';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 300);
+        }
+    }, 3000);
+}
+
 // Initialize portfolio on page load
 document.addEventListener('DOMContentLoaded', async function() {
+    console.log('DOM loaded, initializing portfolio...');
+    
     // Render dynamic portfolio tabs
     renderPortfolioTabs();
     
     // Load and render portfolio
     await renderPortfolio();
+    
+    // Initialize tab functionality
+    initPortfolioTabs();
+    
+    // Set up auto-refresh (check every 30 seconds)
+    setInterval(checkForDataUpdates, 30000);
+    
+    console.log('Portfolio initialization complete');
     
     // Load and render clients
     await loadAndRenderClients();
