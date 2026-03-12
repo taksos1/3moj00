@@ -5,7 +5,7 @@ require('dotenv').config({ path: './config.env' });
 
 const app = express();
 const PORT = process.env.PORT || 8000;
-const HOST = process.env.HOST || 'localhost';
+const HOST = process.env.HOST || '0.0.0.0';
 
 // Middleware
 app.use(express.json());
