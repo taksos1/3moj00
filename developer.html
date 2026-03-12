@@ -585,6 +585,14 @@
                 </button>
             </div>
             
+            <div class="dev-card">
+                <h3><i class="fas fa-cog"></i> Page Settings</h3>
+                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; margin-top: 1rem;">
+                    <input type="checkbox" id="showClientsToggle" checked onchange="toggleClientsVisibility()" style="width: 20px; height: 20px;">
+                    <span>Show Clients Section</span>
+                </label>
+            </div>
+            
         </div>
     </div>
     
@@ -1609,6 +1617,10 @@
                 // Reload all data (this will clear localStorage and load fresh)
                 await loadAllData();
                 
+                // Set the showClients checkbox based on loaded data
+                const showClients = window.unifiedData && window.unifiedData.showClients;
+                document.getElementById('showClientsToggle').checked = showClients !== false;
+                
                 // Refresh the current tab display
                 if (activeTab && window.portfolioTabs[activeTab]) {
                     switchTab(activeTab); // This will re-render the tab content
@@ -1624,6 +1636,38 @@
             } catch (error) {
                 console.error('Error refreshing data:', error);
                 addLog('Error refreshing data: ' + error.message);
+            }
+        }
+        
+        // Toggle clients visibility and save to GitHub
+        async function toggleClientsVisibility() {
+            const showClients = document.getElementById('showClientsToggle').checked;
+            
+            // Update the data object
+            const currentData = {
+                showClients: showClients,
+                portfolioTabs: window.portfolioTabs || {},
+                portfolioData: window.portfolioData || {},
+                clients: window.clientData || []
+            };
+            
+            try {
+                const response = await fetch('/api/data', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(currentData)
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    addLog(`Clients section ${showClients ? 'shown' : 'hidden'} and saved to GitHub`);
+                    alert(`Clients section is now ${showClients ? 'visible' : 'hidden'}! Saved to GitHub.`);
+                } else {
+                    alert('Error saving: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error saving clients visibility:', error);
+                alert('Error saving to server');
             }
         }
         
@@ -1815,6 +1859,7 @@
             // Export data to JSON file
             window.exportData = function() {
                 const dataToExport = {
+                    showClients: document.getElementById('showClientsToggle').checked,
                     portfolioTabs: window.portfolioTabs || {},
                     portfolioData: window.portfolioData || {},
                     clients: window.clientData || [],
