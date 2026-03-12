@@ -58,38 +58,75 @@ function pushToGitHub(content, filePath) {
         const data = JSON.stringify(content, null, 2);
         const encodedData = Buffer.from(data).toString('base64');
         
-        const options = {
+        // First, get the current file's SHA
+        const getOptions = {
             hostname: 'api.github.com',
             path: `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${filePath}`,
-            method: 'PUT',
+            method: 'GET',
             headers: {
                 'Authorization': `token ${GITHUB_TOKEN}`,
                 'Accept': 'application/vnd.github.v3+json',
-                'Content-Type': 'application/json',
                 'User-Agent': '3moj00-Website'
             }
         };
 
-        const req = https.request(options, (res) => {
+        const getReq = https.request(getOptions, (getRes) => {
             let body = '';
-            res.on('data', chunk => body += chunk);
-            res.on('end', () => {
-                if (res.statusCode === 200 || res.statusCode === 201) {
-                    console.log('✅ Auto-pushed to GitHub!');
-                    resolve({ success: true });
-                } else {
-                    console.log('GitHub push failed:', res.statusCode, body);
-                    reject(new Error(`GitHub API error: ${res.statusCode}`));
+            getRes.on('data', chunk => body += chunk);
+            getRes.on('end', () => {
+                let sha = null;
+                if (getRes.statusCode === 200) {
+                    try {
+                        const fileInfo = JSON.parse(body);
+                        sha = fileInfo.sha;
+                    } catch (e) {
+                        console.log('Could not parse file info');
+                    }
                 }
+                
+                // Now push with SHA
+                const pushOptions = {
+                    hostname: 'api.github.com',
+                    path: `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${filePath}`,
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${GITHUB_TOKEN}`,
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Content-Type': 'application/json',
+                        'User-Agent': '3moj00-Website'
+                    }
+                };
+
+                const pushData = {
+                    message: 'Auto-update data.json',
+                    content: encodedData
+                };
+                if (sha) {
+                    pushData.sha = sha;
+                }
+
+                const pushReq = https.request(pushOptions, (pushRes) => {
+                    let pushBody = '';
+                    pushRes.on('data', chunk => pushBody += chunk);
+                    pushRes.on('end', () => {
+                        if (pushRes.statusCode === 200 || pushRes.statusCode === 201) {
+                            console.log('✅ Auto-pushed to GitHub!');
+                            resolve({ success: true });
+                        } else {
+                            console.log('GitHub push failed:', pushRes.statusCode, pushBody);
+                            reject(new Error(`GitHub API error: ${pushRes.statusCode}`));
+                        }
+                    });
+                });
+
+                pushReq.on('error', reject);
+                pushReq.write(JSON.stringify(pushData));
+                pushReq.end();
             });
         });
 
-        req.on('error', reject);
-        req.write(JSON.stringify({
-            message: 'Auto-update data.json',
-            content: encodedData
-        }));
-        req.end();
+        getReq.on('error', reject);
+        getReq.end();
     });
 }
 
