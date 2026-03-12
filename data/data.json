@@ -12,15 +12,6 @@
   "portfolioData": {
     "gaming": [
       {
-        "title": "اوعا تفتح الباب ! | Who’s at the Door",
-        "category": "",
-        "url": "https://youtu.be/-J9fVyLCnWw?si=rBPcG_Hi6soJmCSn",
-        "thumbnail": "",
-        "description": "",
-        "client": "",
-        "duration": ""
-      },
-      {
         "title": "FC 26 عملت أقوى فريق درافت",
         "category": "",
         "url": "https://youtu.be/XEm1h0Eo-3Q?si=XG8syjklaZWTgwO9",
@@ -42,5 +33,5 @@
     "gym": []
   },
   "clients": [],
-  "lastUpdated": "2026-03-12T23:32:21.033Z"
+  "lastUpdated": "2026-03-12T23:33:23.403Z"
 }
