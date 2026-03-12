@@ -1,11 +1,17 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
+const https = require('https');
 require('dotenv').config({ path: './config.env' });
 
 const app = express();
 const PORT = process.env.PORT || 8000;
 const HOST = process.env.HOST || '0.0.0.0';
+
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+const GITHUB_OWNER = process.env.GITHUB_OWNER || 'taksos1';
+const GITHUB_REPO = process.env.GITHUB_REPO || '3moj00';
+const DATA_PATH = process.env.DATA_FILE_PATH || './data/data.json';
 
 // Middleware
 app.use(express.json());
@@ -40,8 +46,55 @@ app.get('/api/config', (req, res) => {
     });
 });
 
+// GitHub API helper function
+function pushToGitHub(content, filePath) {
+    return new Promise((resolve, reject) => {
+        if (!GITHUB_TOKEN) {
+            console.log('No GitHub token, skipping auto-push');
+            resolve({ skipped: true });
+            return;
+        }
+
+        const data = JSON.stringify(content, null, 2);
+        const encodedData = Buffer.from(data).toString('base64');
+        
+        const options = {
+            hostname: 'api.github.com',
+            path: `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${filePath}`,
+            method: 'PUT',
+            headers: {
+                'Authorization': `token ${GITHUB_TOKEN}`,
+                'Accept': 'application/vnd.github.v3+json',
+                'Content-Type': 'application/json',
+                'User-Agent': '3moj00-Website'
+            }
+        };
+
+        const req = https.request(options, (res) => {
+            let body = '';
+            res.on('data', chunk => body += chunk);
+            res.on('end', () => {
+                if (res.statusCode === 200 || res.statusCode === 201) {
+                    console.log('✅ Auto-pushed to GitHub!');
+                    resolve({ success: true });
+                } else {
+                    console.log('GitHub push failed:', res.statusCode, body);
+                    reject(new Error(`GitHub API error: ${res.statusCode}`));
+                }
+            });
+        });
+
+        req.on('error', reject);
+        req.write(JSON.stringify({
+            message: 'Auto-update data.json',
+            content: encodedData
+        }));
+        req.end();
+    });
+}
+
 // API endpoint to update data.json
-app.post('/api/data', (req, res) => {
+app.post('/api/data', async (req, res) => {
     try {
         const dataPath = process.env.DATA_FILE_PATH || './data/data.json';
         const data = req.body;
@@ -49,11 +102,17 @@ app.post('/api/data', (req, res) => {
         // Add timestamp
         data.lastUpdated = new Date().toISOString();
         
-        // Write to file
+        // Write to local file
         fs.writeFileSync(dataPath, JSON.stringify(data, null, 2));
         
-        console.log('Data updated successfully');
-        res.json({ success: true, message: 'Data updated successfully' });
+        console.log('Data updated locally');
+        
+        // Auto-push to GitHub
+        if (GITHUB_TOKEN) {
+            await pushToGitHub(data, 'data/data.json');
+        }
+        
+        res.json({ success: true, message: 'Data updated and pushed to GitHub' });
     } catch (error) {
         console.error('Error updating data:', error);
         res.status(500).json({ success: false, message: 'Error updating data' });
