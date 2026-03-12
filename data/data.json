@@ -1,1 +1,23 @@
-{}
+{
+  "portfolioTabs": {
+    "gaming": {
+      "name": "Gaming",
+      "icon": "fas fa-gamepad"
+    },
+    "commercial": {
+      "name": "Commercial",
+      "icon": "fas fa-briefcase"
+    },
+    "social": {
+      "name": "Social Media",
+      "icon": "fab fa-instagram"
+    }
+  },
+  "portfolioData": {
+    "gaming": [],
+    "commercial": [],
+    "social": []
+  },
+  "clients": [],
+  "lastUpdated": "2026-03-12T23:11:27.003Z"
+}
