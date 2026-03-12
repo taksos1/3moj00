@@ -551,8 +551,14 @@ function extractVideoIdMain(url) {
         return null;
     }
     
-    // YouTube only
-    const youtubeMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/);
+    // YouTube Shorts
+    const shortsMatch = url.match(/(?:youtube\.com\/shorts\/|youtu\.be\/)([^&\n?#]+)/);
+    if (shortsMatch) {
+        return { type: 'youtube', id: shortsMatch[1] };
+    }
+    
+    // YouTube regular videos
+    const youtubeMatch = url.match(/(?:youtube\.com\/watch\?v=|youtube\.com\/embed\/)([^&\n?#]+)/);
     if (youtubeMatch) {
         return { type: 'youtube', id: youtubeMatch[1] };
     }
