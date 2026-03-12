@@ -1,4 +1,5 @@
 {
+  "showClients": false,
   "portfolioTabs": {
     "gaming": {
       "name": "Gaming",
@@ -52,5 +53,5 @@
     ]
   },
   "clients": [],
-  "lastUpdated": "2026-03-12T23:39:05.407Z"
+  "lastUpdated": "2026-03-12T23:40:26.867Z"
 }
