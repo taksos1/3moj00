@@ -1061,6 +1061,9 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Load and render portfolio
     await renderPortfolio();
     
+    // Load and render clients (this checks showClients setting)
+    await loadAndRenderClients();
+    
     // Initialize tab functionality
     initPortfolioTabs();
     
@@ -1069,10 +1072,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     
     console.log('Portfolio initialization complete');
     
-    // Load and render clients
-    await loadAndRenderClients();
-    
-    // Listen for storage changes (when videos are added in developer panel)
+    // Also check for updates periodically (for same-tab updates) (when videos are added in developer panel)
     window.addEventListener('storage', function(e) {
         if (e.key === 'portfolioData' || e.key === 'portfolioTabs') {
             renderPortfolioTabs();
