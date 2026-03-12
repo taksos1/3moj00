@@ -1291,7 +1291,10 @@
             const player = videoInfo ? createPlayer(videoInfo, video.url) : '';
             
             return `
-                <div class="video-item">
+                <div class="video-item" data-index="${index}">
+                    <div class="drag-handle" title="Drag to reorder" style="cursor: grab; padding: 0.5rem; color: #ff6b35; font-size: 1.2rem;">
+                        <i class="fas fa-grip-vertical"></i>
+                    </div>
                     <div class="video-thumbnail">
                         ${player}
                     </div>
@@ -1461,6 +1464,58 @@
             console.log(`Rendering ${videos.length} videos for ${category}:`, videos);
             
             grid.innerHTML = videos.map((video, index) => createVideoItem(video, category, index)).join('');
+            
+            // Add drag and drop handlers
+            setTimeout(() => initDragAndDrop(category), 100);
+        }
+        
+        // Initialize drag and drop for video grid
+        function initDragAndDrop(category) {
+            const grid = document.getElementById(`${category}Grid`);
+            if (!grid) return;
+            
+            const items = grid.querySelectorAll('.video-item');
+            items.forEach(item => {
+                item.setAttribute('draggable', 'true');
+                item.style.cursor = 'grab';
+                
+                item.addEventListener('dragstart', function(e) {
+                    this.classList.add('dragging');
+                    e.dataTransfer.setData('text/plain', this.dataset.index);
+                    e.dataTransfer.setData('category', category);
+                });
+                
+                item.addEventListener('dragend', function() {
+                    this.classList.remove('dragging');
+                });
+                
+                item.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    this.style.border = '2px dashed #ff6b35';
+                });
+                
+                item.addEventListener('dragleave', function() {
+                    this.style.border = '';
+                });
+                
+                item.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    this.style.border = '';
+                    
+                    const fromIndex = parseInt(e.dataTransfer.getData('text/plain'));
+                    const toIndex = parseInt(this.dataset.index);
+                    const fromCategory = e.dataTransfer.getData('category');
+                    
+                    if (fromCategory === category && fromIndex !== toIndex) {
+                        // Reorder the array
+                        const video = window.portfolioData[category].splice(fromIndex, 1)[0];
+                        window.portfolioData[category].splice(toIndex, 0, video);
+                        savePortfolioData();
+                        renderVideos(category);
+                        addLog(`Reordered video in ${category}`);
+                    }
+                });
+            });
         }
         
         // Render all tabs
