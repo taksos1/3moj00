@@ -506,25 +506,13 @@ async function loadPortfolioFromJSON() {
 
 // Load portfolio data with auto-refresh capability
 async function loadPortfolioFromStorage() {
-    // Always try to load fresh data from JSON first
-    try {
-        const jsonData = await loadPortfolioFromJSON();
-        if (Object.keys(jsonData).length > 0) {
-            // Save to localStorage for future use
-            localStorage.setItem('portfolioData', JSON.stringify(jsonData));
-            return jsonData;
-        }
-    } catch (error) {
-        console.log('Could not load fresh data, using localStorage fallback');
+    // Only use data from the unified data.json file
+    if (window.unifiedData && window.unifiedData.portfolioData) {
+        return window.unifiedData.portfolioData;
     }
     
-    // Fallback to localStorage if JSON loading fails
-    const portfolioData = localStorage.getItem('portfolioData');
-    if (portfolioData) {
-        return JSON.parse(portfolioData);
-    }
-    
-    // Final fallback to default config
+    // Return empty data if no data.json exists
+    console.log('No portfolio data in data.json, using empty data');
     return DEFAULT_PORTFOLIO_CONFIG.data;
 }
 
@@ -546,18 +534,13 @@ const DEFAULT_PORTFOLIO_CONFIG = {
 
 // Portfolio Display Functions
 function loadPortfolioTabs() {
-    const portfolioTabs = localStorage.getItem('portfolioTabs');
-    
-    if (portfolioTabs) {
-        try {
-            return JSON.parse(portfolioTabs);
-        } catch (error) {
-            console.error('Error parsing portfolio tabs from localStorage:', error);
-        }
+    // Only use data from the unified data.json file
+    if (window.unifiedData && window.unifiedData.portfolioTabs) {
+        return window.unifiedData.portfolioTabs;
     }
     
-    // Return default tabs
-    console.log('Using default portfolio tabs');
+    // Return default tabs only if no data.json exists
+    console.log('No portfolio tabs in data.json, using default tabs');
     return DEFAULT_PORTFOLIO_CONFIG.tabs;
 }
 
@@ -879,22 +862,15 @@ async function loadClientsFromJSON() {
 
 // Load and render clients
 async function loadAndRenderClients() {
-    const clientData = localStorage.getItem('clientData');
     const clientsGrid = document.getElementById('clientsGrid');
     
     if (!clientsGrid) return;
     
     let clients = [];
     
-    if (clientData) {
-        clients = JSON.parse(clientData);
-    } else {
-        // Fallback to JSON file if no localStorage data
-        clients = await loadClientsFromJSON();
-        if (clients.length > 0) {
-            // Save to localStorage for future use
-            localStorage.setItem('clientData', JSON.stringify(clients));
-        }
+    // Only use data from the unified data.json file
+    if (window.unifiedData && window.unifiedData.clients) {
+        clients = window.unifiedData.clients;
     }
     
     if (clients.length === 0) {
@@ -1029,9 +1005,41 @@ function showUpdateNotification() {
     }, 3000);
 }
 
+// Load unified data from data.json
+async function loadUnifiedData() {
+    try {
+        const response = await fetch('/data/data.json');
+        if (response.ok) {
+            const data = await response.json();
+            window.unifiedData = data;
+            console.log('✅ Loaded unified data from data.json:', data);
+            return data;
+        } else {
+            console.log('⚠️ Could not load data.json, using empty data');
+            window.unifiedData = {
+                portfolioTabs: {},
+                portfolioData: {},
+                clients: []
+            };
+            return window.unifiedData;
+        }
+    } catch (error) {
+        console.error('Error loading unified data:', error);
+        window.unifiedData = {
+            portfolioTabs: {},
+            portfolioData: {},
+            clients: []
+        };
+        return window.unifiedData;
+    }
+}
+
 // Initialize portfolio on page load
 document.addEventListener('DOMContentLoaded', async function() {
     console.log('DOM loaded, initializing portfolio...');
+    
+    // Load unified data first
+    await loadUnifiedData();
     
     // Render dynamic portfolio tabs
     renderPortfolioTabs();
@@ -1061,22 +1069,21 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     });
     
+    // Auto-refresh will handle data updates from data.json
+    
     // Also check for updates periodically (for same-tab updates)
-    let lastPortfolioData = JSON.stringify(await loadPortfolioFromStorage());
-    let lastClientData = localStorage.getItem('clientData') || '[]';
+    let lastUnifiedData = JSON.stringify(window.unifiedData);
     setInterval(async () => {
-        const currentPortfolioData = JSON.stringify(await loadPortfolioFromStorage());
-        const currentClientData = localStorage.getItem('clientData') || '[]';
+        // Reload unified data from data.json
+        await loadUnifiedData();
+        const currentUnifiedData = JSON.stringify(window.unifiedData);
         
-        if (currentPortfolioData !== lastPortfolioData) {
-            lastPortfolioData = currentPortfolioData;
+        if (currentUnifiedData !== lastUnifiedData) {
+            lastUnifiedData = currentUnifiedData;
+            console.log('🔄 Data updated, refreshing display...');
             renderPortfolioTabs();
-            renderPortfolio();
-        }
-        
-        if (currentClientData !== lastClientData) {
-            lastClientData = currentClientData;
-            loadAndRenderClients();
+            await renderPortfolio();
+            await loadAndRenderClients();
         }
     }, 1000);
 });
