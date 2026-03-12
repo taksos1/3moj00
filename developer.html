@@ -974,6 +974,9 @@
                 const jsonData = await response.json();
                 console.log('Developer panel: Fresh data loaded from data.json:', jsonData);
                 
+                // Store unified data for showClients toggle
+                window.unifiedData = jsonData;
+                
                 // Load portfolio tabs ONLY from JSON (no localStorage fallback)
                 if (jsonData.portfolioTabs && Object.keys(jsonData.portfolioTabs).length > 0) {
                     window.portfolioTabs = jsonData.portfolioTabs;
