@@ -863,8 +863,22 @@ async function loadClientsFromJSON() {
 // Load and render clients
 async function loadAndRenderClients() {
     const clientsGrid = document.getElementById('clientsGrid');
+    const clientsSection = clientsGrid ? clientsGrid.closest('.clients') : null;
     
     if (!clientsGrid) return;
+    
+    // Check if clients should be shown
+    if (window.unifiedData && window.unifiedData.showClients === false) {
+        if (clientsSection) {
+            clientsSection.style.display = 'none';
+        }
+        return;
+    }
+    
+    // Show clients section if it was hidden
+    if (clientsSection) {
+        clientsSection.style.display = 'block';
+    }
     
     let clients = [];
     
