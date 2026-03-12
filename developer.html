@@ -570,6 +570,21 @@
                 </div>
             </div>
             
+            <div class="dev-card">
+                <h3><i class="fas fa-database"></i> Data Backup</h3>
+                <p>Export or import your portfolio and client data</p>
+                <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData(event)">
+                <button onclick="exportData()" class="dev-button">
+                    <i class="fas fa-file-export"></i> Export Data
+                </button>
+                <button onclick="document.getElementById('importFile').click()" class="dev-button" style="margin-top: 0.5rem;">
+                    <i class="fas fa-file-import"></i> Import Data
+                </button>
+                <button onclick="refreshFromJSON()" class="dev-button" style="margin-top: 0.5rem;">
+                    <i class="fas fa-sync-alt"></i> Reload from Server
+                </button>
+            </div>
+            
         </div>
     </div>
     
@@ -1322,21 +1337,6 @@
                         <strong>data.json Editor</strong><br>
                         <small style="color: #cccccc;">Changes are saved directly to data.json file</small>
                     </div>
-                    <div style="background: rgba(40, 167, 69, 0.1); border: 1px solid #28a745; border-radius: 8px; padding: 1rem; color: #28a745; margin-bottom: 1rem;">
-                        <i class="fas fa-check-circle" style="margin-right: 0.5rem;"></i>
-                        <strong>Single Source of Truth</strong><br>
-                        <small style="color: #cccccc;">Only data.json content appears on the main page</small>
-                    </div>
-                    <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData(event)">
-                    <button onclick="document.getElementById('importFile').click()" class="dev-button" style="margin-top: 1rem;">
-                        <i class="fas fa-file-import"></i> Import Backup Data
-                    </button>
-                    <button onclick="refreshFromJSON()" class="dev-button" style="margin-top: 0.5rem;">
-                        <i class="fas fa-sync-alt"></i> Reload from data.json
-                    </button>
-                    <button onclick="clearLocalStorage()" class="dev-button" style="margin-top: 0.5rem; background: #dc3545;">
-                        <i class="fas fa-trash"></i> Clear Local Storage
-                    </button>
                 </div>
                 
                 <div class="video-form">
@@ -1812,8 +1812,33 @@
             
             // Legacy functions removed - auto-save now handles data persistence
             
+            // Export data to JSON file
+            window.exportData = function() {
+                const dataToExport = {
+                    portfolioTabs: window.portfolioTabs || {},
+                    portfolioData: window.portfolioData || {},
+                    clients: window.clientData || [],
+                    lastUpdated: new Date().toISOString()
+                };
+                
+                const dataStr = JSON.stringify(dataToExport, null, 2);
+                const blob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = '3moj00-data-backup-' + new Date().toISOString().split('T')[0] + '.json';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                addLog('Data exported to file');
+                alert('Data exported successfully! Save this file to your computer.');
+            }
+            
             // Import data from JSON file
-            function importData(event) {
+            window.importData = function(event) {
                 const file = event.target.files[0];
                 if (!file) return;
                 
