@@ -1,9 +1,12 @@
 {
-  "showClients": false,
   "portfolioTabs": {
     "gaming": {
       "name": "Gaming",
       "icon": "fas fa-gamepad"
+    },
+    "gym": {
+      "name": "Gym",
+      "icon": "fas fa-video"
     }
   },
   "portfolioData": {
@@ -26,8 +29,9 @@
         "client": "",
         "duration": ""
       }
-    ]
+    ],
+    "gym": []
   },
   "clients": [],
-  "lastUpdated": "2026-03-12T23:27:51.246Z"
+  "lastUpdated": "2026-03-12T23:29:29.570Z"
 }
