@@ -3,16 +3,11 @@
     "gaming": {
       "name": "Gaming",
       "icon": "fas fa-gamepad"
-    },
-    "social": {
-      "name": "Social Media",
-      "icon": "fab fa-instagram"
     }
   },
   "portfolioData": {
-    "gaming": [],
-    "social": []
+    "gaming": []
   },
   "clients": [],
-  "lastUpdated": "2026-03-12T23:11:29.184Z"
+  "lastUpdated": "2026-03-12T23:11:31.057Z"
 }
