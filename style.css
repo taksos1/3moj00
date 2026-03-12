@@ -146,6 +146,7 @@ body {
     font-weight: 700;
     margin-bottom: 1rem;
     line-height: 1.1;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 107, 53, 0.3);
 }
 
 .title-line {
@@ -165,6 +166,7 @@ body {
     font-size: 1.3rem;
     margin-bottom: 2rem;
     color: #cccccc;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
     animation: fadeInUp 1s ease-out 0.4s both;
 }
 
@@ -341,39 +343,45 @@ section {
 
 .services-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 2rem;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
 }
 
 .service-card {
     background: #1a1a1a;
-    padding: 2rem;
+    padding: 1.5rem;
     border-radius: 15px;
     text-align: center;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     border: 1px solid rgba(255, 107, 53, 0.1);
 }
 
-.service-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 20px 40px rgba(255, 107, 53, 0.1);
+.service-card h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+.service-card p {
+    font-size: 0.9rem;
+    line-height: 1.4;
 }
 
 .service-icon {
-    font-size: 3rem;
+    font-size: 2rem;
     color: #ff6b35;
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
 }
 
 .service-card h3 {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
     color: #ffffff;
 }
 
 .service-card p {
+    font-size: 0.9rem;
     color: #cccccc;
-    line-height: 1.6;
+    line-height: 1.4;
 }
 
 /* Portfolio Section */
@@ -611,20 +619,35 @@ section {
 
 .contact-info {
     display: flex;
-    flex-direction: row;
-    gap: 3rem;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    flex-wrap: wrap;
+    gap: 1rem;
 }
 
 .contact-item {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
     gap: 1rem;
-    text-align: center;
-    min-width: 150px;
+    text-align: left;
+    min-width: 200px;
+    padding: 0.5rem;
+}
+
+.hidden-info {
+    opacity: 0;
+    max-width: 0;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    color: #ff6b35;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.contact-item:hover .hidden-info {
+    opacity: 1;
+    max-width: 300px;
 }
 
 .contact-link {
