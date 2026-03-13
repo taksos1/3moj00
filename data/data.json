@@ -2,8 +2,8 @@
   "showClients": false,
   "portfolioTabs": {
     "gaming": {
-      "name": "Gaming",
-      "icon": "fas fa-gamepad"
+      "name": "Gaming Content",
+      "icon": ""
     },
     "gym": {
       "name": "Fitness & Sports",
@@ -104,5 +104,5 @@
     ]
   },
   "clients": [],
-  "lastUpdated": "2026-03-13T00:27:42.064Z"
+  "lastUpdated": "2026-03-13T00:28:05.174Z"
 }
