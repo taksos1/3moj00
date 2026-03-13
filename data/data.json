@@ -83,15 +83,6 @@
     ],
     "restaurants": [
       {
-        "title": "اعلان مطعم دايت اند فات",
-        "category": "",
-        "url": "https://youtu.be/dIXUCXC1-QE",
-        "thumbnail": "",
-        "description": "",
-        "client": "",
-        "duration": ""
-      },
-      {
         "title": "اعلان مطعم دايت اند فات 2",
         "category": "",
         "url": "https://youtu.be/SJiQ588MSPY",
@@ -179,5 +170,5 @@
     ]
   },
   "clients": [],
-  "lastUpdated": "2026-03-13T18:31:34.352Z"
+  "lastUpdated": "2026-03-13T18:36:22.179Z"
 }
