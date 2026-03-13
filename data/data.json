@@ -119,9 +119,19 @@
         "duration": ""
       }
     ],
-    "educational-content": [],
+    "educational-content": [
+      {
+        "title": "مونتاج تعليمي ديني",
+        "category": "",
+        "url": "https://youtube.com/shorts/VnqChHQVRlY?feature=share",
+        "thumbnail": "",
+        "description": "",
+        "client": "",
+        "duration": ""
+      }
+    ],
     "cinematic-short-films-": []
   },
   "clients": [],
-  "lastUpdated": "2026-03-13T00:47:13.710Z"
+  "lastUpdated": "2026-03-13T01:13:25.940Z"
 }
