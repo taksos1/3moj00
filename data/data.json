@@ -108,6 +108,15 @@
         "description": "",
         "client": "",
         "duration": ""
+      },
+      {
+        "title": "اعلان مطعم دايت اند فات",
+        "category": "",
+        "url": "https://youtu.be/dIXUCXC1-QE",
+        "thumbnail": "",
+        "description": "",
+        "client": "",
+        "duration": ""
       }
     ],
     "educational-content": [
@@ -170,5 +179,5 @@
     ]
   },
   "clients": [],
-  "lastUpdated": "2026-03-13T18:36:22.179Z"
+  "lastUpdated": "2026-03-13T18:36:23.916Z"
 }
