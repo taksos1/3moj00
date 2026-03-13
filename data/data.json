@@ -6,7 +6,7 @@
       "icon": "fas fa-gamepad"
     },
     "gym": {
-      "name": "Gym",
+      "name": "Fitness & Sports",
       "icon": "fas fa-video"
     },
     "restaurants": {
@@ -104,5 +104,5 @@
     ]
   },
   "clients": [],
-  "lastUpdated": "2026-03-13T00:27:25.714Z"
+  "lastUpdated": "2026-03-13T00:27:42.064Z"
 }
