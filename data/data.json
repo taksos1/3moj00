@@ -6,11 +6,11 @@
       "icon": "fas fa-video"
     },
     "gym": {
-      "name": "🏋️‍♀️ | Fitness & Sports",
+      "name": "Fitness & Sports",
       "icon": "fas fa-video"
     },
     "restaurants": {
-      "name": "Restaurant & Café",
+      "name": "Restaurant & Café ☕️",
       "icon": "fas fa-video"
     },
     "educational-content": {
@@ -114,5 +114,5 @@
     "cinematic-short-films-": []
   },
   "clients": [],
-  "lastUpdated": "2026-03-13T00:41:12.267Z"
+  "lastUpdated": "2026-03-13T00:42:00.248Z"
 }
