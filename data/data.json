@@ -3,7 +3,7 @@
   "portfolioTabs": {
     "gaming": {
       "name": "Gaming Content",
-      "icon": ""
+      "icon": "fas fa-video"
     },
     "gym": {
       "name": "Fitness & Sports",
@@ -104,5 +104,5 @@
     ]
   },
   "clients": [],
-  "lastUpdated": "2026-03-13T00:28:05.174Z"
+  "lastUpdated": "2026-03-13T00:28:10.613Z"
 }
