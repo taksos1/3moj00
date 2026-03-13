@@ -10,7 +10,7 @@
       "icon": "fas fa-video"
     },
     "restaurants": {
-      "name": "Food & Restaurant",
+      "name": "Restaurant & Café",
       "icon": "fas fa-video"
     }
   },
@@ -104,5 +104,5 @@
     ]
   },
   "clients": [],
-  "lastUpdated": "2026-03-13T00:28:10.613Z"
+  "lastUpdated": "2026-03-13T00:33:03.554Z"
 }
