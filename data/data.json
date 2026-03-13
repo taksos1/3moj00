@@ -12,6 +12,10 @@
     "restaurants": {
       "name": "Restaurant & Café",
       "icon": "fas fa-video"
+    },
+    "educational-content": {
+      "name": "Educational Content",
+      "icon": "fas fa-video"
     }
   },
   "portfolioData": {
@@ -101,8 +105,9 @@
         "client": "",
         "duration": ""
       }
-    ]
+    ],
+    "educational-content": []
   },
   "clients": [],
-  "lastUpdated": "2026-03-13T00:33:03.554Z"
+  "lastUpdated": "2026-03-13T00:37:29.875Z"
 }
