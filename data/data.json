@@ -23,17 +23,7 @@
     }
   },
   "portfolioData": {
-    "gaming": [
-      {
-        "title": "تحدي مين افضل رسام مع ليث ومستريوس الجزء الثاني😂",
-        "category": "",
-        "url": "https://youtu.be/YqVkW-eNYY0?si=2mYnDtGimwW-sE3k",
-        "thumbnail": "",
-        "description": "",
-        "client": "",
-        "duration": ""
-      }
-    ],
+    "gaming": [],
     "gym": [
       {
         "title": "El Baz Gym Ramadan",
@@ -179,5 +169,5 @@
     ]
   },
   "clients": [],
-  "lastUpdated": "2026-03-14T06:53:37.597Z"
+  "lastUpdated": "2026-03-14T06:53:39.232Z"
 }
