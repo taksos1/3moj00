@@ -70,6 +70,15 @@
         "description": "",
         "client": "",
         "duration": ""
+      },
+      {
+        "title": "El Baz Gym Ramadan",
+        "category": "",
+        "url": "https://youtube.com/shorts/VbxajROChfM?feature=share",
+        "thumbnail": "",
+        "description": "",
+        "client": "",
+        "duration": ""
       }
     ],
     "restaurants": [
@@ -215,5 +224,5 @@
     ]
   },
   "clients": [],
-  "lastUpdated": "2026-03-14T07:19:46.961Z"
+  "lastUpdated": "2026-03-14T07:20:01.952Z"
 }
