@@ -52,7 +52,17 @@
         "duration": ""
       }
     ],
-    "gym": [],
+    "gym": [
+      {
+        "title": "El-Baz gym Ladies' Group",
+        "category": "",
+        "url": "https://youtube.com/shorts/bESTSqlWRak?feature=share",
+        "thumbnail": "",
+        "description": "",
+        "client": "",
+        "duration": ""
+      }
+    ],
     "restaurants": [
       {
         "title": "windy Café",
@@ -114,6 +124,15 @@
         "title": "مونتاج تعليمي 2",
         "category": "",
         "url": "https://youtube.com/shorts/VnqChHQVRlY?feature=share",
+        "thumbnail": "",
+        "description": "",
+        "client": "",
+        "duration": ""
+      },
+      {
+        "title": "",
+        "category": "",
+        "url": "",
         "thumbnail": "",
         "description": "",
         "client": "",
@@ -187,5 +206,5 @@
     ]
   },
   "clients": [],
-  "lastUpdated": "2026-03-14T07:14:30.167Z"
+  "lastUpdated": "2026-03-14T07:15:04.743Z"
 }
