@@ -26,15 +26,6 @@
     "gaming": [],
     "gym": [
       {
-        "title": "Elbaz Gym Motivational video",
-        "category": "",
-        "url": "https://youtube.com/shorts/laWW41TPAJQ?feature=share",
-        "thumbnail": "",
-        "description": "",
-        "client": "",
-        "duration": ""
-      },
-      {
         "title": "El Baz gym Ladies' Group",
         "category": "",
         "url": "https://youtube.com/shorts/bESTSqlWRak?feature=share",
@@ -160,5 +151,5 @@
     ]
   },
   "clients": [],
-  "lastUpdated": "2026-03-14T06:54:30.682Z"
+  "lastUpdated": "2026-03-14T06:54:32.557Z"
 }
