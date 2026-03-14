@@ -24,17 +24,7 @@
   },
   "portfolioData": {
     "gaming": [],
-    "gym": [
-      {
-        "title": "El Baz gym Ladies' Group",
-        "category": "",
-        "url": "https://youtube.com/shorts/bESTSqlWRak?feature=share",
-        "thumbnail": "",
-        "description": "",
-        "client": "",
-        "duration": ""
-      }
-    ],
+    "gym": [],
     "restaurants": [
       {
         "title": "اعلان مطعم دايت اند فات 2",
@@ -151,5 +141,5 @@
     ]
   },
   "clients": [],
-  "lastUpdated": "2026-03-14T06:54:32.557Z"
+  "lastUpdated": "2026-03-14T06:54:33.933Z"
 }
