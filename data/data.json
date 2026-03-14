@@ -196,13 +196,6 @@
       }
     ]
   },
-  "clients": [
-    {
-      "name": "Taksos",
-      "channelUrl": "https://www.youtube.com/@taksos5307",
-      "subscribers": "1000K",
-      "thumbnailUrl": "https://ui-avatars.com/api/?name=Taksos&background=ff6b35&color=fff"
-    }
-  ],
-  "lastUpdated": "2026-03-14T23:16:48.865Z"
+  "clients": [],
+  "lastUpdated": "2026-03-14T23:18:56.233Z"
 }
