@@ -208,8 +208,13 @@
       "thumbnailUrl": "https://yt3.googleusercontent.com/uTFJvrmWxz7syBbuUp6pm7VTnGf91mFCII-j1vLBFKvdnWQqqfTh2cR-4eLykMYGy1XcfAUDAw=s900-c-k-c0x00ffffff-no-rj"
     }
   ],
-  "lastUpdated": "2026-03-14T23:50:16.125Z",
+  "lastUpdated": "2026-03-14T23:50:30.854Z",
   "projects": [
+    {
+      "title": "test",
+      "url": "https://www.youtube.com/watch?v=h2Bb3gfthbs",
+      "categoryId": "gym"
+    },
     {
       "title": "تحدي الرسم مع اليوتيوبر ليث ومستريوس",
       "category": "",
