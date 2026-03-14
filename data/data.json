@@ -80,6 +80,15 @@
         "description": "",
         "client": "",
         "duration": ""
+      },
+      {
+        "title": "اعلان مطعم غنيم",
+        "category": "",
+        "url": "https://youtu.be/f7ZBkWD74fQ",
+        "thumbnail": "",
+        "description": "",
+        "client": "",
+        "duration": ""
       }
     ],
     "educational-content": [],
@@ -132,5 +141,5 @@
     ]
   },
   "clients": [],
-  "lastUpdated": "2026-03-14T07:12:08.428Z"
+  "lastUpdated": "2026-03-14T07:12:19.329Z"
 }
