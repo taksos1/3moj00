@@ -93,9 +93,18 @@
         "duration": ""
       },
       {
-        "title": "برنامج خطر التكنولوجيا على البشرية",
+        "title": "برومو غير رسمي لفيلم تراب الماس",
         "category": "",
-        "url": "https://youtu.be/ylHG0UxeZIQ",
+        "url": "https://youtu.be/1bHZ_KqysTg",
+        "thumbnail": "",
+        "description": "",
+        "client": "",
+        "duration": ""
+      },
+      {
+        "title": "",
+        "category": "",
+        "url": "",
         "thumbnail": "",
         "description": "",
         "client": "",
@@ -104,5 +113,5 @@
     ]
   },
   "clients": [],
-  "lastUpdated": "2026-03-14T07:08:25.144Z"
+  "lastUpdated": "2026-03-14T07:09:02.747Z"
 }
