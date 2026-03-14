@@ -197,7 +197,7 @@
     ]
   },
   "clients": [],
-  "lastUpdated": "2026-03-14T23:48:32.540Z",
+  "lastUpdated": "2026-03-14T23:48:34.154Z",
   "projects": [
     {
       "title": "تحدي الرسم مع اليوتيوبر ليث ومستريوس",
@@ -220,16 +220,6 @@
       "categoryId": "gaming"
     },
     {
-      "title": "😨 اوعى تفتح الباب",
-      "category": "",
-      "url": "https://youtu.be/-J9fVyLCnWw?si=6rh9G70a8P8E3YJ4",
-      "thumbnail": "",
-      "description": "",
-      "client": "",
-      "duration": "",
-      "categoryId": "gaming"
-    },
-    {
       "title": "El Baz gym Ladies' Group Reel",
       "category": "",
       "url": "https://youtube.com/shorts/bESTSqlWRak?feature=share",
@@ -238,6 +228,16 @@
       "client": "",
       "duration": "",
       "categoryId": "gym"
+    },
+    {
+      "title": "😨 اوعى تفتح الباب",
+      "category": "",
+      "url": "https://youtu.be/-J9fVyLCnWw?si=6rh9G70a8P8E3YJ4",
+      "thumbnail": "",
+      "description": "",
+      "client": "",
+      "duration": "",
+      "categoryId": "gaming"
     },
     {
       "title": "El Baz Gym Motivational",
