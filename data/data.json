@@ -61,6 +61,24 @@
         "description": "",
         "client": "",
         "duration": ""
+      },
+      {
+        "title": "El Baz Gym Motivational",
+        "category": "",
+        "url": "https://youtube.com/shorts/laWW41TPAJQ?feature=share",
+        "thumbnail": "",
+        "description": "",
+        "client": "",
+        "duration": ""
+      },
+      {
+        "title": "",
+        "category": "",
+        "url": "",
+        "thumbnail": "",
+        "description": "",
+        "client": "",
+        "duration": ""
       }
     ],
     "restaurants": [
@@ -206,5 +224,5 @@
     ]
   },
   "clients": [],
-  "lastUpdated": "2026-03-14T07:17:41.566Z"
+  "lastUpdated": "2026-03-14T07:18:09.787Z"
 }
