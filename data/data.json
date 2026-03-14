@@ -57,9 +57,18 @@
     "educational-content": [],
     "cinematic-short-films-": [
       {
-        "title": "فيلم مصر بلا أمية",
+        "title": "فيلم شيزوفرنيا",
         "category": "",
-        "url": "https://youtu.be/MnRT4qfEnE4",
+        "url": "https://youtu.be/X5Rb9VmgTnI",
+        "thumbnail": "",
+        "description": "",
+        "client": "",
+        "duration": ""
+      },
+      {
+        "title": "",
+        "category": "",
+        "url": "",
         "thumbnail": "",
         "description": "",
         "client": "",
@@ -68,5 +77,5 @@
     ]
   },
   "clients": [],
-  "lastUpdated": "2026-03-14T07:00:02.570Z"
+  "lastUpdated": "2026-03-14T07:00:26.806Z"
 }
