@@ -3,2048 +3,606 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Developer Panel - 3moj00</title>
+    <title>3moj00 | Studio Command</title>
     <link rel="icon" type="image/png" href="icon.png">
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .developer-panel {
+        :root {
+            --sidebar-width: 260px;
+            --accent: #ff6b35;
+            --accent-glow: rgba(255, 107, 53, 0.3);
+            --bg-dark: #070707;
+            --card-bg: #121212;
+            --border: rgba(255, 255, 255, 0.08);
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-dark);
+            display: flex;
             min-height: 100vh;
+            color: #e0e0e0;
+        }
+
+        /* Sidebar Navigation */
+        .dev-sidebar {
+            width: var(--sidebar-width);
             background: #0a0a0a;
-            padding: 2rem;
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 2rem 1.5rem;
+            position: fixed;
+            height: 100vh;
         }
-        
-        .dev-header {
-            text-align: center;
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
             margin-bottom: 3rem;
-            padding: 2rem;
-            background: #111111;
-            border-radius: 15px;
-            border: 2px solid #ff6b35;
+            padding-left: 10px;
         }
-        
-        .dev-title {
-            color: #ff6b35;
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-        }
-        
-        .dev-subtitle {
-            color: #cccccc;
-            font-size: 1.2rem;
-        }
-        
-        .dev-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        .dev-card {
-            background: #1a1a1a;
-            padding: 2rem;
-            border-radius: 15px;
-            border: 1px solid rgba(255, 107, 53, 0.2);
-            transition: all 0.3s ease;
-        }
-        
-        .dev-card:hover {
-            border-color: #ff6b35;
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(255, 107, 53, 0.2);
-        }
-        
-        .dev-card h3 {
-            color: #ff6b35;
-            margin-bottom: 1rem;
-            font-size: 1.5rem;
-        }
-        
-        .dev-card p {
-            color: #cccccc;
-            margin-bottom: 1.5rem;
-            line-height: 1.6;
-        }
-        
-        .dev-button {
-            background: linear-gradient(135deg, #ff6b35, #f7931e);
-            color: white;
+
+        .sidebar-logo img { height: 40px; }
+        .sidebar-logo h2 { font-size: 1.2rem; font-weight: 700; color: var(--accent); letter-spacing: 1px; }
+
+        .nav-group { margin-bottom: 2rem; }
+        .nav-label { font-size: 0.7rem; text-transform: uppercase; color: #555; letter-spacing: 2px; margin-bottom: 1rem; display: block; padding-left: 10px; }
+
+        .side-btn {
+            background: none;
             border: none;
-            padding: 10px 20px;
-            border-radius: 25px;
+            color: #888;
+            padding: 12px 15px;
+            width: 100%;
+            text-align: left;
+            border-radius: 12px;
             cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            width: 100%;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+            margin-bottom: 5px;
         }
-        
-        .dev-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 107, 53, 0.3);
+
+        .side-btn i { font-size: 1.1rem; }
+        .side-btn:hover { background: rgba(255, 255, 255, 0.05); color: #fff; }
+        .side-btn.active { background: var(--accent); color: #fff; box-shadow: 0 4px 15px var(--accent-glow); }
+
+        /* Main Content */
+        .dev-main {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 3rem;
+            max-width: 1400px;
         }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-top: 2rem;
-        }
-        
-        .stat-item {
-            background: rgba(255, 107, 53, 0.1);
-            padding: 1.5rem;
-            border-radius: 10px;
-            text-align: center;
-        }
-        
-        .stat-number {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #ff6b35;
-            display: block;
-        }
-        
-        .stat-label {
-            color: #cccccc;
-            font-size: 0.9rem;
-            margin-top: 0.5rem;
-        }
-        
-        .back-button {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            background: rgba(255, 107, 53, 0.2);
-            border: 1px solid #ff6b35;
-            color: #ff6b35;
-            padding: 10px 20px;
-            border-radius: 25px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-        
-        .back-button:hover {
-            background: #ff6b35;
-            color: white;
-        }
-        
-        .log-area {
-            background: #000000;
-            border: 1px solid #333333;
-            border-radius: 10px;
-            padding: 1rem;
-            height: 200px;
-            overflow-y: auto;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9rem;
-            color: #00ff00;
-        }
-        
-        .warning-banner {
-            background: linear-gradient(135deg, #ff6b35, #f7931e);
-            color: white;
-            padding: 1rem;
-            border-radius: 10px;
-            margin-bottom: 2rem;
-            text-align: center;
-            font-weight: 600;
-        }
-        
-        .portfolio-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.9);
-            z-index: 10000;
-            display: none;
-            backdrop-filter: blur(5px);
-        }
-        
-        .portfolio-modal-content {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: #1a1a1a;
-            border-radius: 15px;
-            width: 90%;
-            max-width: 1000px;
-            max-height: 90vh;
-            overflow-y: auto;
-            border: 2px solid #ff6b35;
-        }
-        
-        .modal-header {
-            background: linear-gradient(135deg, #ff6b35, #f7931e);
-            color: white;
-            padding: 1.5rem;
-            border-radius: 13px 13px 0 0;
+
+        .view-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 2.5rem;
         }
-        
-        .modal-close {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 0.5rem;
-            border-radius: 50%;
-            transition: background 0.3s ease;
-        }
-        
-        .modal-close:hover {
-            background: rgba(255,255,255,0.2);
-        }
-        
-        .tab-container {
-            display: flex;
-            background: #111111;
-            border-bottom: 1px solid #333333;
-        }
-        
-        .tab-button {
-            background: none;
-            border: none;
-            color: #cccccc;
-            padding: 1rem 2rem;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            border-bottom: 3px solid transparent;
-        }
-        
-        .tab-button.active {
-            color: #ff6b35;
-            border-bottom-color: #ff6b35;
-            background: rgba(255, 107, 53, 0.1);
-        }
-        
-        .tab-button:hover {
-            background: rgba(255, 107, 53, 0.05);
-        }
-        
-        .tab-content {
+
+        .view-header h1 { font-size: 2rem; font-weight: 700; }
+
+        /* Dashboard Cards */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
             padding: 2rem;
-            display: none;
-        }
-        
-        .tab-content.active {
-            display: block;
-        }
-        
-        .video-form {
-            background: #222222;
-            padding: 2rem;
-            border-radius: 10px;
             margin-bottom: 2rem;
+            position: relative;
         }
-        
-        .form-row {
+
+        /* Video Grid & Sorting UI */
+        .video-manage-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .video-manage-item {
+            background: #1a1a1a;
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            padding: 15px;
+            display: grid;
+            grid-template-columns: 80px 180px 1fr 200px;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .sort-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .sort-btn {
+            background: #252525;
+            border: none;
+            color: #fff;
+            padding: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .sort-btn:hover { background: var(--accent); }
+
+        .mini-thumb {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #333;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        /* Form Styling */
+        .form-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin-bottom: 1rem;
+            gap: 20px;
         }
-        
-        .form-group {
-            margin-bottom: 1rem;
-        }
-        
-        .form-group label {
-            display: block;
-            color: #ff6b35;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-        }
-        
-        .form-group input,
-        .form-group textarea,
-        .form-group select {
+
+        .input-group { margin-bottom: 1.5rem; }
+        .input-group label { display: block; margin-bottom: 8px; font-size: 0.9rem; color: #aaa; }
+        .input-group input, .input-group select, .input-group textarea {
             width: 100%;
-            padding: 12px;
-            background: #333333;
-            border: 1px solid #555555;
-            border-radius: 8px;
+            background: #181818;
+            border: 1px solid var(--border);
+            padding: 12px 15px;
+            border-radius: 10px;
+            color: #fff;
+            font-family: inherit;
+        }
+
+        .input-group input:focus { border-color: var(--accent); outline: none; }
+
+        .btn-action {
+            background: var(--accent);
             color: white;
-            font-size: 1rem;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
         }
-        
-        .form-group input:focus,
-        .form-group textarea:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: #ff6b35;
+
+        .btn-action:hover { opacity: 0.9; transform: translateY(-2px); }
+
+        .tag {
+            font-size: 0.7rem;
+            padding: 4px 8px;
+            background: #2a2a2a;
+            border-radius: 5px;
+            color: var(--accent);
+            font-weight: 700;
+            text-transform: uppercase;
         }
-        
-        .video-grid {
+
+        /* Hide Views */
+        .dev-view { display: none; }
+        .dev-view.active { display: block; animation: fadeIn 0.4s ease; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Client Cards */
+        .client-manage-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
+            gap: 20px;
         }
-        
-        .video-item {
-            background: #222222;
-            border-radius: 10px;
-            overflow: hidden;
-            border: 1px solid #333333;
-            transition: transform 0.3s ease;
-        }
-        
-        .video-item:hover {
-            transform: translateY(-5px);
-            border-color: #ff6b35;
-        }
-        
-        .video-thumbnail {
-            width: 100%;
-            height: 200px;
-            background: #333333;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-        
-        .video-info {
-            padding: 1rem;
-        }
-        
-        .video-title {
-            color: white;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-        
-        .video-description {
-            color: #cccccc;
-            font-size: 0.9rem;
-            margin-bottom: 1rem;
-        }
-        
-        .video-actions {
-            display: flex;
-            gap: 0.5rem;
-        }
-        
-        .btn-small {
-            padding: 6px 12px;
-            font-size: 0.8rem;
-            border-radius: 15px;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-edit {
-            background: #4CAF50;
-            color: white;
-        }
-        
-        .btn-delete {
-            background: #f44336;
-            color: white;
-        }
-        
-        .btn-preview {
-            background: #2196F3;
-            color: white;
-        }
-        
-        .video-player {
-            width: 100%;
-            height: 200px;
-            border-radius: 8px;
-        }
-        
-        .dynamic-tabs {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
-        
-        .add-tab-btn {
-            background: rgba(255, 107, 53, 0.1) !important;
-            border: 2px dashed #ff6b35 !important;
-            color: #ff6b35 !important;
-        }
-        
-        .add-tab-btn:hover {
-            background: rgba(255, 107, 53, 0.2) !important;
-        }
-        
-        .tab-actions {
-            display: none;
-            position: absolute;
-            top: -10px;
-            right: -10px;
-            background: #333;
-            border-radius: 50%;
-            width: 25px;
-            height: 25px;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 0.8rem;
-            color: #ff6b35;
-            border: 2px solid #ff6b35;
-        }
-        
-        .tab-wrapper {
-            position: relative;
-        }
-        
-        .tab-wrapper:hover .tab-actions {
-            display: flex;
-        }
-        
-        .tab-dropdown {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            background: #222;
-            border: 1px solid #555;
-            border-radius: 5px;
-            min-width: 120px;
-            z-index: 1000;
-            display: none;
-        }
-        
-        .tab-dropdown.show {
-            display: block;
-        }
-        
-        .dropdown-item {
-            padding: 8px 12px;
-            cursor: pointer;
-            color: #ccc;
-            font-size: 0.9rem;
-            border-bottom: 1px solid #444;
-        }
-        
-        .dropdown-item:hover {
-            background: #333;
-            color: #ff6b35;
-        }
-        
-        .dropdown-item:last-child {
-            border-bottom: none;
-        }
-        
-        .tab-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.8);
-            z-index: 10001;
-            display: none;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .tab-modal-content {
+
+        .client-dev-card {
             background: #1a1a1a;
-            border-radius: 10px;
-            padding: 2rem;
-            width: 90%;
-            max-width: 400px;
-            border: 2px solid #ff6b35;
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            text-align: center;
         }
-        
-        .tab-modal h3 {
-            color: #ff6b35;
-            margin-bottom: 1rem;
-        }
-        
-        .tab-modal .form-group {
-            margin-bottom: 1rem;
-        }
-        
-        .tab-modal label {
-            display: block;
-            color: #ff6b35;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-        }
-        
-        .tab-modal input, .tab-modal select {
-            width: 100%;
-            padding: 10px;
-            background: #333;
-            border: 1px solid #555;
-            border-radius: 5px;
-            color: white;
-        }
-        
-        .tab-modal-actions {
-            display: flex;
-            gap: 1rem;
-            justify-content: flex-end;
-            margin-top: 1.5rem;
-        }
-        
-        .btn-secondary {
-            background: #666;
-            color: white;
-            padding: 8px 16px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        
-        .btn-secondary:hover {
-            background: #777;
-        }
+
+        .client-dev-img { width: 80px; height: 80px; border-radius: 50%; margin-bottom: 15px; border: 2px solid var(--accent); }
+
     </style>
 </head>
 <body>
-    <a href="index.html" class="back-button">
-        <i class="fas fa-arrow-left"></i> Back to Portfolio
-    </a>
-    
-    <div class="developer-panel">
-        <div class="dev-header">
-            <h1 class="dev-title">
-                <i class="fas fa-code"></i> Developer Panel
-            </h1>
-            <p class="dev-subtitle">Advanced portfolio management system</p>
+
+    <aside class="dev-sidebar">
+        <div class="sidebar-logo">
+            <img src="icon.png" alt="Logo">
+            <h2>STUDIO</h2>
         </div>
+
+        <div class="nav-group">
+            <span class="nav-label">Management</span>
+            <button class="side-btn active" onclick="showView('dashboard')">
+                <i class="fas fa-home"></i> Overview
+            </button>
+            <button class="side-btn" onclick="showView('videos')">
+                <i class="fas fa-video"></i> All Videos
+            </button>
+            <button class="side-btn" onclick="showView('categories')">
+                <i class="fas fa-folder"></i> Categories
+            </button>
+            <button class="side-btn" onclick="showView('clients')">
+                <i class="fas fa-users"></i> Clients
+            </button>
+        </div>
+
+        <div class="nav-group" style="margin-top: auto;">
+            <span class="nav-label">System</span>
+            <button class="side-btn" onclick="exportData()">
+                <i class="fas fa-download"></i> Backup JSON
+            </button>
+            <a href="index.html" class="side-btn" style="text-decoration: none;">
+                <i class="fas fa-external-link-alt"></i> View Site
+            </a>
+        </div>
+    </aside>
+
+    <main class="dev-main">
         
-        <div class="warning-banner">
-            <i class="fas fa-exclamation-triangle"></i>
-            RESTRICTED ACCESS - Developer Mode Active
-        </div>
-        
-        <div class="dev-grid">
-            <div class="dev-card">
-                <h3><i class="fas fa-chart-line"></i> Analytics</h3>
-                <p>View detailed website analytics and visitor statistics</p>
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <span class="stat-number">1,247</span>
-                        <div class="stat-label">Total Visits</div>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number">89</span>
-                        <div class="stat-label">Inquiries</div>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number">23</span>
-                        <div class="stat-label">Projects</div>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number">98%</span>
-                        <div class="stat-label">Uptime</div>
-                    </div>
-                </div>
+        <!-- DASHBOARD VIEW -->
+        <div id="view-dashboard" class="dev-view active">
+            <div class="view-header">
+                <h1>Dashboard</h1>
             </div>
-            
-            <div class="dev-card">
-                <h3><i class="fas fa-folder-open"></i> Portfolio Manager</h3>
-                <p>Add, edit, or remove portfolio items and project showcases</p>
-                <button class="dev-button" onclick="openPortfolioManager()">
-                    Manage Portfolio
-                </button>
-            </div>
-            
-            <div class="dev-card">
-                <div class="card-header">
-                    <h3><i class="fas fa-users"></i> Client Management</h3>
-                </div>
-                <div class="card-content">
-                    <p>Manage your client showcase by adding YouTube channels to display their information.</p>
-                    <button class="dev-button" onclick="openClientManager()">
-                        <i class="fas fa-users"></i> Manage Clients
-                    </button>
-                </div>
-            </div>
-            
-            <div class="dev-card">
-                <h3><i class="fas fa-cog"></i> Page Settings</h3>
-                <label class="switch-container" style="display: flex; align-items: center; justify-content: space-between; margin-top: 1rem; cursor: pointer;">
-                    <span>Show Clients Section</span>
-                    <div class="switch" style="position: relative; width: 50px; height: 26px;">
-                        <input type="checkbox" id="showClientsToggle" onchange="toggleClientsVisibility()" style="opacity: 0; width: 0; height: 0;">
-                        <span class="slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #333; transition: 0.3s; border-radius: 34px;"></span>
-                    </div>
-                </label>
-                <style>
-                    #showClientsToggle:checked + .slider { background-color: #ff6b35; }
-                    #showClientsToggle:checked + .slider:before { transform: translateX(24px); }
-                    .slider:before { content: ""; position: absolute; height: 20px; width: 20px; left: 3px; bottom: 3px; background: white; transition: 0.3s; border-radius: 50%; }
-                </style>
-            </div>
-            
-        </div>
-    </div>
-    
-    <!-- Portfolio Manager Modal -->
-    <div id="portfolioModal" class="portfolio-modal">
-        <div class="portfolio-modal-content">
-            <div class="modal-header">
-                <h2><i class="fas fa-video"></i> Portfolio Manager</h2>
-                <button class="modal-close" onclick="closePortfolioManager()">&times;</button>
-            </div>
-            
-            <div class="tab-container">
-                <div id="dynamicTabs" class="dynamic-tabs">
-                    <!-- Dynamic tabs will be rendered here -->
-                </div>
-                <button class="tab-button add-tab-btn" onclick="showAddTabModal()">
-                    <i class="fas fa-plus"></i> Add Category
-                </button>
-            </div>
-            
-            <!-- Dynamic tab content will be generated here -->
-            <div id="dynamicTabContent">
-                <!-- Tab content panels will be dynamically created -->
-            </div>
-        </div>
-    </div>
-    
-    <!-- Tab Management Modal -->
-    <div id="tabModal" class="tab-modal">
-        <div class="tab-modal-content">
-            <h3 id="tabModalTitle">Add New Category</h3>
-            <form id="tabForm">
-                <div class="form-group">
-                    <label for="tabName">Category Name</label>
-                    <input type="text" id="tabName" name="name" placeholder="e.g., Music Videos" required>
-                </div>
-                <div class="form-group">
-                    <label for="tabIcon">Icon (FontAwesome class)</label>
-                    <select id="tabIcon" name="icon">
-                        <option value="fas fa-cut">Cut (Edits)</option>
-                        <option value="fas fa-magic">Magic (Motion Graphics)</option>
-                        <option value="fas fa-bullhorn">Bullhorn (Commercials)</option>
-                        <option value="fas fa-music">Music (Music Videos)</option>
-                        <option value="fas fa-video">Video</option>
-                        <option value="fas fa-film">Film</option>
-                        <option value="fas fa-camera">Camera</option>
-                        <option value="fas fa-play">Play</option>
-                        <option value="fas fa-star">Star</option>
-                        <option value="fas fa-heart">Heart</option>
-                    </select>
-                </div>
-                <div class="tab-modal-actions">
-                    <button type="button" class="btn-secondary" onclick="closeTabModal()">Cancel</button>
-                    <button type="submit" class="dev-button">Save</button>
-                </div>
-            </form>
-        </div>
-    </div>
-    
-    <!-- Client Manager Modal -->
-    <div id="clientModal" class="portfolio-modal">
-        <div class="portfolio-modal-content">
-            <div class="modal-header">
-                <h2><i class="fas fa-users"></i> Client Manager</h2>
-                <button class="modal-close" onclick="closeClientManager()">&times;</button>
-            </div>
-            
-            <div class="video-form">
-                <h3 style="color: #ff6b35; margin-bottom: 1.5rem;">
-                    <i class="fas fa-plus"></i> Add New Client
-                </h3>
-                
-                <form id="clientForm">
-                    <div class="form-group">
-                        <label for="clientChannelUrl">YouTube Channel URL</label>
-                        <input type="url" id="clientChannelUrl" name="channelUrl" placeholder="https://youtube.com/@channelname or https://youtube.com/c/channelname" required>
-                        <small style="color: #888; font-size: 0.9rem;">Used for generating logo and linking to channel</small>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="clientName">Client/Channel Name</label>
-                        <input type="text" id="clientName" name="name" placeholder="Enter the channel or client name" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="clientImageUrl">Custom Logo/Image URL (Optional)</label>
-                        <input type="url" id="clientImageUrl" name="imageUrl" placeholder="https://example.com/logo.jpg (Leave empty for auto-generated logo)">
-                        <small style="color: #888; font-size: 0.9rem;">If provided, this will be used instead of the auto-generated logo</small>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="clientSubscribers">Subscriber Count (Optional)</label>
-                            <input type="number" id="clientSubscribers" name="subscribers" placeholder="e.g., 500000" min="1000">
+            <div class="form-grid">
+                <div class="card">
+                    <h3 style="margin-bottom:1rem">Quick Stats</h3>
+                    <div style="display:flex; gap:20px;">
+                        <div>
+                            <span id="stat-videos" style="font-size: 2rem; font-weight:800; color:var(--accent)">0</span>
+                            <p style="color:#666">Total Videos</p>
                         </div>
-                        <div class="form-group">
-                            <label for="clientVideos">Video Count (Optional)</label>
-                            <input type="number" id="clientVideos" name="videos" placeholder="e.g., 1200" min="10">
+                        <div>
+                            <span id="stat-clients" style="font-size: 2rem; font-weight:800; color:var(--accent)">0</span>
+                            <p style="color:#666">Clients</p>
                         </div>
                     </div>
-                    
-                    <div class="form-group">
-                        <label for="clientViews">Total Views (Optional)</label>
-                        <input type="number" id="clientViews" name="views" placeholder="e.g., 150000000" min="10000">
+                </div>
+                <div class="card">
+                    <h3 style="margin-bottom:1rem">Visibility</h3>
+                    <div style="display:flex; align-items:center; justify-content:space-between">
+                        <p>Clients Section on Website</p>
+                        <button class="btn-action" id="visibilityBtn" onclick="toggleClientsVisibility()" style="background:#333">Enabled</button>
                     </div>
-                    
-                    <div class="form-group">
-                        <label for="clientDescription">Work Description (Optional)</label>
-                        <textarea id="clientDescription" name="description" rows="3" placeholder="Brief description of work done for this client..."></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIDEOS VIEW -->
+        <div id="view-videos" class="dev-view">
+            <div class="view-header">
+                <h1>Video Manager</h1>
+                <button class="btn-action" onclick="showAddVideoForm()"><i class="fas fa-plus"></i> Add Video</button>
+            </div>
+
+            <div class="card" id="addVideoCard" style="display:none; border: 1px solid var(--accent);">
+                <h3 style="margin-bottom:1.5rem">New Project</h3>
+                <form id="globalVideoForm">
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label>Title</label>
+                            <input type="text" name="title" required placeholder="Project Name">
+                        </div>
+                        <div class="input-group">
+                            <label>Category</label>
+                            <select name="category" id="catSelect"></select>
+                        </div>
                     </div>
-                    
-                    <button type="submit" class="dev-button">
-                        <i class="fas fa-plus"></i> Add Client
-                    </button>
+                    <div class="input-group">
+                        <label>YouTube URL</label>
+                        <input type="url" name="url" required placeholder="https://youtube.com/watch?v=...">
+                    </div>
+                    <div class="input-group">
+                        <label>Description (Optional)</label>
+                        <textarea name="description" rows="2"></textarea>
+                    </div>
+                    <div style="display:flex; gap:10px">
+                        <button type="submit" class="btn-action">Save Video</button>
+                        <button type="button" class="btn-action" onclick="showAddVideoForm()" style="background:#333">Cancel</button>
+                    </div>
                 </form>
             </div>
-            
-            <div id="clientGrid" class="video-grid">
-                <!-- Client cards will be dynamically added here -->
+
+            <div class="card">
+                <div style="margin-bottom: 1.5rem; display:flex; justify-content:space-between; align-items:center">
+                    <h3>All Projects</h3>
+                    <select id="filterCat" onchange="renderVideoList()" style="background:#222; color:#fff; padding:5px 10px; border-radius:5px; border:1px solid #444">
+                        <option value="all">Show All Categories</option>
+                    </select>
+                </div>
+                <div class="video-manage-grid" id="globalVideoList">
+                    <!-- Dynamic -->
+                </div>
             </div>
         </div>
-    </div>
-    
+
+        <!-- CLIENTS VIEW -->
+        <div id="view-clients" class="dev-view">
+            <div class="view-header">
+                <h1>Client Relations</h1>
+            </div>
+
+            <div class="card">
+                <h3 style="margin-bottom:1.5rem">Add New Client</h3>
+                <form id="clientForm">
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label>Client/Channel Name</label>
+                            <input type="text" name="name" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Channel/Website URL</label>
+                            <input type="url" name="channelUrl" required>
+                        </div>
+                    </div>
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label>Subscribers (Text e.g. 1.2M)</label>
+                            <input type="text" name="subscribers">
+                        </div>
+                        <div class="input-group">
+                            <label>Custom Image URL (Optional)</label>
+                            <input type="url" name="imageUrl">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-action">Add to Roster</button>
+                </form>
+            </div>
+
+            <div class="client-manage-grid" id="clientDevGrid">
+                <!-- Dynamic -->
+            </div>
+        </div>
+
+        <!-- CATEGORIES VIEW -->
+        <div id="view-categories" class="dev-view">
+            <div class="view-header">
+                <h1>Categories</h1>
+                <button class="btn-action" onclick="addNewCategory()">New Category</button>
+            </div>
+            <div class="card">
+                <div class="video-manage-grid" id="categoryList">
+                    <!-- Dynamic -->
+                </div>
+            </div>
+        </div>
+
+    </main>
+
     <script>
-        // Add timestamp to logs (console only since no log area in UI)
-        function addLog(message) {
-            const timestamp = new Date().toLocaleString();
-            console.log(`[${timestamp}] ${message}`);
+        let db = {
+            portfolioData: {},
+            portfolioTabs: {},
+            clients: [],
+            showClients: true
+        };
+
+        // UI State
+        function showView(viewId) {
+            document.querySelectorAll('.dev-view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.side-btn').forEach(b => b.classList.remove('active'));
+            
+            document.getElementById('view-' + viewId).classList.add('active');
+            event.currentTarget.classList.add('active');
+            
+            if(viewId === 'videos') renderVideoList();
+            if(viewId === 'clients') renderClientsList();
+            if(viewId === 'categories') renderCategories();
+            updateStats();
         }
-        
-        // Simulate backup download
-        function downloadBackup() {
-            addLog('Backup process initiated...');
-            setTimeout(() => {
-                addLog('Portfolio data exported successfully');
-                alert('Backup created successfully!');
-            }, 2000);
+
+        function showAddVideoForm() {
+            const card = document.getElementById('addVideoCard');
+            card.style.display = card.style.display === 'none' ? 'block' : 'none';
         }
-        
-        // Add some dynamic logs
-        setInterval(() => {
-            const messages = [
-                'Monitoring system performance...',
-                'Checking video background status...',
-                'Contact form submissions: 0 new',
-                'Portfolio views: +3',
-                'System health: Optimal'
-            ];
-            const randomMessage = messages[Math.floor(Math.random() * messages.length)];
-            addLog(randomMessage);
-        }, 10000);
-        
-        // Welcome message
-        setTimeout(() => {
-            addLog('Welcome to the developer panel, 3moj00!');
-        }, 1000);
-        
-        // Client Management System
-        let clientData = [];
-        
-        // Load client data (now handled by loadAllData)
-        function loadClientData() {
-            // Client data is now loaded by loadAllData()
-            // This function is kept for compatibility
-            renderClients();
+
+        // Data Loading
+        async function loadData() {
+            try {
+                const res = await fetch('/api/data?t=' + Date.now());
+                const data = await res.json();
+                db = data;
+                
+                // Populate Category Dropdowns
+                const catSelect = document.getElementById('catSelect');
+                const filterCat = document.getElementById('filterCat');
+                catSelect.innerHTML = '';
+                filterCat.innerHTML = '<option value="all">Show All Categories</option>';
+                
+                Object.keys(db.portfolioTabs).forEach(id => {
+                    const opt = `<option value="${id}">${db.portfolioTabs[id].name}</option>`;
+                    catSelect.innerHTML += opt;
+                    filterCat.innerHTML += opt;
+                });
+
+                updateStats();
+                if(document.getElementById('view-videos').classList.contains('active')) renderVideoList();
+            } catch (e) {
+                console.error("Failed to load data", e);
+            }
         }
-        
-        // Save client data to localStorage and sync to GitHub
-        function saveClientData() {
-            localStorage.setItem('clientData', JSON.stringify(clientData));
-            // Also sync to GitHub
-            saveAllData();
+
+        function updateStats() {
+            let totalVids = 0;
+            Object.values(db.portfolioData).forEach(arr => totalVids += arr.length);
+            document.getElementById('stat-videos').innerText = totalVids;
+            document.getElementById('stat-clients').innerText = db.clients ? db.clients.length : 0;
+            
+            const vBtn = document.getElementById('visibilityBtn');
+            vBtn.innerText = db.showClients ? 'Visible' : 'Hidden';
+            vBtn.style.background = db.showClients ? 'var(--accent)' : '#333';
         }
-        
-        // Open Client Manager
-        function openClientManager() {
-            document.getElementById('clientModal').style.display = 'block';
-            loadAllData().then(() => {
-                renderClients();
+
+        // VIDEO MANAGEMENT LOGIC
+        function extractYTId(url) {
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
+
+        function renderVideoList() {
+            const container = document.getElementById('globalVideoList');
+            const filter = document.getElementById('filterCat').value;
+            container.innerHTML = '';
+
+            Object.keys(db.portfolioData).forEach(catId => {
+                if(filter !== 'all' && filter !== catId) return;
+
+                db.portfolioData[catId].forEach((vid, index) => {
+                    const ytId = extractYTId(vid.url);
+                    const thumb = ytId ? `https://img.youtube.com/vi/${ytId}/mqdefault.jpg` : 'icon.png';
+                    
+                    const item = document.createElement('div');
+                    item.className = 'video-manage-item';
+                    item.innerHTML = `
+                        <div class="sort-controls">
+                            <button class="sort-btn" onclick="moveVideo('${catId}', ${index}, -1)"><i class="fas fa-chevron-up"></i></button>
+                            <button class="sort-btn" onclick="moveVideo('${catId}', ${index}, 1)"><i class="fas fa-chevron-down"></i></button>
+                        </div>
+                        <img src="${thumb}" class="mini-thumb">
+                        <div>
+                            <span class="tag">${db.portfolioTabs[catId]?.name || catId}</span>
+                            <h4 style="margin:5px 0">${vid.title}</h4>
+                            <p style="font-size:0.8rem; color:#666">${vid.url}</p>
+                        </div>
+                        <div style="text-align:right">
+                            <button class="sort-btn" onclick="deleteVideo('${catId}', ${index})" style="background:#f44336; padding: 8px 12px"><i class="fas fa-trash"></i></button>
+                        </div>
+                    `;
+                    container.appendChild(item);
+                });
             });
         }
-        
-        // Close Client Manager
-        function closeClientManager() {
-            document.getElementById('clientModal').style.display = 'none';
-        }
-        
-        // Extract channel ID from YouTube URL
-        function extractChannelId(url) {
-            // Handle different YouTube URL formats
-            const patterns = [
-                /youtube\.com\/channel\/([a-zA-Z0-9_-]+)/,
-                /youtube\.com\/c\/([a-zA-Z0-9_-]+)/,
-                /youtube\.com\/@([a-zA-Z0-9_-]+)/,
-                /youtube\.com\/user\/([a-zA-Z0-9_-]+)/
-            ];
-            
-            for (const pattern of patterns) {
-                const match = url.match(pattern);
-                if (match) {
-                    return { type: 'handle', id: match[1] };
-                }
-            }
-            return null;
-        }
-        
-        // Generate logo based on channel name and URL
-        function generateClientLogo(channelName, channelUrl) {
-            console.log('Generating logo for:', channelName); // Debug log
-            
-            // Create a hash for consistent color generation
-            let hash = 0;
-            const str = channelName.toLowerCase();
-            for (let i = 0; i < str.length; i++) {
-                const char = str.charCodeAt(i);
-                hash = ((hash << 5) - hash) + char;
-                hash = hash & hash;
-            }
-            hash = Math.abs(hash);
-            
-            // Generate initials from the channel name
-            const initials = channelName.split(' ')
-                .filter(word => word.length > 0)
-                .map(word => word[0].toUpperCase())
-                .slice(0, 2)
-                .join('');
-            
-            console.log('Generated initials:', initials); // Debug log
-            
-            // Choose color based on channel content type (detected from name)
-            const isGaming = /gaming|game|boss|vampire|play|stream|fps|rpg|minecraft|fortnite/i.test(channelName);
-            const isTech = /tech|review|unbox|gadget|phone|laptop|apple|samsung/i.test(channelName);
-            const isMusic = /music|song|beat|audio|rap|hip|rock|pop|dj/i.test(channelName);
-            
-            let avatarColor;
-            if (isGaming) {
-                const gamingColors = ['ff6b35', 'FF4444', '9C27B0', '673AB7', 'E91E63'];
-                avatarColor = gamingColors[hash % gamingColors.length];
-            } else if (isTech) {
-                const techColors = ['2196F3', '00BCD4', '4CAF50', '607D8B', '009688'];
-                avatarColor = techColors[hash % techColors.length];
-            } else if (isMusic) {
-                const musicColors = ['FF9800', 'FF5722', '795548', 'FFC107', 'CDDC39'];
-                avatarColor = musicColors[hash % musicColors.length];
-            } else {
-                const defaultColors = ['ff6b35', '4CAF50', '2196F3', 'FF9800', 'F44336', '9C27B0'];
-                avatarColor = defaultColors[hash % defaultColors.length];
-            }
-            
-            console.log('Selected color:', avatarColor); // Debug log
-            
-            // Create logo URL with fallback options
-            const logoUrl = `https://placehold.co/120x120/${avatarColor}/ffffff?text=${encodeURIComponent(initials)}&font=roboto`;
-            console.log('Generated logo URL:', logoUrl); // Debug log
-            
-            return logoUrl;
-        }
-        
-        // Format numbers with K, M, B suffixes
-        function formatNumber(num) {
-            if (num >= 1000000000) {
-                return (num / 1000000000).toFixed(1) + 'B';
-            }
-            if (num >= 1000000) {
-                return (num / 1000000).toFixed(1) + 'M';
-            }
-            if (num >= 1000) {
-                return (num / 1000).toFixed(1) + 'K';
-            }
-            return num.toString();
-        }
-        
-        // Create client card HTML
-        function createClientCard(client, index) {
-            return `
-                <div class="video-item" style="background: linear-gradient(135deg, #2a2a2a, #1a1a1a); border: 1px solid #444;">
-                    <div class="video-thumbnail" style="height: auto; padding: 1rem;">
-                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-                            <img src="${client.thumbnailUrl}" alt="${client.name}" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; background: #ff6b35;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                            <div style="display: none; width: 60px; height: 60px; border-radius: 50%; background: #ff6b35; color: white; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem;">${client.name.split(' ').filter(w => w.length > 0).map(w => w[0]).join('').substring(0,2).toUpperCase()}</div>
-                            <div>
-                                <h4 style="color: #ff6b35; margin: 0; font-size: 1.1rem;">${client.name}</h4>
-                                <a href="${client.channelUrl}" target="_blank" style="color: #888; font-size: 0.9rem; text-decoration: none;">
-                                    <i class="fab fa-youtube"></i> View Channel
-                                </a>
-                            </div>
-                        </div>
-                        
-                        ${(client.subscriberCount || client.videoCount || client.viewCount) ? `
-                        <div style="display: grid; grid-template-columns: repeat(${[client.subscriberCount, client.videoCount, client.viewCount].filter(Boolean).length}, 1fr); gap: 0.5rem; margin-bottom: 1rem;">
-                            ${client.subscriberCount ? `
-                            <div style="text-align: center; padding: 0.5rem; background: rgba(255,107,53,0.1); border-radius: 5px;">
-                                <div style="color: #ff6b35; font-weight: bold; font-size: 1.1rem;">${formatNumber(client.subscriberCount)}</div>
-                                <div style="color: #888; font-size: 0.8rem;">Subscribers</div>
-                            </div>` : ''}
-                            ${client.videoCount ? `
-                            <div style="text-align: center; padding: 0.5rem; background: rgba(255,107,53,0.1); border-radius: 5px;">
-                                <div style="color: #ff6b35; font-weight: bold; font-size: 1.1rem;">${formatNumber(client.videoCount)}</div>
-                                <div style="color: #888; font-size: 0.8rem;">Videos</div>
-                            </div>` : ''}
-                            ${client.viewCount ? `
-                            <div style="text-align: center; padding: 0.5rem; background: rgba(255,107,53,0.1); border-radius: 5px;">
-                                <div style="color: #ff6b35; font-weight: bold; font-size: 1.1rem;">${formatNumber(client.viewCount)}</div>
-                                <div style="color: #888; font-size: 0.8rem;">Views</div>
-                            </div>` : ''}
-                        </div>` : ''}
-                        
-                        ${client.description ? `<p style="color: #ccc; font-size: 0.9rem; margin-bottom: 1rem; line-height: 1.4;">${client.description}</p>` : ''}
-                    </div>
-                    <div class="video-info">
-                        <div class="video-actions" style="justify-content: center;">
-                            <button class="btn-small btn-delete" onclick="deleteClient(${index})" style="background: #f44336;">
-                                <i class="fas fa-trash"></i> Remove
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-        
-        // Render clients
-        function renderClients() {
-            const grid = document.getElementById('clientGrid');
-            
-            if (clientData.length === 0) {
-                grid.innerHTML = '<div style="text-align: center; color: #888; padding: 2rem;">No clients added yet. Add your first client using the form above!</div>';
-                return;
-            }
-            
-            grid.innerHTML = clientData.map((client, index) => createClientCard(client, index)).join('');
-        }
-        
-        // Add client
-        function addClient(clientInfo) {
-            clientData.push(clientInfo);
-            saveClientData();
-            renderClients();
-        }
-        
-        // Delete client
-        function deleteClient(index) {
-            if (confirm('Are you sure you want to remove this client?')) {
-                const client = clientData[index];
-                clientData.splice(index, 1);
-                saveClientData();
-                renderClients();
+
+        async function save() {
+            db.lastUpdated = new Date().toISOString();
+            const res = await fetch('/api/data', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(db)
+            });
+            if(res.ok) {
+                const notify = document.createElement('div');
+                notify.style = "position:fixed; bottom:20px; right:20px; background:#4CAF50; padding:15px 25px; border-radius:10px; z-index:9999";
+                notify.innerText = "✓ System Synced Successfully";
+                document.body.appendChild(notify);
+                setTimeout(() => notify.remove(), 2000);
             }
         }
-        
-        // Portfolio Manager Functions
-        let activeTab = 'edits';
-        let editingTab = null;
-        
-        // Load all data from unified data.json (always fresh)
-        async function loadAllData() {
-            try {
-                console.log('Developer panel: Loading fresh data from data.json...');
-                
-                // Clear localStorage first to ensure we get fresh data
-                localStorage.removeItem('portfolioTabs');
-                localStorage.removeItem('portfolioData');
-                localStorage.removeItem('clientData');
-                
-                const response = await fetch('./data/data.json');
-                console.log('Developer panel response:', response.status, response.statusText);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                const jsonData = await response.json();
-                console.log('Developer panel: Fresh data loaded from data.json:', jsonData);
-                
-                // Store unified data for showClients toggle
-                window.unifiedData = jsonData;
-                
-                // Load portfolio tabs ONLY from JSON (no localStorage fallback)
-                if (jsonData.portfolioTabs && Object.keys(jsonData.portfolioTabs).length > 0) {
-                    window.portfolioTabs = jsonData.portfolioTabs;
-                    localStorage.setItem('portfolioTabs', JSON.stringify(jsonData.portfolioTabs));
-                    console.log('Loaded portfolio tabs from JSON:', window.portfolioTabs);
-                } else {
-                    // Only use default tabs if JSON is completely empty
-                    window.portfolioTabs = {
-                        'gaming': { name: 'Gaming', icon: 'fas fa-gamepad' },
-                        'music': { name: 'Music Videos', icon: 'fas fa-music' },
-                        'commercial': { name: 'Commercial', icon: 'fas fa-briefcase' },
-                        'social': { name: 'Social Media', icon: 'fab fa-instagram' }
-                    };
-                    // Save default tabs to localStorage for developer panel use
-                    localStorage.setItem('portfolioTabs', JSON.stringify(window.portfolioTabs));
-                    console.log('Using default portfolio tabs');
-                }
-                
-                // Load portfolio data ONLY from JSON (no localStorage fallback)
-                if (jsonData.portfolioData && Object.keys(jsonData.portfolioData).length > 0) {
-                    window.portfolioData = jsonData.portfolioData;
-                    localStorage.setItem('portfolioData', JSON.stringify(jsonData.portfolioData));
-                    console.log('Loaded portfolio data from JSON:', window.portfolioData);
-                } else {
-                    window.portfolioData = {};
-                    console.log('No portfolio data in JSON, using empty object');
-                }
-                
-                // Ensure all tab categories have arrays
-                Object.keys(window.portfolioTabs).forEach(tabId => {
-                    if (!window.portfolioData[tabId]) {
-                        window.portfolioData[tabId] = [];
-                    }
-                });
-                
-                console.log('Portfolio data loaded successfully');
-                console.log('Final portfolio data state:', window.portfolioData);
-                console.log('Final portfolio tabs state:', window.portfolioTabs);
-                
-                // Load client data ONLY from JSON (no localStorage fallback)
-                if (jsonData.clients && Array.isArray(jsonData.clients) && jsonData.clients.length > 0) {
-                    window.clientData = jsonData.clients;
-                    localStorage.setItem('clientData', JSON.stringify(jsonData.clients));
-                    console.log('Loaded client data from JSON:', window.clientData);
-                } else {
-                    window.clientData = [];
-                    console.log('No client data in JSON, using empty array');
-                }
-                
-            } catch (error) {
-                console.log('Could not load from JSON, using localStorage only:', error);
-                
-                // Fallback to localStorage only
-                const portfolioData = localStorage.getItem('portfolioData');
-                const portfolioTabs = localStorage.getItem('portfolioTabs');
-                const clientData = localStorage.getItem('clientData');
-                
-                window.portfolioData = portfolioData ? JSON.parse(portfolioData) : {};
-                window.portfolioTabs = portfolioTabs ? JSON.parse(portfolioTabs) : {
-                    'gaming': { name: 'Gaming', icon: 'fas fa-gamepad' },
-                    'music': { name: 'Music Videos', icon: 'fas fa-music' },
-                    'commercial': { name: 'Commercial', icon: 'fas fa-briefcase' },
-                    'social': { name: 'Social Media', icon: 'fab fa-instagram' }
-                };
-                window.clientData = clientData ? JSON.parse(clientData) : [];
-                
-                // Save defaults if nothing exists
-                if (!window.portfolioTabs) {
-                    localStorage.setItem('portfolioTabs', JSON.stringify(window.portfolioTabs));
-                }
-                if (!clientData) {
-                    localStorage.setItem('clientData', JSON.stringify(window.clientData));
-                }
+
+        // Actions
+        function moveVideo(catId, index, direction) {
+            const arr = db.portfolioData[catId];
+            const newIndex = index + direction;
+            if(newIndex >= 0 && newIndex < arr.length) {
+                const temp = arr[index];
+                arr[index] = arr[newIndex];
+                arr[newIndex] = temp;
+                save();
+                renderVideoList();
             }
-            if (!activeTab || !window.portfolioTabs[activeTab]) {
-                activeTab = Object.keys(window.portfolioTabs)[0] || 'edits';
+        }
+
+        function deleteVideo(catId, index) {
+            if(confirm('Delete this project forever?')) {
+                db.portfolioData[catId].splice(index, 1);
+                save();
+                renderVideoList();
             }
-            
-            renderTabs();
-            renderTabContent();
         }
-        
-        // Save all data to localStorage and auto-generate data.json
-        function saveAllData() {
-            localStorage.setItem('portfolioData', JSON.stringify(window.portfolioData));
-            localStorage.setItem('portfolioTabs', JSON.stringify(window.portfolioTabs));
-            localStorage.setItem('clientData', JSON.stringify(window.clientData));
-            console.log('All data saved to localStorage');
-            
-            // Auto-generate updated data.json file
-            autoGenerateDataFile();
-        }
-        
-        // Save data to data.json file
-        async function autoGenerateDataFile() {
-            const showClients = document.getElementById('showClientsToggle') ? document.getElementById('showClientsToggle').checked : true;
-            const unifiedData = {
-                showClients: showClients,
-                portfolioTabs: window.portfolioTabs,
-                portfolioData: window.portfolioData,
-                clients: window.clientData,
-                lastUpdated: new Date().toISOString()
+
+        document.getElementById('globalVideoForm').onsubmit = (e) => {
+            e.preventDefault();
+            const fd = new FormData(e.target);
+            const cat = fd.get('category');
+            const newVid = {
+                title: fd.get('title'),
+                url: fd.get('url'),
+                description: fd.get('description')
             };
             
-            try {
-                // Save to data.json file
-                const response = await fetch('/api/data', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(unifiedData)
-                });
-                
-                if (response.ok) {
-                    // Also save to localStorage for immediate use
-                    localStorage.setItem('portfolioData', JSON.stringify(window.portfolioData));
-                    localStorage.setItem('portfolioTabs', JSON.stringify(window.portfolioTabs));
-                    localStorage.setItem('clientData', JSON.stringify(window.clientData));
-                    
-                    // Update the global unified data
-                    window.unifiedData = unifiedData;
-                    
-                    // Data saved to data.json - main page will auto-refresh
-                    
-                    showLocalSaveNotification();
-                    console.log('✅ Data saved to data.json file');
-                } else {
-                    throw new Error('Failed to save to data.json');
-                }
-            } catch (error) {
-                console.error('Error saving to data.json:', error);
-                // Fallback to localStorage only
-                localStorage.setItem('portfolioData', JSON.stringify(window.portfolioData));
-                localStorage.setItem('portfolioTabs', JSON.stringify(window.portfolioTabs));
-                localStorage.setItem('clientData', JSON.stringify(window.clientData));
-                
-                showLocalSaveNotification();
-                console.log('⚠️ Data saved to localStorage only (data.json save failed)');
-            }
-        }
-        
-        // Local storage functions (no GitHub needed)
-        
-        // Show local save notification
-        function showLocalSaveNotification() {
-            const existing = document.querySelector('.auto-save-notification');
-            if (existing) {
-                existing.remove();
-            }
+            if(!db.portfolioData[cat]) db.portfolioData[cat] = [];
+            db.portfolioData[cat].unshift(newVid);
+            save();
+            e.target.reset();
+            showAddVideoForm();
+            renderVideoList();
+        };
+
+        // CLIENTS LOGIC
+        function renderClientsList() {
+            const grid = document.getElementById('clientDevGrid');
+            grid.innerHTML = '';
             
-            const notification = document.createElement('div');
-            notification.className = 'auto-save-notification';
-            notification.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: linear-gradient(135deg, #4CAF50, #45a049);
-                color: white;
-                padding: 1rem 1.5rem;
-                border-radius: 10px;
-                box-shadow: 0 4px 20px rgba(76, 175, 80, 0.3);
-                z-index: 10000;
-                font-weight: 600;
-                animation: slideIn 0.3s ease-out;
-            `;
-            
-            notification.innerHTML = `
-                <i class="fas fa-save" style="margin-right: 0.5rem;"></i>
-                Changes saved to data.json! Refresh the main page to see updates.
-            `;
-            
-            document.body.appendChild(notification);
-            
-            // Auto-remove after 5 seconds
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.style.animation = 'slideIn 0.3s ease-out reverse';
-                    setTimeout(() => {
-                        if (notification.parentNode) {
-                            notification.remove();
-                        }
-                    }, 300);
-                }
-            }, 5000);
-        }
-        
-        // Show auto-save notification
-        function showAutoSaveNotification() {
-            // Remove existing notification if any
-            const existing = document.querySelector('.auto-save-notification');
-            if (existing) {
-                existing.remove();
-            }
-            
-            const notification = document.createElement('div');
-            notification.className = 'auto-save-notification';
-            notification.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: linear-gradient(135deg, #4CAF50, #45a049);
-                color: white;
-                padding: 1rem 1.5rem;
-                border-radius: 10px;
-                box-shadow: 0 4px 20px rgba(76, 175, 80, 0.3);
-                z-index: 10000;
-                font-weight: 600;
-                animation: slideIn 0.3s ease-out;
-            `;
-            
-            notification.innerHTML = `
-                <i class="fas fa-check-circle" style="margin-right: 0.5rem;"></i>
-                Data auto-saved! Replace data/data.json with the downloaded file.
-            `;
-            
-            // Add animation keyframes
-            if (!document.querySelector('#autoSaveStyles')) {
-                const style = document.createElement('style');
-                style.id = 'autoSaveStyles';
-                style.textContent = `
-                    @keyframes slideIn {
-                        from { transform: translateX(100%); opacity: 0; }
-                        to { transform: translateX(0); opacity: 1; }
-                    }
+            db.clients.forEach((client, index) => {
+                const card = document.createElement('div');
+                card.className = 'client-dev-card';
+                card.innerHTML = `
+                    <img src="${client.thumbnailUrl || 'icon.png'}" class="client-dev-img">
+                    <h4>${client.name}</h4>
+                    <p style="color:#666; font-size:0.8rem; margin-bottom:1rem">${client.subscribers || 'No Info'}</p>
+                    <button class="sort-btn" onclick="deleteClient(${index})" style="background:#f44336; width:100%">Remove</button>
                 `;
-                document.head.appendChild(style);
-            }
-            
-            document.body.appendChild(notification);
-            
-            // Auto-remove after 5 seconds
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.style.animation = 'slideIn 0.3s ease-out reverse';
-                    setTimeout(() => {
-                        if (notification.parentNode) {
-                            notification.remove();
-                        }
-                    }, 300);
-                }
-            }, 5000);
-        }
-        
-        // Legacy function for compatibility
-        function savePortfolioData() {
-            saveAllData();
-        }
-        
-        // Open Portfolio Manager
-        function openPortfolioManager() {
-            document.getElementById('portfolioModal').style.display = 'block';
-            loadAllData();
-            addLog('Portfolio manager opened');
-        }
-        
-        // Close Portfolio Manager
-        function closePortfolioManager() {
-            document.getElementById('portfolioModal').style.display = 'none';
-            addLog('Portfolio manager closed');
-        }
-        
-        // Render tabs
-        function renderTabs() {
-            const tabsContainer = document.getElementById('dynamicTabs');
-            tabsContainer.innerHTML = '';
-            
-            Object.keys(window.portfolioTabs).forEach(tabId => {
-                const tab = window.portfolioTabs[tabId];
-                const tabWrapper = document.createElement('div');
-                tabWrapper.className = 'tab-wrapper';
-                
-                const tabButton = document.createElement('button');
-                tabButton.className = `tab-button ${activeTab === tabId ? 'active' : ''}`;
-                tabButton.onclick = () => switchTab(tabId);
-                tabButton.innerHTML = `<i class="${tab.icon}"></i> ${tab.name}`;
-                
-                const tabActions = document.createElement('div');
-                tabActions.className = 'tab-actions';
-                tabActions.innerHTML = '⋮';
-                tabActions.onclick = (e) => {
-                    e.stopPropagation();
-                    showTabDropdown(tabId, e.target);
-                };
-                
-                tabWrapper.appendChild(tabButton);
-                tabWrapper.appendChild(tabActions);
-                tabsContainer.appendChild(tabWrapper);
+                grid.appendChild(card);
             });
         }
-        
-        // Switch tabs
-        function switchTab(tabId) {
-            activeTab = tabId;
-            renderTabs();
-            renderTabContent();
-        }
-        
-        // Extract video ID from URL
-        function extractVideoId(url) {
-            // YouTube Shorts
-            const shortsMatch = url.match(/(?:youtube\.com\/shorts\/|youtu\.be\/)([^&\n?#]+)/);
-            if (shortsMatch) {
-                return { type: 'youtube', id: shortsMatch[1] };
-            }
+
+        document.getElementById('clientForm').onsubmit = (e) => {
+            e.preventDefault();
+            const fd = new FormData(e.target);
             
-            // YouTube regular videos
-            const youtubeMatch = url.match(/(?:youtube\.com\/watch\?v=|youtube\.com\/embed\/)([^&\n?#]+)/);
-            if (youtubeMatch) {
-                return { type: 'youtube', id: youtubeMatch[1] };
-            }
-            
-            return null;
-        }
-        
-        // Create embedded player
-        function createPlayer(videoInfo, videoUrl) {
-            if (videoInfo && videoInfo.type === 'youtube') {
-                return `<iframe class="video-player" src="https://www.youtube.com/embed/${videoInfo.id}" frameborder="0" allowfullscreen></iframe>`;
-            }
-            return '<div class="video-player" style="background: #333; display: flex; align-items: center; justify-content: center; color: #ccc;">Invalid YouTube URL</div>';
-        }
-        
-        // Create video item HTML
-        function createVideoItem(video, category, index) {
-            const videoInfo = extractVideoId(video.url);
-            const player = videoInfo ? createPlayer(videoInfo, video.url) : '';
-            
-            return `
-                <div class="video-item" data-index="${index}">
-                    <div class="drag-handle" title="Drag to reorder" style="cursor: grab; padding: 0.5rem; color: #ff6b35; font-size: 1.2rem;">
-                        <i class="fas fa-grip-vertical"></i>
-                    </div>
-                    <div class="video-thumbnail">
-                        ${player}
-                    </div>
-                    <div class="video-info">
-                        <div class="video-title">${video.title}</div>
-                        <div class="video-description">${video.description || 'No description'}</div>
-                        <div style="font-size: 0.8rem; color: #888; margin-bottom: 1rem;">
-                            ${video.client ? `Client: ${video.client} | ` : ''}
-                            ${video.brand ? `Brand: ${video.brand} | ` : ''}
-                            ${video.artist ? `Artist: ${video.artist} | ` : ''}
-                            ${video.duration ? `Duration: ${video.duration}` : ''}
-                        </div>
-                        <div class="video-actions">
-                            <button class="btn-small btn-preview" onclick="previewVideo('${video.url}')">
-                                <i class="fas fa-play"></i> Preview
-                            </button>
-                            <button class="btn-small btn-edit" onclick="editVideo('${category}', ${index})">
-                                <i class="fas fa-edit"></i> Edit
-                            </button>
-                            <button class="btn-small btn-delete" onclick="deleteVideo('${category}', ${index})">
-                                <i class="fas fa-trash"></i> Delete
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-        
-        // Render tab content
-        function renderTabContent() {
-            const contentContainer = document.getElementById('dynamicTabContent');
-            contentContainer.innerHTML = '';
-            
-            if (!window.portfolioTabs[activeTab]) return;
-            
-            const tabContent = document.createElement('div');
-            tabContent.className = 'tab-content active';
-            
-            const tabName = window.portfolioTabs[activeTab].name;
-            
-            tabContent.innerHTML = `
-                <div class="dev-section">
-                    <h3 style="color: #ff6b35; margin-bottom: 1rem;">
-                        <i class="fas fa-users"></i> Client Management
-                    </h3>
-                    <button onclick="openClientManager()" class="dev-button">
-                        <i class="fas fa-edit"></i> Manage Clients
-                    </button>
-                </div>
-                
-                <div class="dev-section">
-                    <h3 style="color: #ff6b35; margin-bottom: 1rem;">
-                        <i class="fas fa-file-code"></i> data.json Editor
-                    </h3>
-                    <div id="localStatus" style="background: rgba(40, 167, 69, 0.1); border: 1px solid #28a745; border-radius: 8px; padding: 1rem; color: #28a745; margin-bottom: 1rem;">
-                        <i class="fas fa-file-code" style="margin-right: 0.5rem;"></i>
-                        <strong>data.json Editor</strong><br>
-                        <small style="color: #cccccc;">Changes are saved directly to data.json file</small>
-                    </div>
-                </div>
-                
-                <div class="video-form">
-                    <h3 style="color: #ff6b35; margin-bottom: 1.5rem;">
-                        <i class="fas fa-plus"></i> Add New ${tabName}
-                    </h3>
-                    
-                    <form id="${activeTab}Form">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="${activeTab}Title">Video Title</label>
-                                <input type="text" id="${activeTab}Title" name="title" placeholder="Enter video title" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="${activeTab}Category">Category</label>
-                                <input type="text" id="${activeTab}Category" name="category" placeholder="e.g., Short Form, Commercial, etc.">
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="${activeTab}Url">YouTube Video URL</label>
-                            <input type="url" id="${activeTab}Url" name="url" placeholder="https://youtube.com/watch?v=... or https://youtu.be/..." required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="${activeTab}Thumbnail">Custom Thumbnail URL (Optional)</label>
-                            <input type="url" id="${activeTab}Thumbnail" name="thumbnail" placeholder="https://example.com/thumbnail.jpg (Leave empty to use auto-generated)">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="${activeTab}Description">Description</label>
-                            <textarea id="${activeTab}Description" name="description" rows="3" placeholder="Describe the video project..."></textarea>
-                        </div>
-                        
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="${activeTab}Client">Client/Brand/Artist</label>
-                                <input type="text" id="${activeTab}Client" name="client" placeholder="Client name (optional)">
-                            </div>
-                            <div class="form-group">
-                                <label for="${activeTab}Duration">Duration</label>
-                                <input type="text" id="${activeTab}Duration" name="duration" placeholder="e.g., 2:30">
-                            </div>
-                        </div>
-                        
-                        <button type="submit" class="dev-button">
-                            <i class="fas fa-plus"></i> Add Video
-                        </button>
-                    </form>
-                </div>
-                
-                <div id="${activeTab}Grid" class="video-grid">
-                    <!-- Videos will be dynamically added here -->
-                </div>
-            `;
-            
-            contentContainer.appendChild(tabContent);
-            
-            // Render existing videos for this tab
-            setTimeout(() => {
-                renderVideos(activeTab);
-            }, 100);
-            
-            // Add form event listener after DOM insertion
-            setTimeout(() => {
-                const form = document.getElementById(`${activeTab}Form`);
-                if (form) {
-                    form.addEventListener('submit', function(e) {
-                        e.preventDefault();
-                        const formData = new FormData(e.target);
-                        const videoData = Object.fromEntries(formData);
-                        addVideo(activeTab, videoData);
-                        e.target.reset();
-                    });
-                }
-            }, 0);
-            
-            // Render existing videos
-            renderVideos(activeTab);
-        }
-        
-        // Render videos for a specific category
-        function renderVideos(category) {
-            console.log(`Rendering videos for category: ${category}`);
-            console.log('Current portfolio data:', window.portfolioData);
-            
-            const grid = document.getElementById(`${category}Grid`);
-            
-            if (!grid) {
-                console.error(`Grid not found for category: ${category}`);
-                return;
-            }
-            
-            // Ensure the category array exists
-            if (!window.portfolioData[category]) {
-                window.portfolioData[category] = [];
-                console.log(`Created empty array for category: ${category}`);
-            }
-            
-            const videos = window.portfolioData[category] || [];
-            console.log(`Videos for ${category}:`, videos);
-            
-            if (videos.length === 0) {
-                grid.innerHTML = '<div style="text-align: center; color: #888; padding: 2rem;">No videos added yet. Use the form above to add your first video!</div>';
-                return;
-            }
-            
-            console.log(`Rendering ${videos.length} videos for ${category}:`, videos);
-            
-            grid.innerHTML = videos.map((video, index) => createVideoItem(video, category, index)).join('');
-            
-            // Add drag and drop handlers
-            setTimeout(() => initDragAndDrop(category), 100);
-        }
-        
-        // Initialize drag and drop for video grid
-        function initDragAndDrop(category) {
-            const grid = document.getElementById(`${category}Grid`);
-            if (!grid) return;
-            
-            const items = grid.querySelectorAll('.video-item');
-            items.forEach(item => {
-                item.setAttribute('draggable', 'true');
-                item.style.cursor = 'grab';
-                
-                item.addEventListener('dragstart', function(e) {
-                    this.classList.add('dragging');
-                    e.dataTransfer.setData('text/plain', this.dataset.index);
-                    e.dataTransfer.setData('category', category);
-                });
-                
-                item.addEventListener('dragend', function() {
-                    this.classList.remove('dragging');
-                });
-                
-                item.addEventListener('dragover', function(e) {
-                    e.preventDefault();
-                    this.style.border = '2px dashed #ff6b35';
-                });
-                
-                item.addEventListener('dragleave', function() {
-                    this.style.border = '';
-                });
-                
-                item.addEventListener('drop', function(e) {
-                    e.preventDefault();
-                    this.style.border = '';
-                    
-                    const fromIndex = parseInt(e.dataTransfer.getData('text/plain'));
-                    const toIndex = parseInt(this.dataset.index);
-                    const fromCategory = e.dataTransfer.getData('category');
-                    
-                    if (fromCategory === category && fromIndex !== toIndex) {
-                        // Reorder the array
-                        const video = window.portfolioData[category].splice(fromIndex, 1)[0];
-                        window.portfolioData[category].splice(toIndex, 0, video);
-                        savePortfolioData();
-                        renderVideos(category);
-                        addLog(`Reordered video in ${category}`);
-                    }
-                });
-            });
-        }
-        
-        // Render all tabs
-        function renderAllTabs() {
-            // Only render videos for the active tab since other tab content doesn't exist yet
-            if (activeTab && window.portfolioTabs[activeTab]) {
-                renderTabContent();
-            }
-        }
-        
-        // Add video
-        function addVideo(category, videoData) {
-            // Ensure the category array exists
-            if (!window.portfolioData[category]) {
-                window.portfolioData[category] = [];
-            }
-            
-            window.portfolioData[category].push(videoData);
-            savePortfolioData();
-            renderVideos(category);
-            addLog(`Added new video: ${videoData.title} to ${category}`);
-        }
-        
-        // Delete video
-        function deleteVideo(category, index) {
-            if (confirm('Are you sure you want to delete this video?')) {
-                // Ensure the category array exists
-                if (!window.portfolioData[category]) {
-                    window.portfolioData[category] = [];
-                    return;
-                }
-                const video = window.portfolioData[category][index];
-                window.portfolioData[category].splice(index, 1);
-                savePortfolioData();
-                renderVideos(category);
-                addLog(`Deleted video: ${video.title} from ${category}`);
-            }
-        }
-        
-        // Preview video
-        function previewVideo(url) {
-            window.open(url, '_blank');
-        }
-        
-        // Edit video function
-        function editVideo(category, index) {
-            // Ensure the category array exists
-            if (!window.portfolioData[category]) {
-                window.portfolioData[category] = [];
-                return;
-            }
-            const video = window.portfolioData[category][index];
-            if (!video) return;
-            
-            // Switch to the correct tab first
-            if (activeTab !== category) {
-                switchTab(category);
-            }
-            
-            // Wait for tab to render, then populate form
-            setTimeout(() => {
-                const form = document.getElementById(`${category}Form`);
-                if (form) {
-                    document.getElementById(`${category}Title`).value = video.title || '';
-                    document.getElementById(`${category}Category`).value = video.category || '';
-                    document.getElementById(`${category}Url`).value = video.url || '';
-                    document.getElementById(`${category}Thumbnail`).value = video.thumbnail || '';
-                    document.getElementById(`${category}Description`).value = video.description || '';
-                    document.getElementById(`${category}Client`).value = video.client || video.brand || video.artist || '';
-                    document.getElementById(`${category}Duration`).value = video.duration || '';
-                    
-                    // Remove the video from array (will be re-added when form is submitted)
-                    window.portfolioData[category].splice(index, 1);
-                    savePortfolioData();
-                    renderVideos(category);
-                    
-                    // Scroll to form
-                    form.scrollIntoView({ behavior: 'smooth' });
-                }
-            }, 100);
-        }
-        
-        // Form submissions are now handled dynamically in renderTabContent()
-        
-        // Tab management functions
-        function showTabDropdown(tabId, element) {
-            // Remove any existing dropdowns
-            document.querySelectorAll('.tab-dropdown').forEach(d => d.remove());
-            
-            const dropdown = document.createElement('div');
-            dropdown.className = 'tab-dropdown show';
-            dropdown.innerHTML = `
-                <div class="dropdown-item" onclick="editTab('${tabId}')">
-                    <i class="fas fa-edit"></i> Edit
-                </div>
-                <div class="dropdown-item" onclick="deleteTab('${tabId}')" style="color: #f44336;">
-                    <i class="fas fa-trash"></i> Delete
-                </div>
-            `;
-            
-            element.parentElement.appendChild(dropdown);
-            
-            // Close dropdown when clicking outside
-            setTimeout(() => {
-                document.addEventListener('click', function closeDropdown() {
-                    dropdown.remove();
-                    document.removeEventListener('click', closeDropdown);
-                });
-            }, 100);
-        }
-        
-        function showAddTabModal() {
-            editingTab = null;
-            document.getElementById('tabModalTitle').textContent = 'Add New Category';
-            document.getElementById('tabName').value = '';
-            document.getElementById('tabIcon').value = 'fas fa-video';
-            document.getElementById('tabModal').style.display = 'flex';
-        }
-        
-        function editTab(tabId) {
-            editingTab = tabId;
-            const tab = window.portfolioTabs[tabId];
-            document.getElementById('tabModalTitle').textContent = 'Edit Category';
-            document.getElementById('tabName').value = tab.name;
-            document.getElementById('tabIcon').value = tab.icon;
-            document.getElementById('tabModal').style.display = 'flex';
-        }
-        
-        function deleteTab(tabId) {
-            if (Object.keys(window.portfolioTabs).length <= 1) {
-                alert('You must have at least one category!');
-                return;
-            }
-            
-            const tabName = window.portfolioTabs[tabId].name;
-            
-            if (confirm(`Are you sure you want to delete "${tabName}" and all its videos?`)) {
-                delete window.portfolioTabs[tabId];
-                delete window.portfolioData[tabId];
-                
-                // Switch to first available tab
-                activeTab = Object.keys(window.portfolioTabs)[0];
-                
-                savePortfolioData();
-                renderTabs();
-                renderTabContent();
-                addLog(`Deleted category: ${tabName}`);
-            }
-        }
-        
-        function closeTabModal() {
-            document.getElementById('tabModal').style.display = 'none';
-        }
-        
-        // Refresh data from JSON file
-        async function refreshFromJSON() {
-            try {
-                console.log('Refreshing data from data.json file...');
-                
-                // Reload all data (this will clear localStorage and load fresh)
-                await loadAllData();
-                
-                // Set the showClients checkbox based on loaded data
-                const showClients = window.unifiedData && window.unifiedData.showClients;
-                document.getElementById('showClientsToggle').checked = showClients !== false;
-                
-                // Refresh the current tab display
-                if (activeTab && window.portfolioTabs[activeTab]) {
-                    switchTab(activeTab); // This will re-render the tab content
-                } else if (Object.keys(window.portfolioTabs).length > 0) {
-                    // If current tab doesn't exist, switch to first available tab
-                    const firstTab = Object.keys(window.portfolioTabs)[0];
-                    switchTab(firstTab);
-                }
-                
-                addLog('Data refreshed from data.json file');
-                console.log('✅ Data refreshed successfully');
-                
-            } catch (error) {
-                console.error('Error refreshing data:', error);
-                addLog('Error refreshing data: ' + error.message);
-            }
-        }
-        
-        // Toggle clients visibility and save to GitHub
-        async function toggleClientsVisibility() {
-            const showClients = document.getElementById('showClientsToggle').checked;
-            
-            // Update the data object
-            const currentData = {
-                showClients: showClients,
-                portfolioTabs: window.portfolioTabs || {},
-                portfolioData: window.portfolioData || {},
-                clients: window.clientData || []
+            const newClient = {
+                name: fd.get('name'),
+                channelUrl: fd.get('channelUrl'),
+                subscribers: fd.get('subscribers'),
+                thumbnailUrl: fd.get('imageUrl') || `https://ui-avatars.com/api/?name=${encodeURIComponent(fd.get('name'))}&background=ff6b35&color=fff`
             };
             
-            try {
-                const response = await fetch('/api/data', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(currentData)
-                });
-                
-                const result = await response.json();
-                if (result.success) {
-                    addLog(`Clients section ${showClients ? 'shown' : 'hidden'} and saved to GitHub`);
-                    alert(`Clients section is now ${showClients ? 'visible' : 'hidden'}! Saved to GitHub.`);
-                } else {
-                    alert('Error saving: ' + result.message);
-                }
-            } catch (error) {
-                console.error('Error saving clients visibility:', error);
-                alert('Error saving to server');
-            }
+            db.clients.push(newClient);
+            save();
+            renderClientsList();
+            e.target.reset();
+        };
+
+        function deleteClient(index) {
+            db.clients.splice(index, 1);
+            save();
+            renderClientsList();
         }
-        
-        // Clear localStorage and reload
-        async function clearLocalStorage() {
-            if (confirm('Are you sure you want to clear all local storage? This will reload data from the JSON file.')) {
-                try {
-                    console.log('Clearing localStorage...');
-                    
-                    // Clear all localStorage
-                    localStorage.clear();
-                    
-                    // Reload all data from JSON
-                    await loadAllData();
-                    
-                    // Refresh the current tab display
-                    if (activeTab) {
-                        renderVideos(activeTab);
-                    }
-                    
-                    addLog('Local storage cleared and data reloaded from JSON');
-                    console.log('✅ Local storage cleared successfully');
-                    
-                } catch (error) {
-                    console.error('Error clearing localStorage:', error);
-                    addLog('Error clearing localStorage: ' + error.message);
-                }
-            }
+
+        // Visibility
+        function toggleClientsVisibility() {
+            db.showClients = !db.showClients;
+            save();
+            updateStats();
         }
-        
-        
-        // Local storage functions (GitHub integration removed)
-        
-        function updateLocalStatus() {
-            const statusDiv = document.getElementById('localStatus');
-            
-            // Always show as active for data.json editing
-            statusDiv.style.background = 'rgba(40, 167, 69, 0.1)';
-            statusDiv.style.borderColor = '#28a745';
-            statusDiv.style.color = '#28a745';
-            statusDiv.innerHTML = `
-                <i class="fas fa-file-code" style="margin-right: 0.5rem;"></i>
-                <strong>data.json Editor</strong><br>
-                <small style="color: #cccccc;">Changes are saved directly to data.json file</small>
-            `;
+
+        function exportData() {
+            const blob = new Blob([JSON.stringify(db, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `3moj00_backup_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
         }
-        
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            // Load data and set showClients toggle
-            loadAllData().then(() => {
-                const showClients = window.unifiedData && window.unifiedData.showClients;
-                document.getElementById('showClientsToggle').checked = showClients !== false;
-            });
-            
-            // Tab form submission
-            const tabForm = document.getElementById('tabForm');
-            if (tabForm) {
-                tabForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    
-                    const name = document.getElementById('tabName').value.trim();
-                    const icon = document.getElementById('tabIcon').value;
-                    
-                    if (!name) {
-                        alert('Please enter a category name');
-                        return;
-                    }
-                    
-                    if (editingTab) {
-                        // Edit existing tab
-                        window.portfolioTabs[editingTab] = { name, icon };
-                        addLog(`Updated category: ${name}`);
-                    } else {
-                        // Add new tab
-                        const tabId = name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
-                        
-                        if (window.portfolioTabs[tabId]) {
-                            alert('A category with this name already exists!');
-                            return;
-                        }
-                        
-                        window.portfolioTabs[tabId] = { name, icon };
-                        window.portfolioData[tabId] = [];
-                        activeTab = tabId;
-                        addLog(`Added new category: ${name}`);
-                    }
-                    
-                    savePortfolioData();
-                    renderTabs();
-                    renderTabContent();
-                    closeTabModal();
-                });
-            }
-            
-            // Close modal when clicking outside
-            const portfolioModal = document.getElementById('portfolioModal');
-            if (portfolioModal) {
-                portfolioModal.addEventListener('click', function(e) {
-                    if (e.target === this) {
-                        closePortfolioManager();
-                    }
-                });
-            }
-            
-            // Local storage is ready - no configuration needed
-            
-            // Client form submission
-            const clientForm = document.getElementById('clientForm');
-            if (clientForm) {
-                clientForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    
-                    const formData = new FormData(e.target);
-                    const channelUrl = formData.get('channelUrl');
-                    const clientName = formData.get('name');
-                    const customImageUrl = formData.get('imageUrl');
-                    const subscribers = parseInt(formData.get('subscribers'));
-                    const videos = parseInt(formData.get('videos'));
-                    const views = parseInt(formData.get('views'));
-                    const description = formData.get('description');
-                    
-                    // Validate required fields
-                    if (!channelUrl) {
-                        alert('Please enter a YouTube channel URL');
-                        return;
-                    }
-                    
-                    if (!clientName || !clientName.trim()) {
-                        alert('Please enter a client/channel name');
-                        return;
-                    }
-                    
-                    // Validate optional numeric fields only if provided
-                    if (subscribers && subscribers < 1000) {
-                        alert('Subscriber count must be at least 1,000 if provided');
-                        return;
-                    }
-                    
-                    if (videos && videos < 10) {
-                        alert('Video count must be at least 10 if provided');
-                        return;
-                    }
-                    
-                    if (views && views < 10000) {
-                        alert('View count must be at least 10,000 if provided');
-                        return;
-                    }
-                    
-                    // Validate URL format (optional - just for linking)
-                    const channelInfo = extractChannelId(channelUrl);
-                    let finalChannelUrl = channelUrl;
-                    if (!channelInfo && !channelUrl.includes('youtube.com')) {
-                        alert('Invalid YouTube channel URL. Please use a valid format like:\\n- https://youtube.com/@channelname\\n- https://youtube.com/c/channelname\\n- https://youtube.com/channel/CHANNEL_ID');
-                        return;
-                    }
-                    
-                    // Create client data object with manual inputs
-                    const clientData = {
-                        name: clientName.trim(),
-                        subscriberCount: subscribers || null,
-                        videoCount: videos || null,
-                        viewCount: views || null,
-                        description: description || '',
-                        channelUrl: finalChannelUrl,
-                        thumbnailUrl: customImageUrl && customImageUrl.trim() ? 
-                            customImageUrl.trim() : 
-                            generateClientLogo(clientName.trim(), finalChannelUrl),
-                        originalUrl: channelUrl,
-                        customImage: customImageUrl && customImageUrl.trim() ? true : false
-                    };
-                    
-                    // Add to client list
-                    addClient(clientData);
-                    
-                    // Reset form
-                    e.target.reset();
-                    
-                    alert(`Client "${clientData.name}" added successfully!`);
-                });
-            }
-            
-            // Close client modal when clicking outside
-            const clientModal = document.getElementById('clientModal');
-            if (clientModal) {
-                clientModal.addEventListener('click', function(e) {
-                    if (e.target === this) {
-                        closeClientManager();
-                    }
-                });
-            }
-            
-            // Legacy functions removed - auto-save now handles data persistence
-            
-            // Export data to JSON file
-            window.exportData = function() {
-                const dataToExport = {
-                    showClients: document.getElementById('showClientsToggle').checked,
-                    portfolioTabs: window.portfolioTabs || {},
-                    portfolioData: window.portfolioData || {},
-                    clients: window.clientData || [],
-                    lastUpdated: new Date().toISOString()
-                };
-                
-                const dataStr = JSON.stringify(dataToExport, null, 2);
-                const blob = new Blob([dataStr], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = '3moj00-data-backup-' + new Date().toISOString().split('T')[0] + '.json';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-                
-                addLog('Data exported to file');
-                alert('Data exported successfully! Save this file to your computer.');
-            }
-            
-            // Import data from JSON file
-            window.importData = function(event) {
-                const file = event.target.files[0];
-                if (!file) return;
-                
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    try {
-                        const importedData = JSON.parse(e.target.result);
-                        
-                        // Validate the structure
-                        if (!importedData.portfolioTabs && !importedData.portfolioData && !importedData.clients) {
-                            alert('Invalid data format. Please ensure the JSON file contains portfolioTabs, portfolioData, and/or clients.');
-                            return;
-                        }
-                        
-                        // Confirm import
-                        if (!confirm('This will replace all current data. Are you sure you want to import?')) {
-                            return;
-                        }
-                        
-                        // Import the data
-                        if (importedData.portfolioTabs) {
-                            window.portfolioTabs = importedData.portfolioTabs;
-                            localStorage.setItem('portfolioTabs', JSON.stringify(importedData.portfolioTabs));
-                        }
-                        
-                        if (importedData.portfolioData) {
-                            window.portfolioData = importedData.portfolioData;
-                            localStorage.setItem('portfolioData', JSON.stringify(importedData.portfolioData));
-                        }
-                        
-                        if (importedData.clients) {
-                            window.clientData = importedData.clients;
-                            localStorage.setItem('clientData', JSON.stringify(importedData.clients));
-                        }
-                        
-                        // Refresh the UI
-                        if (window.portfolioTabs && Object.keys(window.portfolioTabs).length > 0) {
-                            activeTab = Object.keys(window.portfolioTabs)[0];
-                            renderTabs();
-                            renderTabContent();
-                        }
-                        
-                        renderClients();
-                        
-                        alert('Data imported successfully!');
-                        addLog('Data imported from file: ' + file.name);
-                        
-                    } catch (error) {
-                        alert('Error importing data: ' + error.message);
-                        console.error('Import error:', error);
-                    }
-                };
-                reader.readAsText(file);
-                
-                // Reset the file input
-                event.target.value = '';
-            }
-            
-            // Always load fresh data when developer panel opens
-            loadAllData().then(() => {
-                console.log('✅ Fresh data loaded from data.json');
-                updateLocalStatus(); // Update local status on load
-                
-                // Log data.json editor configuration
-                console.log('📝 data.json Editor Active:');
-                console.log(`   Data Source: data.json file (always fresh)`);
-                console.log(`   Editor: Developer panel saves to data.json`);
-                console.log(`   Display: Main page shows only data.json content`);
-                console.log('📊 Current Data State:');
-                console.log(`   Portfolio Data:`, window.portfolioData);
-                console.log(`   Portfolio Tabs:`, window.portfolioTabs);
-                console.log(`   Client Data:`, window.clientData);
-                
-                // Debug: Check if videos exist in each category
-                Object.keys(window.portfolioTabs).forEach(tabId => {
-                    const videos = window.portfolioData[tabId] || [];
-                    console.log(`   ${tabId}: ${videos.length} videos`, videos);
-                });
-                
-                // Render the first tab to show existing content
-                if (Object.keys(window.portfolioTabs).length > 0) {
-                    const firstTab = Object.keys(window.portfolioTabs)[0];
-                    switchTab(firstTab);
-                }
-            });
-            
-            // Auto-refresh when user comes back to this tab
-            document.addEventListener('visibilitychange', function() {
-                if (!document.hidden) {
-                    console.log('Developer panel tab became visible, refreshing data...');
-                    refreshFromJSON();
-                }
-            });
-        });
+
+        // Init
+        window.onload = loadData;
+
     </script>
 </body>
 </html>
