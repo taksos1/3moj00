@@ -196,8 +196,14 @@
       }
     ]
   },
-  "clients": [],
-  "lastUpdated": "2026-03-14T23:48:38.143Z",
+  "clients": [
+    {
+      "name": "ElMido",
+      "channelUrl": "https://www.youtube.com/@ItsElMido",
+      "thumbnailUrl": "https://yt3.googleusercontent.com/3tAMghn-LVxwefZWWNSZN643IDmt1PADdC1NcKsU103x3HtYvZbg0Win7Be0_omdNyRW_3Au=s900-c-k-c0x00ffffff-no-rj"
+    }
+  ],
+  "lastUpdated": "2026-03-14T23:48:49.559Z",
   "projects": [
     {
       "title": "تحدي الرسم مع اليوتيوبر ليث ومستريوس",
