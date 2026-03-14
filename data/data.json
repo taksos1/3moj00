@@ -1,27 +1,32 @@
 {
   "showClients": true,
-  "portfolioTabs": {
-    "gaming": {
-      "name": "Gaming Content 🎮",
-      "icon": "fas fa-video"
-    },
-    "gym": {
+  "portfolioTabs": [
+    {
+      "id": "gym",
       "name": "Fitness & Sports 🏋️‍♀️",
       "icon": "fas fa-video"
     },
-    "restaurants": {
+    {
+      "id": "gaming",
+      "name": "Gaming Content 🎮",
+      "icon": "fas fa-video"
+    },
+    {
+      "id": "restaurants",
       "name": "Restaurant & Café ☕️",
       "icon": "fas fa-video"
     },
-    "educational-content": {
+    {
+      "id": "educational-content",
       "name": "Educational Content 📝",
       "icon": "fas fa-video"
     },
-    "cinematic-short-films-": {
+    {
+      "id": "cinematic-short-films-",
       "name": "Cinematic Short Films 🎥",
       "icon": "fas fa-video"
     }
-  },
+  ],
   "portfolioData": {
     "gaming": [
       {
@@ -208,7 +213,7 @@
       "thumbnailUrl": "https://yt3.googleusercontent.com/uTFJvrmWxz7syBbuUp6pm7VTnGf91mFCII-j1vLBFKvdnWQqqfTh2cR-4eLykMYGy1XcfAUDAw=s900-c-k-c0x00ffffff-no-rj"
     }
   ],
-  "lastUpdated": "2026-03-14T23:50:35.647Z",
+  "lastUpdated": "2026-03-14T23:58:52.960Z",
   "projects": [
     {
       "title": "تحدي الرسم مع اليوتيوبر ليث ومستريوس",
