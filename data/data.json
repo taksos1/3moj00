@@ -197,7 +197,7 @@
     ]
   },
   "clients": [],
-  "lastUpdated": "2026-03-14T23:48:36.846Z",
+  "lastUpdated": "2026-03-14T23:48:38.143Z",
   "projects": [
     {
       "title": "تحدي الرسم مع اليوتيوبر ليث ومستريوس",
@@ -220,16 +220,6 @@
       "categoryId": "gym"
     },
     {
-      "title": "🔥 عملت أقوى فريق فيفا 26",
-      "category": "",
-      "url": "https://youtu.be/XEm1h0Eo-3Q?si=voo3xqk_3OMTkMm0",
-      "thumbnail": "",
-      "description": "",
-      "client": "",
-      "duration": "",
-      "categoryId": "gaming"
-    },
-    {
       "title": "El Baz Gym Motivational",
       "category": "",
       "url": "https://youtube.com/shorts/laWW41TPAJQ?feature=share",
@@ -238,6 +228,16 @@
       "client": "",
       "duration": "",
       "categoryId": "gym"
+    },
+    {
+      "title": "🔥 عملت أقوى فريق فيفا 26",
+      "category": "",
+      "url": "https://youtu.be/XEm1h0Eo-3Q?si=voo3xqk_3OMTkMm0",
+      "thumbnail": "",
+      "description": "",
+      "client": "",
+      "duration": "",
+      "categoryId": "gaming"
     },
     {
       "title": "😨 اوعى تفتح الباب",
