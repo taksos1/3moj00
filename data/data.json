@@ -2,13 +2,13 @@
   "showClients": true,
   "portfolioTabs": [
     {
-      "id": "gym",
-      "name": "Fitness & Sports 🏋️‍♀️",
+      "id": "gaming",
+      "name": "Gaming Content 🎮",
       "icon": "fas fa-video"
     },
     {
-      "id": "gaming",
-      "name": "Gaming Content 🎮",
+      "id": "gym",
+      "name": "Fitness & Sports 🏋️‍♀️",
       "icon": "fas fa-video"
     },
     {
@@ -213,7 +213,7 @@
       "thumbnailUrl": "https://yt3.googleusercontent.com/uTFJvrmWxz7syBbuUp6pm7VTnGf91mFCII-j1vLBFKvdnWQqqfTh2cR-4eLykMYGy1XcfAUDAw=s900-c-k-c0x00ffffff-no-rj"
     }
   ],
-  "lastUpdated": "2026-03-14T23:58:52.960Z",
+  "lastUpdated": "2026-03-14T23:59:08.356Z",
   "projects": [
     {
       "title": "تحدي الرسم مع اليوتيوبر ليث ومستريوس",
