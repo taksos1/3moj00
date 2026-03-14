@@ -29,15 +29,6 @@
     "educational-content": [],
     "cinematic-short-films-": [
       {
-        "title": "فيلم شيزوفرنيا",
-        "category": "",
-        "url": "https://youtu.be/X5Rb9VmgTnI",
-        "thumbnail": "",
-        "description": "",
-        "client": "",
-        "duration": ""
-      },
-      {
         "title": "برنامج خطر التكنولوجيا على البشرية",
         "category": "",
         "url": "https://youtu.be/ylHG0UxeZIQ",
@@ -67,5 +58,5 @@
     ]
   },
   "clients": [],
-  "lastUpdated": "2026-03-14T06:55:03.874Z"
+  "lastUpdated": "2026-03-14T06:55:05.623Z"
 }
