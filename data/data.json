@@ -50,6 +50,15 @@
         "description": "",
         "client": "",
         "duration": ""
+      },
+      {
+        "title": "El Baz Gym Ramadan",
+        "category": "",
+        "url": "https://youtube.com/shorts/VbxajROChfM?feature=share",
+        "thumbnail": "",
+        "description": "",
+        "client": "",
+        "duration": ""
       }
     ],
     "gym": [
@@ -63,9 +72,9 @@
         "duration": ""
       },
       {
-        "title": "El Baz Gym Ramadan",
+        "title": "El Baz Gym Motivational",
         "category": "",
-        "url": "https://youtube.com/shorts/VbxajROChfM?feature=share",
+        "url": "https://youtube.com/shorts/laWW41TPAJQ?feature=share",
         "thumbnail": "",
         "description": "",
         "client": "",
@@ -215,5 +224,5 @@
     ]
   },
   "clients": [],
-  "lastUpdated": "2026-03-14T07:18:52.605Z"
+  "lastUpdated": "2026-03-14T07:19:37.376Z"
 }
