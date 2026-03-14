@@ -29,15 +29,6 @@
     "educational-content": [],
     "cinematic-short-films-": [
       {
-        "title": "برومو غير رسمي لفيلم تراب الماس",
-        "category": "",
-        "url": "https://youtu.be/1bHZ_KqysTg",
-        "thumbnail": "",
-        "description": "",
-        "client": "",
-        "duration": ""
-      },
-      {
         "title": "فيلم مصر بلا أمية",
         "category": "",
         "url": "https://youtu.be/MnRT4qfEnE4",
@@ -85,5 +76,5 @@
     ]
   },
   "clients": [],
-  "lastUpdated": "2026-03-14T06:54:57.038Z"
+  "lastUpdated": "2026-03-14T06:55:01.041Z"
 }
