@@ -197,7 +197,7 @@
     ]
   },
   "clients": [],
-  "lastUpdated": "2026-03-14T23:45:57.569Z",
+  "lastUpdated": "2026-03-14T23:48:25.617Z",
   "projects": [
     {
       "title": "🔥 عملت أقوى فريق فيفا 26",
@@ -220,16 +220,6 @@
       "categoryId": "gaming"
     },
     {
-      "title": "El Baz gym Ladies' Group Reel",
-      "category": "",
-      "url": "https://youtube.com/shorts/bESTSqlWRak?feature=share",
-      "thumbnail": "",
-      "description": "",
-      "client": "",
-      "duration": "",
-      "categoryId": "gym"
-    },
-    {
       "title": "تحدي الرسم مع اليوتيوبر ليث ومستريوس",
       "category": "",
       "url": "https://youtu.be/YqVkW-eNYY0?si=XhK7k2Emby8HXbsr",
@@ -238,6 +228,16 @@
       "client": "",
       "duration": "",
       "categoryId": "gaming"
+    },
+    {
+      "title": "El Baz gym Ladies' Group Reel",
+      "category": "",
+      "url": "https://youtube.com/shorts/bESTSqlWRak?feature=share",
+      "thumbnail": "",
+      "description": "",
+      "client": "",
+      "duration": "",
+      "categoryId": "gym"
     },
     {
       "title": "El Baz Gym Motivational",
