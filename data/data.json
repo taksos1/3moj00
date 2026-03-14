@@ -29,15 +29,6 @@
     "educational-content": [],
     "cinematic-short-films-": [
       {
-        "title": "برنامج خطر التكنولوجيا على البشرية",
-        "category": "",
-        "url": "https://youtu.be/ylHG0UxeZIQ",
-        "thumbnail": "",
-        "description": "",
-        "client": "",
-        "duration": ""
-      },
-      {
         "title": "فيلم بدايتها فكرة",
         "category": "",
         "url": "https://youtu.be/-RH6WLoX42s",
@@ -58,5 +49,5 @@
     ]
   },
   "clients": [],
-  "lastUpdated": "2026-03-14T06:55:05.623Z"
+  "lastUpdated": "2026-03-14T06:55:07.621Z"
 }
