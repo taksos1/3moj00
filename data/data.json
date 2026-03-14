@@ -27,15 +27,6 @@
     "gym": [],
     "restaurants": [
       {
-        "title": "windy Café",
-        "category": "",
-        "url": "https://youtube.com/shorts/mB9FmWdEiaI?feature=share",
-        "thumbnail": "",
-        "description": "",
-        "client": "",
-        "duration": ""
-      },
-      {
         "title": "اعلان مطعم دايت اند فات",
         "category": "",
         "url": "https://youtu.be/dIXUCXC1-QE",
@@ -123,5 +114,5 @@
     ]
   },
   "clients": [],
-  "lastUpdated": "2026-03-14T06:54:45.473Z"
+  "lastUpdated": "2026-03-14T06:54:47.178Z"
 }
