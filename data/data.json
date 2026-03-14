@@ -61,6 +61,24 @@
         "description": "",
         "client": "",
         "duration": ""
+      },
+      {
+        "title": "El-Baz gym Ladies' Group Reel",
+        "category": "",
+        "url": "https://youtube.com/shorts/bESTSqlWRak?feature=share",
+        "thumbnail": "",
+        "description": "",
+        "client": "",
+        "duration": ""
+      },
+      {
+        "title": "",
+        "category": "",
+        "url": "",
+        "thumbnail": "",
+        "description": "",
+        "client": "",
+        "duration": ""
       }
     ],
     "restaurants": [
@@ -206,5 +224,5 @@
     ]
   },
   "clients": [],
-  "lastUpdated": "2026-03-14T07:16:50.886Z"
+  "lastUpdated": "2026-03-14T07:16:55.045Z"
 }
