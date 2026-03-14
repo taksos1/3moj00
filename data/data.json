@@ -27,15 +27,6 @@
     "gym": [],
     "restaurants": [
       {
-        "title": "اعلان مطعم غنيم",
-        "category": "",
-        "url": "https://youtu.be/f7ZBkWD74fQ",
-        "thumbnail": "",
-        "description": "",
-        "client": "",
-        "duration": ""
-      },
-      {
         "title": "windy Café",
         "category": "",
         "url": "https://youtube.com/shorts/mB9FmWdEiaI?feature=share",
@@ -132,5 +123,5 @@
     ]
   },
   "clients": [],
-  "lastUpdated": "2026-03-14T06:54:43.925Z"
+  "lastUpdated": "2026-03-14T06:54:45.473Z"
 }
