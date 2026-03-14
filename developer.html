@@ -9,139 +9,241 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --accent: #ff6b35; --bg: #0a0a0a; --card: #141414; --border: rgba(255, 255, 255, 0.07); --sidebar-w: 260px; }
+        :root { --accent: #ff6b35; --bg: #0a0a0a; --card: #141414; --border: rgba(255, 255, 255, 0.08); --sidebar-w: 260px; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); color: #efefef; display: flex; margin: 0; min-height: 100vh; }
+        
         .sidebar { width: var(--sidebar-w); background: #000; border-right: 1px solid var(--border); padding: 2rem 1.5rem; display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 100; }
-        .sidebar-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 3rem; }
-        .sidebar-logo span { font-weight: 800; font-size: 1.2rem; color: var(--accent); letter-spacing: 1px; }
+        .sidebar-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 3rem; font-weight: 800; color: var(--accent); }
+        
         .nav-link { background: none; border: none; color: #888; padding: 12px 15px; width: 100%; text-align: left; border-radius: 12px; cursor: pointer; display: flex; align-items: center; gap: 12px; font-weight: 600; margin-bottom: 8px; transition: 0.2s; }
         .nav-link.active { background: var(--accent); color: #fff; }
-        .content { margin-left: var(--sidebar-w); padding: 3rem; flex: 1; max-width: 1400px; }
+
+        .content { margin-left: var(--sidebar-w); padding: 3rem; flex: 1; max-width: 1200px; }
         .card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 1.5rem; margin-bottom: 2rem; }
-        .video-item-row { background: #1c1c1c; border-radius: 15px; padding: 12px 20px; display: grid; grid-template-columns: 60px 140px 1fr 180px; align-items: center; gap: 20px; margin-bottom: 10px; border: 1px solid transparent; }
-        .video-item-row:hover { border-color: var(--accent); }
+        
+        .item-row { background: #1c1c1c; border-radius: 15px; padding: 12px 20px; display: grid; grid-template-columns: 50px 120px 1fr 150px; align-items: center; gap: 20px; margin-bottom: 10px; border: 1px solid transparent; }
+        .item-row:hover { border-color: var(--accent); }
+        
         .move-btns { display: flex; flex-direction: column; gap: 4px; }
-        .btn-small { background: #252525; border: none; color: #fff; border-radius: 5px; cursor: pointer; font-size: 0.75rem; padding: 6px; }
-        .thumb-preview { width: 100%; aspect-ratio: 16/9; object-fit: cover; border-radius: 8px; background: #333; }
-        .badge { font-size: 0.65rem; text-transform: uppercase; font-weight: 800; padding: 4px 8px; background: #000; color: var(--accent); border-radius: 5px; border: 1px solid var(--border); }
+        .btn-small { background: #252525; border: none; color: #fff; border-radius: 5px; cursor: pointer; font-size: 0.7rem; padding: 5px; }
+        .btn-small:hover { background: var(--accent); }
+
+        .thumb { width: 100%; aspect-ratio: 16/9; object-fit: cover; border-radius: 8px; background: #333; }
+        .badge { font-size: 0.65rem; padding: 4px 8px; background: #000; color: var(--accent); border-radius: 5px; border: 1px solid var(--border); font-weight: 800; }
+
         .btn-primary { background: var(--accent); color: #fff; border: none; padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; }
         .dev-view { display: none; } .dev-view.active { display: block; }
-        #loading { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; display: none; justify-content: center; align-items: center; }
+        #loading { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:1000; display:none; justify-content:center; align-items:center; flex-direction:column; }
+        
+        input, select { background: #000; border: 1px solid var(--border); color: #fff; padding: 10px; border-radius: 10px; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
-    <div id="loading"><p>Syncing Order...</p></div>
+    <div id="loading"><p>Syncing Studio Data...</p></div>
 
-    <nav class="sidebar">
-        <div class="sidebar-logo"><span>STUDIO CMD</span></div>
-        <button class="nav-link active" onclick="showView('dashboard')"><i class="fas fa-home"></i> Dashboard</button>
-        <button class="nav-link" onclick="showView('videos')"><i class="fas fa-layer-group"></i> Master Order</button>
+    <aside class="sidebar">
+        <div class="sidebar-logo">3MOJ00 STUDIO</div>
+        <button class="nav-link active" onclick="showView('dashboard')"><i class="fas fa-chart-pie"></i> Dashboard</button>
+        <button class="nav-link" onclick="showView('videos')"><i class="fas fa-video"></i> Videos</button>
+        <button class="nav-link" onclick="showView('categories')"><i class="fas fa-tags"></i> Categories</button>
         <button class="nav-link" onclick="showView('clients')"><i class="fas fa-users"></i> Clients</button>
-        <a href="index.html" class="nav-link" style="margin-top:auto"><i class="fas fa-eye"></i> View Site</a>
-    </nav>
+        <a href="index.html" class="nav-link" style="margin-top:auto"><i class="fas fa-external-link-alt"></i> Public Site</a>
+    </aside>
 
     <main class="content">
+        <!-- DASHBOARD -->
         <div id="view-dashboard" class="dev-view active">
-            <h1>Welcome, 3moj00</h1>
-            <div class="card"><h3>Total Mixed Projects: <span id="count-vids">0</span></h3></div>
+            <h1>Studio Overview</h1>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px">
+                <div class="card"><h3>Total Videos</h3><p id="count-vids" style="font-size:2rem; font-weight:800; color:var(--accent)">0</p></div>
+                <div class="card"><h3>Visibility</h3><button class="btn-primary" onclick="toggleClients()">Toggle Clients</button></div>
+            </div>
         </div>
 
+        <!-- VIDEOS -->
         <div id="view-videos" class="dev-view">
             <div class="card">
-                <h3>Add New Video</h3>
-                <form id="videoForm">
-                    <input type="text" name="title" placeholder="Title" required style="width:200px; padding:10px; border-radius:10px; border:none; background:#000; color:#fff">
-                    <select name="category" id="cat-select" style="padding:10px; border-radius:10px; background:#000; color:#fff"></select>
-                    <input type="url" name="url" placeholder="YouTube URL" required style="width:300px; padding:10px; border-radius:10px; border:none; background:#000; color:#fff">
-                    <button type="submit" class="btn-primary">Add</button>
+                <h3>Add Video</h3>
+                <form id="vForm" style="display:grid; grid-template-columns:1fr 1fr; gap:10px">
+                    <input type="text" name="title" placeholder="Title" required>
+                    <select name="categoryId" id="vCatSelect"></select>
+                    <input type="url" name="url" placeholder="YouTube URL" required style="grid-column: span 2">
+                    <button type="submit" class="btn-primary" style="grid-column: span 2">Add Project</button>
                 </form>
             </div>
             <div class="card">
-                <h3>Global Sort (Mix everything here)</h3>
-                <div id="video-list"></div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem">
+                    <h3 style="margin:0">Inventory</h3>
+                    <select id="vFilter" onchange="renderVideos()" style="margin:0"><option value="all">All Projects (Mixed)</option></select>
+                </div>
+                <div id="vList"></div>
             </div>
         </div>
 
+        <!-- CATEGORIES -->
+        <div id="view-categories" class="dev-view">
+            <div class="card">
+                <h3>Create Category</h3>
+                <input type="text" id="newCatName" placeholder="Category Name (e.g. Real Estate)">
+                <button class="btn-primary" onclick="addCategory()">Create</button>
+            </div>
+            <div class="card">
+                <h3>Reorder Tabs (As seen on Home)</h3>
+                <div id="catList"></div>
+            </div>
+        </div>
+
+        <!-- CLIENTS -->
         <div id="view-clients" class="dev-view">
             <div class="card">
-                <h3>Auto-Fetch Client</h3>
-                <input type="url" id="magic-url" placeholder="Paste Channel URL" style="width:300px; padding:10px; background:#000; color:#fff; border:none; border-radius:10px">
-                <button class="btn-primary" onclick="fetchClientInfo()">Magic Fetch</button>
+                <h3>Magic Add (YouTube Link)</h3>
+                <input type="url" id="magicUrl" placeholder="Paste YouTube Channel URL" style="width:70%">
+                <button class="btn-primary" onclick="magicFetch()">Magic Fetch</button>
             </div>
-            <div id="client-list" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:15px"></div>
+            <div id="clList" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:15px"></div>
         </div>
     </main>
 
     <script>
         let db = null;
 
-        async function init() {
+        async function load() {
             const res = await fetch('/api/data?t=' + Date.now());
             db = await res.json();
             
-            // Migration: If projects list doesn't exist, create it from old data
-            if(!db.projects) {
+            // Migration: Convert Tabs Object to Array
+            if (!Array.isArray(db.portfolioTabs)) {
+                db.portfolioTabs = Object.keys(db.portfolioTabs).map(id => ({ id, ...db.portfolioTabs[id] }));
+            }
+            // Migration: Convert Data Object to Flat Projects
+            if (!db.projects) {
                 db.projects = [];
-                Object.keys(db.portfolioData || {}).forEach(cat => {
-                    db.portfolioData[cat].forEach(v => {
-                        if(v.title) db.projects.push({...v, categoryId: cat});
-                    });
+                Object.keys(db.portfolioData || {}).forEach(cId => {
+                    db.portfolioData[cId].forEach(v => { if(v.title) db.projects.push({...v, categoryId: cId}); });
                 });
             }
 
+            refreshUI();
+        }
+
+        function refreshUI() {
             populateSelects();
             renderVideos();
+            renderCategories();
             renderClients();
             document.getElementById('count-vids').innerText = db.projects.length;
         }
 
-        function showView(view) {
-            document.querySelectorAll('.dev-view').forEach(v => v.classList.remove('active'));
-            document.querySelectorAll('.nav-link').forEach(v => v.classList.remove('active'));
-            document.getElementById('view-' + view).classList.add('active');
-            event.currentTarget.classList.add('active');
-        }
-
         function populateSelects() {
-            const s = document.getElementById('cat-select');
-            s.innerHTML = '';
-            Object.keys(db.portfolioTabs).forEach(id => {
-                s.innerHTML += `<option value="${id}">${db.portfolioTabs[id].name}</option>`;
+            const vS = document.getElementById('vCatSelect');
+            const vF = document.getElementById('vFilter');
+            const currentFilter = vF.value;
+            vS.innerHTML = '';
+            vF.innerHTML = '<option value="all">All Projects (Mixed)</option>';
+            db.portfolioTabs.forEach(t => {
+                const opt = `<option value="${t.id}">${t.name}</option>`;
+                vS.innerHTML += opt;
+                vF.innerHTML += opt;
             });
+            vF.value = currentFilter;
         }
 
+        // --- VIDEO LOGIC ---
         function renderVideos() {
-            const container = document.getElementById('video-list');
+            const container = document.getElementById('vList');
+            const filter = document.getElementById('vFilter').value;
             container.innerHTML = '';
-            db.projects.forEach((vid, idx) => {
+            
+            // Filter the master list
+            const list = filter === 'all' ? db.projects : db.projects.filter(v => v.categoryId === filter);
+
+            list.forEach((v, idx) => {
+                const ytId = v.url.match(/(?:youtu\.be\/|youtube\.com\/(?:shorts\/|watch\?v=))([\w-]{11})/)?.[1];
                 const row = document.createElement('div');
-                row.className = 'video-item-row';
-                const ytId = vid.url.match(/(?:youtu\.be\/|youtube\.com\/(?:shorts\/|watch\?v=))([\w-]{11})/)?.[1];
+                row.className = 'item-row';
                 row.innerHTML = `
                     <div class="move-btns">
-                        <button class="btn-small" onclick="move(${idx}, -1)"><i class="fas fa-chevron-up"></i></button>
-                        <button class="btn-small" onclick="move(${idx}, 1)"><i class="fas fa-chevron-down"></i></button>
+                        <button class="btn-small" onclick="moveVid('${v.url}', -1)"><i class="fas fa-chevron-up"></i></button>
+                        <button class="btn-small" onclick="moveVid('${v.url}', 1)"><i class="fas fa-chevron-down"></i></button>
                     </div>
-                    <img src="https://img.youtube.com/vi/${ytId}/mqdefault.jpg" class="thumb-preview">
-                    <div><span class="badge">${db.portfolioTabs[vid.categoryId]?.name || 'Video'}</span><div>${vid.title}</div></div>
-                    <button class="btn-small" onclick="del(${idx})" style="background:#f44336">Delete</button>
+                    <img src="https://img.youtube.com/vi/${ytId}/mqdefault.jpg" class="thumb">
+                    <div><span class="badge">${db.portfolioTabs.find(t=>t.id===v.categoryId)?.name || 'Video'}</span><div style="font-weight:700;margin-top:5px">${v.title}</div></div>
+                    <button class="btn-small" onclick="delVid('${v.url}')" style="background:#f44336">Delete</button>
                 `;
                 container.appendChild(row);
             });
         }
 
-        async function move(idx, dir) {
+        async function moveVid(url, dir) {
+            const idx = db.projects.findIndex(v => v.url === url);
+            const filter = document.getElementById('vFilter').value;
+            
+            if (filter === 'all') {
+                // Global Move
+                const target = idx + dir;
+                if(target >= 0 && target < db.projects.length) {
+                    [db.projects[idx], db.projects[target]] = [db.projects[target], db.projects[idx]];
+                }
+            } else {
+                // Local Move: Find next item belonging to this category
+                let target = idx + dir;
+                while(target >= 0 && target < db.projects.length && db.projects[target].categoryId !== filter) {
+                    target += dir;
+                }
+                if(target >= 0 && target < db.projects.length) {
+                    [db.projects[idx], db.projects[target]] = [db.projects[target], db.projects[idx]];
+                }
+            }
+            await sync();
+            renderVideos();
+        }
+
+        // --- CATEGORY LOGIC ---
+        function renderCategories() {
+            const container = document.getElementById('catList');
+            container.innerHTML = '';
+            db.portfolioTabs.forEach((t, idx) => {
+                const row = document.createElement('div');
+                row.className = 'item-row';
+                row.style.gridTemplateColumns = '50px 1fr 100px';
+                row.innerHTML = `
+                    <div class="move-btns">
+                        <button class="btn-small" onclick="moveCat(${idx}, -1)"><i class="fas fa-chevron-up"></i></button>
+                        <button class="btn-small" onclick="moveCat(${idx}, 1)"><i class="fas fa-chevron-down"></i></button>
+                    </div>
+                    <div><strong>${t.name}</strong></div>
+                    <button class="btn-small" onclick="delCat(${idx})" style="background:#f44336">Delete</button>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        async function moveCat(idx, dir) {
             const target = idx + dir;
-            if(target >= 0 && target < db.projects.length) {
-                [db.projects[idx], db.projects[target]] = [db.projects[target], db.projects[idx]];
+            if(target >= 0 && target < db.portfolioTabs.length) {
+                [db.portfolioTabs[idx], db.portfolioTabs[target]] = [db.portfolioTabs[target], db.portfolioTabs[idx]];
                 await sync();
-                renderVideos();
+                renderCategories();
+                populateSelects();
             }
         }
 
+        async function addCategory() {
+            const name = document.getElementById('newCatName').value;
+            if(!name) return;
+            const id = name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
+            db.portfolioTabs.push({ id, name, icon: "fas fa-video" });
+            await sync();
+            document.getElementById('newCatName').value = '';
+            refreshUI();
+        }
+
+        // --- SYSTEM ---
         async function sync() {
             document.getElementById('loading').style.display = 'flex';
+            // Final check: Remove ghost items
+            db.projects = db.projects.filter(v => v.title && v.url);
             const res = await fetch('/api/data', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -150,42 +252,50 @@
             document.getElementById('loading').style.display = 'none';
         }
 
-        document.getElementById('videoForm').onsubmit = async (e) => {
+        function showView(v) {
+            document.querySelectorAll('.dev-view, .nav-link').forEach(el => el.classList.remove('active'));
+            document.getElementById('view-'+v).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        document.getElementById('vForm').onsubmit = async (e) => {
             e.preventDefault();
             const fd = new FormData(e.target);
-            db.projects.unshift({ title: fd.get('title'), url: fd.get('url'), categoryId: fd.get('category') });
+            db.projects.unshift({ title: fd.get('title'), url: fd.get('url'), categoryId: fd.get('categoryId') });
             await sync();
             renderVideos();
             e.target.reset();
         };
 
-        async function fetchClientInfo() {
-            const url = document.getElementById('magic-url').value;
-            const proxy = "https://api.allorigins.win/get?url=";
-            const res = await fetch(proxy + encodeURIComponent(url));
+        async function magicFetch() {
+            const url = document.getElementById('magicUrl').value;
+            const res = await fetch("https://api.allorigins.win/get?url=" + encodeURIComponent(url));
             const data = await res.json();
             const doc = new DOMParser().parseFromString(data.contents, 'text/html');
             const name = doc.querySelector('meta[property="og:title"]')?.content.replace(" - YouTube","");
-            const logo = doc.querySelector('meta[property="og:image"]')?.content;
+            const thumb = doc.querySelector('meta[property="og:image"]')?.content;
             if(name) {
-                db.clients.push({ name, channelUrl: url, thumbnailUrl: logo });
+                db.clients.push({ name, channelUrl: url, thumbnailUrl: thumb });
                 await sync();
                 renderClients();
+                document.getElementById('magicUrl').value = '';
             }
         }
 
         function renderClients() {
-            const c = document.getElementById('client-list');
+            const c = document.getElementById('clList');
             c.innerHTML = '';
             db.clients.forEach((cl, i) => {
-                c.innerHTML += `<div class="card" style="text-align:center"><img src="${cl.thumbnailUrl}" style="width:60px; border-radius:50%"><p>${cl.name}</p><button onclick="delCl(${i})">Del</button></div>`;
+                c.innerHTML += `<div class="card" style="text-align:center"><img src="${cl.thumbnailUrl}" style="width:60px;border-radius:50%"><p>${cl.name}</p><button onclick="delCl(${i})">Del</button></div>`;
             });
         }
 
         async function delCl(i) { db.clients.splice(i, 1); await sync(); renderClients(); }
-        async function del(i) { db.projects.splice(i, 1); await sync(); renderVideos(); }
+        async function delVid(url) { if(confirm('Del?')){ db.projects = db.projects.filter(v=>v.url!==url); await sync(); renderVideos(); } }
+        async function delCat(i) { if(confirm('Del category?')){ db.portfolioTabs.splice(i,1); await sync(); refreshUI(); } }
+        async function toggleClients() { db.showClients = !db.showClients; await sync(); }
 
-        window.onload = init;
+        window.onload = load;
     </script>
 </body>
 </html>
