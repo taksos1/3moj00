@@ -23,12 +23,22 @@
     }
   },
   "portfolioData": {
-    "gaming": [],
+    "gaming": [
+      {
+        "title": "تحدي مين افضل رسام مع ليث ومستريوس الجزء الثاني😂",
+        "category": "",
+        "url": "https://www.youtube.com/watch?v=YqVkW-eNYY0",
+        "thumbnail": "",
+        "description": "",
+        "client": "",
+        "duration": ""
+      }
+    ],
     "gym": [],
     "restaurants": [],
     "educational-content": [],
     "cinematic-short-films-": []
   },
   "clients": [],
-  "lastUpdated": "2026-03-14T06:55:11.950Z"
+  "lastUpdated": "2026-03-14T06:56:45.847Z"
 }
