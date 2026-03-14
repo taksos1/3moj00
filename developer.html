@@ -10,599 +10,456 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --sidebar-width: 260px;
             --accent: #ff6b35;
-            --accent-glow: rgba(255, 107, 53, 0.3);
-            --bg-dark: #070707;
-            --card-bg: #121212;
-            --border: rgba(255, 255, 255, 0.08);
+            --accent-glow: rgba(255, 107, 53, 0.2);
+            --bg: #0a0a0a;
+            --card: #141414;
+            --border: rgba(255, 255, 255, 0.07);
+            --sidebar-w: 260px;
         }
 
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--bg-dark);
+            background-color: var(--bg);
+            color: #efefef;
             display: flex;
+            margin: 0;
             min-height: 100vh;
-            color: #e0e0e0;
         }
 
-        /* Sidebar Navigation */
-        .dev-sidebar {
-            width: var(--sidebar-width);
-            background: #0a0a0a;
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-w);
+            background: #000;
             border-right: 1px solid var(--border);
+            padding: 2rem 1.5rem;
             display: flex;
             flex-direction: column;
-            padding: 2rem 1.5rem;
             position: fixed;
             height: 100vh;
         }
 
         .sidebar-logo {
             display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 3rem;
-            padding-left: 10px;
+            align-items: center; gap: 12px; margin-bottom: 3rem;
         }
+        .sidebar-logo img { height: 35px; }
+        .sidebar-logo span { font-weight: 800; font-size: 1.2rem; color: var(--accent); letter-spacing: 1px; }
 
-        .sidebar-logo img { height: 40px; }
-        .sidebar-logo h2 { font-size: 1.2rem; font-weight: 700; color: var(--accent); letter-spacing: 1px; }
-
-        .nav-group { margin-bottom: 2rem; }
-        .nav-label { font-size: 0.7rem; text-transform: uppercase; color: #555; letter-spacing: 2px; margin-bottom: 1rem; display: block; padding-left: 10px; }
-
-        .side-btn {
-            background: none;
-            border: none;
-            color: #888;
-            padding: 12px 15px;
-            width: 100%;
-            text-align: left;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-weight: 500;
-            margin-bottom: 5px;
+        .nav-link {
+            background: none; border: none; color: #888;
+            padding: 12px 15px; width: 100%; text-align: left;
+            border-radius: 12px; cursor: pointer; display: flex;
+            align-items: center; gap: 12px; font-weight: 600;
+            margin-bottom: 8px; transition: 0.2s;
         }
+        .nav-link:hover { background: rgba(255,255,255,0.05); color: #fff; }
+        .nav-link.active { background: var(--accent); color: #fff; box-shadow: 0 10px 20px var(--accent-glow); }
 
-        .side-btn i { font-size: 1.1rem; }
-        .side-btn:hover { background: rgba(255, 255, 255, 0.05); color: #fff; }
-        .side-btn.active { background: var(--accent); color: #fff; box-shadow: 0 4px 15px var(--accent-glow); }
+        /* Content Area */
+        .content { margin-left: var(--sidebar-w); padding: 3rem; flex: 1; max-width: 1400px; }
 
-        /* Main Content */
-        .dev-main {
-            margin-left: var(--sidebar-width);
-            flex: 1;
-            padding: 3rem;
-            max-width: 1400px;
+        .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        .header-row h1 { font-size: 2rem; font-weight: 800; margin: 0; }
+
+        /* Cards */
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 1.5rem; margin-bottom: 2rem; }
+        .card h3 { margin-top: 0; color: #fff; font-weight: 700; margin-bottom: 1.5rem; }
+
+        /* Row Layouts */
+        .item-row {
+            background: #1c1c1c; border-radius: 15px; padding: 12px 20px;
+            display: grid; grid-template-columns: 60px 140px 1fr 180px;
+            align-items: center; gap: 20px; border: 1px solid transparent;
+            transition: 0.2s; margin-bottom: 10px;
         }
+        .cat-row { grid-template-columns: 50px 1fr 150px; }
 
-        .view-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2.5rem;
+        .move-btns { display: flex; flex-direction: column; gap: 4px; }
+        .btn-small { 
+            background: #252525; border: none; color: #fff; 
+            border-radius: 5px; cursor: pointer; font-size: 0.75rem; padding: 6px;
         }
+        .btn-small:hover { background: var(--accent); }
 
-        .view-header h1 { font-size: 2rem; font-weight: 700; }
+        .thumb-preview { width: 100%; aspect-ratio: 16/9; object-fit: cover; border-radius: 8px; background: #333; }
+        .badge { font-size: 0.65rem; text-transform: uppercase; font-weight: 800; padding: 4px 8px; background: #2a2a2a; color: var(--accent); border-radius: 5px; }
 
-        /* Dashboard Cards */
-        .card {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            position: relative;
-        }
-
-        /* Video Grid & Sorting UI */
-        .video-manage-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .video-manage-item {
-            background: #1a1a1a;
-            border: 1px solid var(--border);
-            border-radius: 15px;
-            padding: 15px;
-            display: grid;
-            grid-template-columns: 80px 180px 1fr 200px;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .sort-controls {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .sort-btn {
-            background: #252525;
-            border: none;
-            color: #fff;
-            padding: 5px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.8rem;
-        }
-
-        .sort-btn:hover { background: var(--accent); }
-
-        .mini-thumb {
-            width: 100%;
-            aspect-ratio: 16/9;
-            background: #333;
-            border-radius: 8px;
-            object-fit: cover;
-        }
-
-        /* Form Styling */
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        .input-group { margin-bottom: 1.5rem; }
-        .input-group label { display: block; margin-bottom: 8px; font-size: 0.9rem; color: #aaa; }
+        /* Forms */
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .input-group { margin-bottom: 1rem; }
+        .input-group label { display: block; font-size: 0.8rem; color: #777; margin-bottom: 6px; font-weight: 600; }
         .input-group input, .input-group select, .input-group textarea {
-            width: 100%;
-            background: #181818;
-            border: 1px solid var(--border);
-            padding: 12px 15px;
-            border-radius: 10px;
-            color: #fff;
-            font-family: inherit;
+            width: 100%; background: #000; border: 1px solid var(--border);
+            border-radius: 10px; padding: 10px 15px; color: #fff; font-family: inherit;
         }
 
-        .input-group input:focus { border-color: var(--accent); outline: none; }
+        .btn-primary { background: var(--accent); color: #fff; border: none; padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.3s; }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 20px var(--accent-glow); }
 
-        .btn-action {
-            background: var(--accent);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .btn-action:hover { opacity: 0.9; transform: translateY(-2px); }
-
-        .tag {
-            font-size: 0.7rem;
-            padding: 4px 8px;
-            background: #2a2a2a;
-            border-radius: 5px;
-            color: var(--accent);
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-
-        /* Hide Views */
+        /* Visibility View */
         .dev-view { display: none; }
-        .dev-view.active { display: block; animation: fadeIn 0.4s ease; }
+        .dev-view.active { display: block; animation: slideUp 0.4s ease; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Client Cards */
-        .client-manage-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-        }
-
-        .client-dev-card {
-            background: #1a1a1a;
-            border-radius: 15px;
-            padding: 20px;
-            border: 1px solid var(--border);
-            text-align: center;
-        }
-
-        .client-dev-img { width: 80px; height: 80px; border-radius: 50%; margin-bottom: 15px; border: 2px solid var(--accent); }
-
+        .client-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+        .client-item { background: #1c1c1c; border-radius: 20px; padding: 20px; text-align: center; border: 1px solid var(--border); }
+        .client-item img { width: 70px; height: 70px; border-radius: 50%; border: 3px solid var(--accent); margin-bottom: 15px; }
     </style>
 </head>
 <body>
 
-    <aside class="dev-sidebar">
+    <nav class="sidebar">
         <div class="sidebar-logo">
-            <img src="icon.png" alt="Logo">
-            <h2>STUDIO</h2>
+            <img src="icon.png" alt="3moj00">
+            <span>STUDIO CMD</span>
         </div>
 
-        <div class="nav-group">
-            <span class="nav-label">Management</span>
-            <button class="side-btn active" onclick="showView('dashboard')">
-                <i class="fas fa-home"></i> Overview
-            </button>
-            <button class="side-btn" onclick="showView('videos')">
-                <i class="fas fa-video"></i> All Videos
-            </button>
-            <button class="side-btn" onclick="showView('categories')">
-                <i class="fas fa-folder"></i> Categories
-            </button>
-            <button class="side-btn" onclick="showView('clients')">
-                <i class="fas fa-users"></i> Clients
-            </button>
-        </div>
-
-        <div class="nav-group" style="margin-top: auto;">
-            <span class="nav-label">System</span>
-            <button class="side-btn" onclick="exportData()">
-                <i class="fas fa-download"></i> Backup JSON
-            </button>
-            <a href="index.html" class="side-btn" style="text-decoration: none;">
-                <i class="fas fa-external-link-alt"></i> View Site
-            </a>
-        </div>
-    </aside>
-
-    <main class="dev-main">
+        <button class="nav-link active" onclick="showView('dashboard')"><i class="fas fa-th-large"></i> Dashboard</button>
+        <button class="nav-link" onclick="showView('videos')"><i class="fas fa-film"></i> My Videos</button>
+        <button class="nav-link" onclick="showView('categories')"><i class="fas fa-tags"></i> Categories</button>
+        <button class="nav-link" onclick="showView('clients')"><i class="fas fa-users"></i> Clients</button>
         
-        <!-- DASHBOARD VIEW -->
+        <div style="margin-top: auto;">
+            <button class="nav-link" onclick="exportBackup()"><i class="fas fa-save"></i> Backup JSON</button>
+            <a href="index.html" class="nav-link" style="text-decoration: none;"><i class="fas fa-external-link-alt"></i> Public Site</a>
+        </div>
+    </nav>
+
+    <main class="content">
+        
+        <!-- DASHBOARD -->
         <div id="view-dashboard" class="dev-view active">
-            <div class="view-header">
-                <h1>Dashboard</h1>
-            </div>
+            <div class="header-row"><h1>Dashboard</h1></div>
             <div class="form-grid">
                 <div class="card">
-                    <h3 style="margin-bottom:1rem">Quick Stats</h3>
-                    <div style="display:flex; gap:20px;">
-                        <div>
-                            <span id="stat-videos" style="font-size: 2rem; font-weight:800; color:var(--accent)">0</span>
-                            <p style="color:#666">Total Videos</p>
-                        </div>
-                        <div>
-                            <span id="stat-clients" style="font-size: 2rem; font-weight:800; color:var(--accent)">0</span>
-                            <p style="color:#666">Clients</p>
-                        </div>
+                    <h3>Summary</h3>
+                    <div style="display:flex; gap:30px;">
+                        <div><div id="count-vids" style="font-size: 2.5rem; font-weight: 800; color:var(--accent)">0</div><div style="color:#666">Videos</div></div>
+                        <div><div id="count-clients" style="font-size: 2.5rem; font-weight: 800; color:var(--accent)">0</div><div style="color:#666">Clients</div></div>
                     </div>
                 </div>
                 <div class="card">
-                    <h3 style="margin-bottom:1rem">Visibility</h3>
-                    <div style="display:flex; align-items:center; justify-content:space-between">
-                        <p>Clients Section on Website</p>
-                        <button class="btn-action" id="visibilityBtn" onclick="toggleClientsVisibility()" style="background:#333">Enabled</button>
+                    <h3>Visibility Controls</h3>
+                    <div style="display:flex; justify-content:space-between; align-items:center">
+                        <span>Show Clients Section</span>
+                        <button id="toggle-clients" class="btn-primary" onclick="toggleVisibility()">Active</button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- VIDEOS VIEW -->
+        <!-- VIDEOS -->
         <div id="view-videos" class="dev-view">
-            <div class="view-header">
-                <h1>Video Manager</h1>
-                <button class="btn-action" onclick="showAddVideoForm()"><i class="fas fa-plus"></i> Add Video</button>
+            <div class="header-row">
+                <h1>Video Inventory</h1>
+                <button class="btn-primary" onclick="toggleAddForm()"><i class="fas fa-plus"></i> Add New Video</button>
             </div>
 
-            <div class="card" id="addVideoCard" style="display:none; border: 1px solid var(--accent);">
-                <h3 style="margin-bottom:1.5rem">New Project</h3>
-                <form id="globalVideoForm">
+            <div id="add-form" class="card" style="display:none; border: 2px solid var(--accent)">
+                <h3>Add Project</h3>
+                <form id="videoForm">
                     <div class="form-grid">
-                        <div class="input-group">
-                            <label>Title</label>
-                            <input type="text" name="title" required placeholder="Project Name">
-                        </div>
-                        <div class="input-group">
-                            <label>Category</label>
-                            <select name="category" id="catSelect"></select>
-                        </div>
+                        <div class="input-group"><label>Title</label><input type="text" name="title" required></div>
+                        <div class="input-group"><label>Category</label><select name="category" id="cat-select"></select></div>
                     </div>
-                    <div class="input-group">
-                        <label>YouTube URL</label>
-                        <input type="url" name="url" required placeholder="https://youtube.com/watch?v=...">
-                    </div>
-                    <div class="input-group">
-                        <label>Description (Optional)</label>
-                        <textarea name="description" rows="2"></textarea>
-                    </div>
+                    <div class="input-group"><label>YouTube Link</label><input type="url" name="url" required></div>
                     <div style="display:flex; gap:10px">
-                        <button type="submit" class="btn-action">Save Video</button>
-                        <button type="button" class="btn-action" onclick="showAddVideoForm()" style="background:#333">Cancel</button>
+                        <button type="submit" class="btn-primary">Add Video</button>
+                        <button type="button" class="btn-primary" style="background:#333" onclick="toggleAddForm()">Cancel</button>
                     </div>
                 </form>
             </div>
 
             <div class="card">
-                <div style="margin-bottom: 1.5rem; display:flex; justify-content:space-between; align-items:center">
-                    <h3>All Projects</h3>
-                    <select id="filterCat" onchange="renderVideoList()" style="background:#222; color:#fff; padding:5px 10px; border-radius:5px; border:1px solid #444">
-                        <option value="all">Show All Categories</option>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem">
+                    <h3 style="margin:0">Sort & Edit</h3>
+                    <select id="filter-cat" onchange="renderVideos()" style="background:#222; color:#fff; padding:6px; border-radius:8px; border:1px solid #444">
+                        <option value="all">All Categories</option>
                     </select>
                 </div>
-                <div class="video-manage-grid" id="globalVideoList">
-                    <!-- Dynamic -->
-                </div>
+                <div id="video-list"></div>
             </div>
         </div>
 
-        <!-- CLIENTS VIEW -->
-        <div id="view-clients" class="dev-view">
-            <div class="view-header">
-                <h1>Client Relations</h1>
+        <!-- CATEGORIES -->
+        <div id="view-categories" class="dev-view">
+            <div class="header-row">
+                <h1>Categories</h1>
+                <button class="btn-primary" onclick="addNewCategory()"><i class="fas fa-plus"></i> New Category</button>
             </div>
-
             <div class="card">
-                <h3 style="margin-bottom:1.5rem">Add New Client</h3>
+                <div id="category-list"></div>
+            </div>
+        </div>
+
+        <!-- CLIENTS -->
+        <div id="view-clients" class="dev-view">
+            <div class="header-row"><h1>Client List</h1></div>
+            <div class="card">
                 <form id="clientForm">
                     <div class="form-grid">
-                        <div class="input-group">
-                            <label>Client/Channel Name</label>
-                            <input type="text" name="name" required>
-                        </div>
-                        <div class="input-group">
-                            <label>Channel/Website URL</label>
-                            <input type="url" name="channelUrl" required>
-                        </div>
+                        <div class="input-group"><label>Name</label><input type="text" name="name" required></div>
+                        <div class="input-group"><label>Subscribers (e.g. 50K)</label><input type="text" name="subscribers"></div>
                     </div>
-                    <div class="form-grid">
-                        <div class="input-group">
-                            <label>Subscribers (Text e.g. 1.2M)</label>
-                            <input type="text" name="subscribers">
-                        </div>
-                        <div class="input-group">
-                            <label>Custom Image URL (Optional)</label>
-                            <input type="url" name="imageUrl">
-                        </div>
-                    </div>
-                    <button type="submit" class="btn-action">Add to Roster</button>
+                    <div class="input-group"><label>YouTube URL</label><input type="url" name="channelUrl" required></div>
+                    <button type="submit" class="btn-primary">Add Client</button>
                 </form>
             </div>
-
-            <div class="client-manage-grid" id="clientDevGrid">
-                <!-- Dynamic -->
-            </div>
-        </div>
-
-        <!-- CATEGORIES VIEW -->
-        <div id="view-categories" class="dev-view">
-            <div class="view-header">
-                <h1>Categories</h1>
-                <button class="btn-action" onclick="addNewCategory()">New Category</button>
-            </div>
-            <div class="card">
-                <div class="video-manage-grid" id="categoryList">
-                    <!-- Dynamic -->
-                </div>
-            </div>
+            <div id="client-list" class="client-grid"></div>
         </div>
 
     </main>
 
     <script>
-        let db = {
-            portfolioData: {},
-            portfolioTabs: {},
-            clients: [],
-            showClients: true
-        };
+        let db = null;
 
-        // UI State
-        function showView(viewId) {
-            document.querySelectorAll('.dev-view').forEach(v => v.classList.remove('active'));
-            document.querySelectorAll('.side-btn').forEach(b => b.classList.remove('active'));
+        async function init() {
+            const res = await fetch('/api/data?t=' + Date.now());
+            db = await res.json();
             
-            document.getElementById('view-' + viewId).classList.add('active');
+            // Auto-clean broken/empty items
+            Object.keys(db.portfolioData).forEach(cat => {
+                db.portfolioData[cat] = db.portfolioData[cat].filter(v => v && v.title && v.url);
+            });
+
+            populateSelects();
+            updateCounts();
+            renderVideos();
+            renderClients();
+            renderCategories();
+        }
+
+        function showView(view) {
+            document.querySelectorAll('.dev-view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(v => v.classList.remove('active'));
+            document.getElementById('view-' + view).classList.add('active');
             event.currentTarget.classList.add('active');
             
-            if(viewId === 'videos') renderVideoList();
-            if(viewId === 'clients') renderClientsList();
-            if(viewId === 'categories') renderCategories();
-            updateStats();
+            if(view === 'categories') renderCategories();
+            if(view === 'videos') renderVideos();
         }
 
-        function showAddVideoForm() {
-            const card = document.getElementById('addVideoCard');
-            card.style.display = card.style.display === 'none' ? 'block' : 'none';
-        }
-
-        // Data Loading
-        async function loadData() {
-            try {
-                const res = await fetch('/api/data?t=' + Date.now());
-                const data = await res.json();
-                db = data;
-                
-                // Populate Category Dropdowns
-                const catSelect = document.getElementById('catSelect');
-                const filterCat = document.getElementById('filterCat');
-                catSelect.innerHTML = '';
-                filterCat.innerHTML = '<option value="all">Show All Categories</option>';
-                
-                Object.keys(db.portfolioTabs).forEach(id => {
-                    const opt = `<option value="${id}">${db.portfolioTabs[id].name}</option>`;
-                    catSelect.innerHTML += opt;
-                    filterCat.innerHTML += opt;
-                });
-
-                updateStats();
-                if(document.getElementById('view-videos').classList.contains('active')) renderVideoList();
-            } catch (e) {
-                console.error("Failed to load data", e);
-            }
-        }
-
-        function updateStats() {
-            let totalVids = 0;
-            Object.values(db.portfolioData).forEach(arr => totalVids += arr.length);
-            document.getElementById('stat-videos').innerText = totalVids;
-            document.getElementById('stat-clients').innerText = db.clients ? db.clients.length : 0;
+        function populateSelects() {
+            const catSelect = document.getElementById('cat-select');
+            const filterSelect = document.getElementById('filter-cat');
+            catSelect.innerHTML = '';
+            filterSelect.innerHTML = '<option value="all">All Categories</option>';
             
-            const vBtn = document.getElementById('visibilityBtn');
-            vBtn.innerText = db.showClients ? 'Visible' : 'Hidden';
-            vBtn.style.background = db.showClients ? 'var(--accent)' : '#333';
+            Object.keys(db.portfolioTabs).forEach(id => {
+                const opt = `<option value="${id}">${db.portfolioTabs[id].name}</option>`;
+                catSelect.innerHTML += opt;
+                filterSelect.innerHTML += opt;
+            });
         }
 
-        // VIDEO MANAGEMENT LOGIC
-        function extractYTId(url) {
-            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-            const match = url.match(regExp);
-            return (match && match[2].length === 11) ? match[2] : null;
+        function updateCounts() {
+            let totalV = 0;
+            Object.values(db.portfolioData).forEach(a => totalV += a.length);
+            document.getElementById('count-vids').innerText = totalV;
+            document.getElementById('count-clients').innerText = db.clients ? db.clients.length : 0;
+            const t = document.getElementById('toggle-clients');
+            t.innerText = db.showClients ? 'Active' : 'Hidden';
+            t.style.background = db.showClients ? 'var(--accent)' : '#333';
         }
 
-        function renderVideoList() {
-            const container = document.getElementById('globalVideoList');
-            const filter = document.getElementById('filterCat').value;
+        // --- Video Logic ---
+        function getYTId(url) {
+            const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:shorts\/|watch\?v=))([\w-]{11})/);
+            return match ? match[1] : null;
+        }
+
+        function renderVideos() {
+            const container = document.getElementById('video-list');
+            const filter = document.getElementById('filter-cat').value;
             container.innerHTML = '';
 
             Object.keys(db.portfolioData).forEach(catId => {
-                if(filter !== 'all' && filter !== catId) return;
+                if (filter !== 'all' && filter !== catId) return;
 
-                db.portfolioData[catId].forEach((vid, index) => {
-                    const ytId = extractYTId(vid.url);
-                    const thumb = ytId ? `https://img.youtube.com/vi/${ytId}/mqdefault.jpg` : 'icon.png';
+                db.portfolioData[catId].forEach((vid, idx) => {
+                    const id = getYTId(vid.url);
+                    const thumb = id ? `https://img.youtube.com/vi/${id}/mqdefault.jpg` : 'icon.png';
                     
-                    const item = document.createElement('div');
-                    item.className = 'video-manage-item';
-                    item.innerHTML = `
-                        <div class="sort-controls">
-                            <button class="sort-btn" onclick="moveVideo('${catId}', ${index}, -1)"><i class="fas fa-chevron-up"></i></button>
-                            <button class="sort-btn" onclick="moveVideo('${catId}', ${index}, 1)"><i class="fas fa-chevron-down"></i></button>
+                    const row = document.createElement('div');
+                    row.className = 'item-row';
+                    row.innerHTML = `
+                        <div class="move-btns">
+                            <button class="btn-small" onclick="reorder('${catId}', ${idx}, -1)"><i class="fas fa-chevron-up"></i></button>
+                            <button class="btn-small" onclick="reorder('${catId}', ${idx}, 1)"><i class="fas fa-chevron-down"></i></button>
                         </div>
-                        <img src="${thumb}" class="mini-thumb">
+                        <img src="${thumb}" class="thumb-preview">
                         <div>
-                            <span class="tag">${db.portfolioTabs[catId]?.name || catId}</span>
-                            <h4 style="margin:5px 0">${vid.title}</h4>
-                            <p style="font-size:0.8rem; color:#666">${vid.url}</p>
+                            <span class="badge">${db.portfolioTabs[catId]?.name || catId}</span>
+                            <div style="font-weight:700; margin-top:5px">${vid.title}</div>
                         </div>
                         <div style="text-align:right">
-                            <button class="sort-btn" onclick="deleteVideo('${catId}', ${index})" style="background:#f44336; padding: 8px 12px"><i class="fas fa-trash"></i></button>
+                            <button class="btn-small" onclick="delVid('${catId}', ${idx})" style="background:#f44336; padding:8px 12px"><i class="fas fa-trash"></i></button>
                         </div>
                     `;
-                    container.appendChild(item);
+                    container.appendChild(row);
                 });
             });
         }
 
-        async function save() {
+        // --- Category Logic ---
+        function renderCategories() {
+            const container = document.getElementById('category-list');
+            container.innerHTML = '';
+            
+            Object.keys(db.portfolioTabs).forEach(id => {
+                const cat = db.portfolioTabs[id];
+                const row = document.createElement('div');
+                row.className = 'item-row cat-row';
+                row.innerHTML = `
+                    <div style="font-size: 1.2rem; color: var(--accent);"><i class="fas fa-tag"></i></div>
+                    <div><strong style="color:#fff">${cat.name}</strong><br><small style="color:#666">ID: ${id}</small></div>
+                    <div style="text-align:right">
+                        <button class="btn-small" onclick="deleteCategory('${id}')" style="background:#f44336; padding:8px 12px"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        function addNewCategory() {
+            const name = prompt("Enter new category name (e.g. Real Estate):");
+            if (!name) return;
+            const id = name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
+            
+            if (db.portfolioTabs[id]) {
+                alert("This category ID already exists.");
+                return;
+            }
+
+            db.portfolioTabs[id] = { name: name, icon: "fas fa-video" };
+            db.portfolioData[id] = [];
+            
+            sync().then(() => {
+                populateSelects();
+                renderCategories();
+            });
+        }
+
+        function deleteCategory(id) {
+            if(confirm(`Delete category "${db.portfolioTabs[id].name}" and ALL its videos?`)) {
+                delete db.portfolioTabs[id];
+                delete db.portfolioData[id];
+                sync().then(() => {
+                    populateSelects();
+                    renderCategories();
+                });
+            }
+        }
+
+        // --- Sync/System ---
+        async function sync() {
             db.lastUpdated = new Date().toISOString();
             const res = await fetch('/api/data', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'},
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(db)
             });
-            if(res.ok) {
-                const notify = document.createElement('div');
-                notify.style = "position:fixed; bottom:20px; right:20px; background:#4CAF50; padding:15px 25px; border-radius:10px; z-index:9999";
-                notify.innerText = "✓ System Synced Successfully";
-                document.body.appendChild(notify);
-                setTimeout(() => notify.remove(), 2000);
+            if(res.ok) updateCounts();
+            return res.ok;
+        }
+
+        async function reorder(cat, idx, dir) {
+            const arr = db.portfolioData[cat];
+            const target = idx + dir;
+            if (target >= 0 && target < arr.length) {
+                [arr[idx], arr[target]] = [arr[target], arr[idx]];
+                await sync();
+                renderVideos();
             }
         }
 
-        // Actions
-        function moveVideo(catId, index, direction) {
-            const arr = db.portfolioData[catId];
-            const newIndex = index + direction;
-            if(newIndex >= 0 && newIndex < arr.length) {
-                const temp = arr[index];
-                arr[index] = arr[newIndex];
-                arr[newIndex] = temp;
-                save();
-                renderVideoList();
+        async function delVid(cat, idx) {
+            if(confirm('Remove this video?')) {
+                db.portfolioData[cat].splice(idx, 1);
+                await sync();
+                renderVideos();
             }
         }
 
-        function deleteVideo(catId, index) {
-            if(confirm('Delete this project forever?')) {
-                db.portfolioData[catId].splice(index, 1);
-                save();
-                renderVideoList();
-            }
-        }
-
-        document.getElementById('globalVideoForm').onsubmit = (e) => {
+        document.getElementById('videoForm').onsubmit = async (e) => {
             e.preventDefault();
             const fd = new FormData(e.target);
             const cat = fd.get('category');
-            const newVid = {
+            if(!db.portfolioData[cat]) db.portfolioData[cat] = [];
+            
+            db.portfolioData[cat].unshift({
                 title: fd.get('title'),
                 url: fd.get('url'),
-                description: fd.get('description')
-            };
-            
-            if(!db.portfolioData[cat]) db.portfolioData[cat] = [];
-            db.portfolioData[cat].unshift(newVid);
-            save();
+                category: "", thumbnail: "", description: "", client: "", duration: ""
+            });
+
+            await sync();
             e.target.reset();
-            showAddVideoForm();
-            renderVideoList();
+            toggleAddForm();
+            renderVideos();
         };
 
-        // CLIENTS LOGIC
-        function renderClientsList() {
-            const grid = document.getElementById('clientDevGrid');
-            grid.innerHTML = '';
-            
-            db.clients.forEach((client, index) => {
-                const card = document.createElement('div');
-                card.className = 'client-dev-card';
-                card.innerHTML = `
-                    <img src="${client.thumbnailUrl || 'icon.png'}" class="client-dev-img">
-                    <h4>${client.name}</h4>
-                    <p style="color:#666; font-size:0.8rem; margin-bottom:1rem">${client.subscribers || 'No Info'}</p>
-                    <button class="sort-btn" onclick="deleteClient(${index})" style="background:#f44336; width:100%">Remove</button>
+        // --- Client Logic ---
+        function renderClients() {
+            const container = document.getElementById('client-list');
+            container.innerHTML = '';
+            if(!db.clients) return;
+
+            db.clients.forEach((c, i) => {
+                const div = document.createElement('div');
+                div.className = 'client-item';
+                div.innerHTML = `
+                    <img src="${c.thumbnailUrl || 'icon.png'}">
+                    <div style="font-weight:700">${c.name}</div>
+                    <div style="color:var(--accent); font-size:0.8rem; margin-top:5px">${c.subscribers || ''}</div>
+                    <button class="btn-small" onclick="delClient(${i})" style="margin-top:15px; color:#666">Delete</button>
                 `;
-                grid.appendChild(card);
+                container.appendChild(div);
             });
         }
 
-        document.getElementById('clientForm').onsubmit = (e) => {
+        document.getElementById('clientForm').onsubmit = async (e) => {
             e.preventDefault();
             const fd = new FormData(e.target);
-            
-            const newClient = {
+            if(!db.clients) db.clients = [];
+            db.clients.push({
                 name: fd.get('name'),
                 channelUrl: fd.get('channelUrl'),
                 subscribers: fd.get('subscribers'),
-                thumbnailUrl: fd.get('imageUrl') || `https://ui-avatars.com/api/?name=${encodeURIComponent(fd.get('name'))}&background=ff6b35&color=fff`
-            };
-            
-            db.clients.push(newClient);
-            save();
-            renderClientsList();
+                thumbnailUrl: `https://ui-avatars.com/api/?name=${encodeURIComponent(fd.get('name'))}&background=ff6b35&color=fff`
+            });
+            await sync();
             e.target.reset();
+            renderClients();
         };
 
-        function deleteClient(index) {
-            db.clients.splice(index, 1);
-            save();
-            renderClientsList();
+        async function delClient(i) {
+            db.clients.splice(i, 1);
+            await sync();
+            renderClients();
         }
 
-        // Visibility
-        function toggleClientsVisibility() {
+        async function toggleVisibility() {
             db.showClients = !db.showClients;
-            save();
-            updateStats();
+            await sync();
         }
 
-        function exportData() {
+        function toggleAddForm() {
+            const f = document.getElementById('add-form');
+            f.style.display = f.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function exportBackup() {
             const blob = new Blob([JSON.stringify(db, null, 2)], {type: 'application/json'});
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `3moj00_backup_${new Date().toISOString().split('T')[0]}.json`;
+            a.download = `backup_${new Date().toISOString().split('T')[0]}.json`;
             a.click();
         }
 
-        // Init
-        window.onload = loadData;
-
+        window.onload = init;
     </script>
 </body>
 </html>
