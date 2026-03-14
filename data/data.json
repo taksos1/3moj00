@@ -1,5 +1,5 @@
 {
-  "showClients": true,
+  "showClients": false,
   "portfolioTabs": {
     "gaming": {
       "name": "Gaming Content 🎮",
@@ -196,6 +196,19 @@
       }
     ]
   },
-  "clients": [],
-  "lastUpdated": "2026-03-14T23:40:00.678Z"
+  "clients": [
+    {
+      "name": "ريمارو _ Rimaro gaming",
+      "channelUrl": "https://www.youtube.com/@_rimaro",
+      "subscribers": "",
+      "thumbnailUrl": "https://yt3.googleusercontent.com/uTFJvrmWxz7syBbuUp6pm7VTnGf91mFCII-j1vLBFKvdnWQqqfTh2cR-4eLykMYGy1XcfAUDAw=s900-c-k-c0x00ffffff-no-rj"
+    },
+    {
+      "name": "ElMido",
+      "channelUrl": "https://www.youtube.com/@ItsElMido",
+      "subscribers": "",
+      "thumbnailUrl": "https://yt3.googleusercontent.com/3tAMghn-LVxwefZWWNSZN643IDmt1PADdC1NcKsU103x3HtYvZbg0Win7Be0_omdNyRW_3Au=s900-c-k-c0x00ffffff-no-rj"
+    }
+  ],
+  "lastUpdated": "2026-03-14T23:41:25.346Z"
 }
