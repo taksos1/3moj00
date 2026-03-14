@@ -26,15 +26,6 @@
     "gaming": [],
     "gym": [
       {
-        "title": "El Baz Gym Ramadan",
-        "category": "",
-        "url": "https://youtube.com/shorts/VbxajROChfM?feature=share",
-        "thumbnail": "",
-        "description": "",
-        "client": "",
-        "duration": ""
-      },
-      {
         "title": "Elbaz Gym Motivational video",
         "category": "",
         "url": "https://youtube.com/shorts/laWW41TPAJQ?feature=share",
@@ -169,5 +160,5 @@
     ]
   },
   "clients": [],
-  "lastUpdated": "2026-03-14T06:53:39.232Z"
+  "lastUpdated": "2026-03-14T06:54:30.682Z"
 }
