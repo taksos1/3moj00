@@ -100,7 +100,17 @@
         "duration": ""
       }
     ],
-    "educational-content": [],
+    "educational-content": [
+      {
+        "title": "مونتاج تعليمي",
+        "category": "",
+        "url": "https://youtu.be/fixxVCH5PbA",
+        "thumbnail": "",
+        "description": "",
+        "client": "",
+        "duration": ""
+      }
+    ],
     "cinematic-short-films-": [
       {
         "title": "فيلم شيزوفرنيا",
@@ -155,9 +165,18 @@
         "description": "",
         "client": "",
         "duration": ""
+      },
+      {
+        "title": "",
+        "category": "",
+        "url": "",
+        "thumbnail": "",
+        "description": "",
+        "client": "",
+        "duration": ""
       }
     ]
   },
   "clients": [],
-  "lastUpdated": "2026-03-14T07:13:41.863Z"
+  "lastUpdated": "2026-03-14T07:14:14.151Z"
 }
