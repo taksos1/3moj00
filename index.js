@@ -628,70 +628,40 @@ function createPortfolioItem(video, category) {
 
 // Updated Portfolio Rendering to support Mixed Sorting
 async function renderPortfolio(filterCategory = 'all') {
-    // 1. Get data from the unified data.json
     const data = window.unifiedData;
     const portfolioGrid = document.getElementById('portfolioGrid');
     if (!portfolioGrid) return;
 
-    // 2. Use the master "projects" list if it exists, otherwise fallback to old structure
-    let allVideos = [];
-    if (data.projects && Array.isArray(data.projects)) {
-        allVideos = data.projects;
-    } else if (data.portfolioData) {
-        // Fallback for old data format
-        Object.keys(data.portfolioData).forEach(catId => {
-            data.portfolioData[catId].forEach(vid => {
-                allVideos.push({ ...vid, categoryId: catId });
-            });
-        });
-    }
-
-    // 3. Filter videos based on the selected tab
-    let displayVideos = allVideos;
+    let displayVideos = data.projects || [];
+    
     if (filterCategory !== 'all') {
-        displayVideos = allVideos.filter(video => video.categoryId === filterCategory);
+        displayVideos = displayVideos.filter(v => v.categoryId === filterCategory);
     }
 
-    // 4. Check if empty
     if (displayVideos.length === 0) {
-        portfolioGrid.innerHTML = `
-            <div class="portfolio-placeholder">
-                <i class="fas fa-video" style="font-size: 3rem; color: #ff6b35; margin-bottom: 1rem;"></i>
-                <h3 style="color: #ffffff; margin-bottom: 1rem;">No Projects Found</h3>
-                <p style="color: #cccccc;">Add projects in the developer panel to see them here.</p>
-            </div>`;
+        portfolioGrid.innerHTML = `<div class="portfolio-placeholder"><h3>No Projects Found</h3></div>`;
         return;
     }
 
-    // 5. Render (We DO NOT .reverse() here anymore so it follows your dev panel order)
-    portfolioGrid.innerHTML = displayVideos.map(video => 
-        createPortfolioItem(video, video.categoryId)
-    ).join('');
+    portfolioGrid.innerHTML = displayVideos.map(video => createPortfolioItem(video, video.categoryId)).join('');
 }
 
 // Render portfolio tabs dynamically
 async function renderPortfolioTabs() {
-    const portfolioData = await loadPortfolioFromStorage();
-    const tabs = loadPortfolioTabs();
+    const data = window.unifiedData;
     const tabsContainer = document.querySelector('.portfolio-tabs');
+    if (!tabsContainer || !data.portfolioTabs) return;
     
-    if (!tabsContainer) return;
-    
-    // Create "All Projects" tab
-    let tabsHTML = '<button class="portfolio-tab-btn active" data-category="all">All Projects</button>';
-    
-    // Create tabs for each category
-    Object.keys(tabs).forEach(tabId => {
-        const tab = tabs[tabId];
-        tabsHTML += `<button class="portfolio-tab-btn" data-category="${tabId}">${tab.name}</button>`;
-    });
-    
-    tabsContainer.innerHTML = tabsHTML;
-    
-    // Add event listeners to new tabs
-    initPortfolioTabs();
-}
+    // We expect an array now. If it's an old object, we convert it
+    const tabs = Array.isArray(data.portfolioTabs) ? data.portfolioTabs : 
+                 Object.keys(data.portfolioTabs).map(id => ({id, ...data.portfolioTabs[id]}));
 
+    let tabsHTML = '<button class="portfolio-tab-btn active" data-category="all">All Projects</button>';
+    tabs.forEach(tab => {
+        tabsHTML += `<button class="portfolio-tab-btn" data-category="${tab.id}">${tab.name}</button>`;
+    });
+    tabsContainer.innerHTML = tabsHTML;
+    i
 // Portfolio tab functionality
 function initPortfolioTabs() {
     const tabButtons = document.querySelectorAll('.portfolio-tab-btn');
