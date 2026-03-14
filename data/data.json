@@ -25,17 +25,7 @@
   "portfolioData": {
     "gaming": [],
     "gym": [],
-    "restaurants": [
-      {
-        "title": "اعلان مطعم دايت اند فات",
-        "category": "",
-        "url": "https://youtu.be/dIXUCXC1-QE",
-        "thumbnail": "",
-        "description": "",
-        "client": "",
-        "duration": ""
-      }
-    ],
+    "restaurants": [],
     "educational-content": [
       {
         "title": "مونتاج تعليمي ديني",
@@ -114,5 +104,5 @@
     ]
   },
   "clients": [],
-  "lastUpdated": "2026-03-14T06:54:47.178Z"
+  "lastUpdated": "2026-03-14T06:54:49.261Z"
 }
