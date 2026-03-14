@@ -26,17 +26,7 @@
     "gaming": [],
     "gym": [],
     "restaurants": [],
-    "educational-content": [
-      {
-        "title": "مونتاج تعليمي",
-        "category": "",
-        "url": "https://youtu.be/fixxVCH5PbA",
-        "thumbnail": "",
-        "description": "",
-        "client": "",
-        "duration": ""
-      }
-    ],
+    "educational-content": [],
     "cinematic-short-films-": [
       {
         "title": "برومو غير رسمي لفيلم تراب الماس",
@@ -95,5 +85,5 @@
     ]
   },
   "clients": [],
-  "lastUpdated": "2026-03-14T06:54:55.273Z"
+  "lastUpdated": "2026-03-14T06:54:57.038Z"
 }
