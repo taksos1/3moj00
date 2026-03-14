@@ -626,48 +626,47 @@ function createPortfolioItem(video, category) {
     `;
 }
 
-// Render portfolio items
+// Updated Portfolio Rendering to support Mixed Sorting
 async function renderPortfolio(filterCategory = 'all') {
-    const portfolioData = await loadPortfolioFromStorage();
-    const tabs = loadPortfolioTabs();
+    // 1. Get data from the unified data.json
+    const data = window.unifiedData;
     const portfolioGrid = document.getElementById('portfolioGrid');
-    
+    if (!portfolioGrid) return;
+
+    // 2. Use the master "projects" list if it exists, otherwise fallback to old structure
     let allVideos = [];
-    
-    // Collect all videos from all categories
-    Object.keys(portfolioData).forEach(category => {
-        if (portfolioData[category] && Array.isArray(portfolioData[category])) {
-            portfolioData[category].forEach(video => {
-                // Only include valid videos
-                if (video && video.title && video.url) {
-                    allVideos.push({ ...video, category });
-                }
+    if (data.projects && Array.isArray(data.projects)) {
+        allVideos = data.projects;
+    } else if (data.portfolioData) {
+        // Fallback for old data format
+        Object.keys(data.portfolioData).forEach(catId => {
+            data.portfolioData[catId].forEach(vid => {
+                allVideos.push({ ...vid, categoryId: catId });
             });
-        }
-    });
-    
-    // Filter videos if needed
-    if (filterCategory !== 'all') {
-        allVideos = allVideos.filter(video => video.category === filterCategory);
+        });
     }
-    
-    if (allVideos.length === 0) {
+
+    // 3. Filter videos based on the selected tab
+    let displayVideos = allVideos;
+    if (filterCategory !== 'all') {
+        displayVideos = allVideos.filter(video => video.categoryId === filterCategory);
+    }
+
+    // 4. Check if empty
+    if (displayVideos.length === 0) {
         portfolioGrid.innerHTML = `
             <div class="portfolio-placeholder">
                 <i class="fas fa-video" style="font-size: 3rem; color: #ff6b35; margin-bottom: 1rem;"></i>
-                <h3 style="color: #ffffff; margin-bottom: 1rem;">No Projects Yet</h3>
-                <p style="color: #cccccc;">Projects added through the developer panel will appear here automatically.</p>
-            </div>
-        `;
+                <h3 style="color: #ffffff; margin-bottom: 1rem;">No Projects Found</h3>
+                <p style="color: #cccccc;">Add projects in the developer panel to see them here.</p>
+            </div>`;
         return;
     }
-    
-    // Sort videos by most recent (assuming they're added in order)
-    allVideos.reverse();
-    
-    portfolioGrid.innerHTML = allVideos.map(video => 
-        createPortfolioItem(video, video.category)
-    ).filter(html => html.trim() !== '').join('');
+
+    // 5. Render (We DO NOT .reverse() here anymore so it follows your dev panel order)
+    portfolioGrid.innerHTML = displayVideos.map(video => 
+        createPortfolioItem(video, video.categoryId)
+    ).join('');
 }
 
 // Render portfolio tabs dynamically
