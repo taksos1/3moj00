@@ -29,15 +29,6 @@
     "educational-content": [],
     "cinematic-short-films-": [
       {
-        "title": "فيلم بدايتها فكرة",
-        "category": "",
-        "url": "https://youtu.be/-RH6WLoX42s",
-        "thumbnail": "",
-        "description": "",
-        "client": "",
-        "duration": ""
-      },
-      {
         "title": "اعلان مدينة دمياط للأثاث",
         "category": "",
         "url": "https://youtu.be/7B-P3MtQLOk",
@@ -49,5 +40,5 @@
     ]
   },
   "clients": [],
-  "lastUpdated": "2026-03-14T06:55:07.621Z"
+  "lastUpdated": "2026-03-14T06:55:09.563Z"
 }
