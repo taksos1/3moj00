@@ -398,8 +398,12 @@ document.getElementById('verify-btn').onclick = async (btn) => {
         }
     };
 
+    // Initialize developer access
+    initDeveloperAccess();
+}
+
+// Create access notification
 function showDeveloperAccess() {
-    // Create access notification
     const notification = document.createElement('div');
     notification.style.cssText = `
         position: fixed;
