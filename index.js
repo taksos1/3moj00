@@ -627,58 +627,61 @@ function createPortfolioItem(video, category) {
 }
 
 // Updated Portfolio Rendering to support Mixed Sorting
-async function renderPortfolio(filterCategory = 'all') {
-    const data = window.unifiedData;
-    const portfolioGrid = document.getElementById('portfolioGrid');
-    if (!portfolioGrid) return;
-
-    let displayVideos = data.projects || [];
-    
-    if (filterCategory !== 'all') {
-        displayVideos = displayVideos.filter(v => v.categoryId === filterCategory);
-    }
-
-    if (displayVideos.length === 0) {
-        portfolioGrid.innerHTML = `<div class="portfolio-placeholder"><h3>No Projects Found</h3></div>`;
-        return;
-    }
-
-    portfolioGrid.innerHTML = displayVideos.map(video => createPortfolioItem(video, video.categoryId)).join('');
-}
-
-// Render portfolio tabs dynamically
 async function renderPortfolioTabs() {
     const data = window.unifiedData;
     const tabsContainer = document.querySelector('.portfolio-tabs');
     if (!tabsContainer || !data.portfolioTabs) return;
-    
-    // We expect an array now. If it's an old object, we convert it
-    const tabs = Array.isArray(data.portfolioTabs) ? data.portfolioTabs : 
-                 Object.keys(data.portfolioTabs).map(id => ({id, ...data.portfolioTabs[id]}));
+
+    // Handle migration: if tabs are still an object, convert to array
+    const tabs = Array.isArray(data.portfolioTabs) 
+        ? data.portfolioTabs 
+        : Object.keys(data.portfolioTabs).map(id => ({ id, ...data.portfolioTabs[id] }));
 
     let tabsHTML = '<button class="portfolio-tab-btn active" data-category="all">All Projects</button>';
     tabs.forEach(tab => {
         tabsHTML += `<button class="portfolio-tab-btn" data-category="${tab.id}">${tab.name}</button>`;
     });
     tabsContainer.innerHTML = tabsHTML;
-    i
-// Portfolio tab functionality
-function initPortfolioTabs() {
-    const tabButtons = document.querySelectorAll('.portfolio-tab-btn');
     
-    tabButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            // Remove active class from all buttons
-            tabButtons.forEach(btn => btn.classList.remove('active'));
-            
-            // Add active class to clicked button
+    // Re-attach click listeners
+    const buttons = document.querySelectorAll('.portfolio-tab-btn');
+    buttons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            buttons.forEach(b => b.classList.remove('active'));
             this.classList.add('active');
-            
-            // Get category and render portfolio
-            const category = this.getAttribute('data-category');
-            renderPortfolio(category);
+            renderPortfolio(this.dataset.category);
         });
     });
+}
+
+async function renderPortfolio(filterCategory = 'all') {
+    const data = window.unifiedData;
+    const grid = document.getElementById('portfolioGrid');
+    if (!grid) return;
+
+    // Use the new "projects" master list
+    let videos = data.projects || [];
+
+    // Fallback if projects is empty but old portfolioData exists
+    if (videos.length === 0 && data.portfolioData) {
+        Object.keys(data.portfolioData).forEach(catId => {
+            data.portfolioData[catId].forEach(v => {
+                if(v.title) videos.push({...v, categoryId: catId});
+            });
+        });
+    }
+
+    // Filter by tab
+    if (filterCategory !== 'all') {
+        videos = videos.filter(v => v.categoryId === filterCategory);
+    }
+
+    if (videos.length === 0) {
+        grid.innerHTML = `<div class="portfolio-placeholder"><h3>No Projects Found</h3></div>`;
+        return;
+    }
+
+    grid.innerHTML = videos.map(v => createPortfolioItem(v)).join('');
 }
 
 // Video modal functionality
