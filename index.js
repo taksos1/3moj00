@@ -345,37 +345,55 @@ preloadResources();
 
 // Secret developer panel access
 function initDeveloperAccess() {
-    let keySequence = '';
-    let ctrlPressed = false;
-    const secretCode = '15987530';
-    
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Control') {
-            ctrlPressed = true;
-            keySequence = ''; // Reset sequence when Ctrl is pressed
-        }
-        
-        if (ctrlPressed && e.key !== 'Control') {
-            keySequence += e.key.toLowerCase();
-            
-            // Check if the sequence matches our secret code
-            if (keySequence === secretCode) {
-                // Success! Redirect to developer panel
-                showDeveloperAccess();
-                keySequence = '';
-            } else if (keySequence.length >= secretCode.length) {
-                // Reset if sequence is too long
-                keySequence = '';
+    let keys = "";
+    document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey) {
+            keys += e.key;
+            if (keys.includes("15987530")) {
+                keys = ""; // Reset
+                requestAccess();
             }
         }
     });
-    
-    document.addEventListener('keyup', function(e) {
-        if (e.key === 'Control') {
-            ctrlPressed = false;
-            keySequence = '';
+}
+
+async function requestAccess() {
+    // 1. Ask Server to send OTP to Discord
+    const res = await fetch('/api/auth/request', { method: 'POST' });
+    if (!res.ok) return alert("Security system failed to trigger.");
+
+    // 2. Create the Modal UI
+    const modal = document.createElement('div');
+    modal.style.cssText = `position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:100000; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(10px); color:#fff; font-family:sans-serif;`;
+    modal.innerHTML = `
+        <div style="background:#141414; padding:40px; border-radius:20px; border:2px solid #ff6b35; text-align:center; width:350px;">
+            <i class="fas fa-shield-halved" style="font-size:3rem; color:#ff6b35; margin-bottom:20px;"></i>
+            <h2 style="margin:0 0 10px 0;">Verification Required</h2>
+            <p style="color:#888; margin-bottom:20px; font-size:0.9rem;">A code has been sent to your Discord. Enter it below to unlock the studio.</p>
+            <input type="text" id="otp-input" placeholder="000000" maxlength="6" style="width:100%; padding:15px; background:#000; border:1px solid #333; color:#fff; border-radius:10px; text-align:center; font-size:1.5rem; letter-spacing:5px; margin-bottom:20px;">
+            <button id="verify-btn" style="width:100%; background:#ff6b35; color:#fff; border:none; padding:15px; border-radius:10px; font-weight:700; cursor:pointer;">Unlock Panel</button>
+            <button onclick="this.closest('div').parentElement.remove()" style="background:none; border:none; color:#555; margin-top:15px; cursor:pointer;">Cancel</button>
+        </div>
+    `;
+    document.body.appendChild(modal);
+
+    // 3. Handle Verification
+    document.getElementById('verify-btn').onclick = async () => {
+        const code = document.getElementById('otp-input').value;
+        const verifyRes = await fetch('/api/auth/verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ code })
+        });
+
+        const result = await verifyRes.json();
+        if (result.success) {
+            window.location.href = "/developer";
+        } else {
+            alert("Invalid Code. Access Denied.");
+            modal.remove();
         }
-    });
+    };
 }
 
 function showDeveloperAccess() {
