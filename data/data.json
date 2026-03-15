@@ -213,7 +213,7 @@
       "thumbnailUrl": "https://yt3.googleusercontent.com/uTFJvrmWxz7syBbuUp6pm7VTnGf91mFCII-j1vLBFKvdnWQqqfTh2cR-4eLykMYGy1XcfAUDAw=s900-c-k-c0x00ffffff-no-rj"
     }
   ],
-  "lastUpdated": "2026-03-15T02:36:41.053Z",
+  "lastUpdated": "2026-03-15T02:36:42.434Z",
   "projects": [
     {
       "title": "اعلان مطعم دايت اند فات",
@@ -246,16 +246,6 @@
       "categoryId": "gaming"
     },
     {
-      "title": "El Baz Gym Motivational",
-      "category": "",
-      "url": "https://youtube.com/shorts/laWW41TPAJQ?feature=share",
-      "thumbnail": "",
-      "description": "",
-      "client": "",
-      "duration": "",
-      "categoryId": "gym"
-    },
-    {
       "title": "مونتاج تعليمي 2",
       "category": "",
       "url": "https://youtube.com/shorts/VnqChHQVRlY?feature=share",
@@ -264,6 +254,16 @@
       "client": "",
       "duration": "",
       "categoryId": "educational-content"
+    },
+    {
+      "title": "El Baz Gym Motivational",
+      "category": "",
+      "url": "https://youtube.com/shorts/laWW41TPAJQ?feature=share",
+      "thumbnail": "",
+      "description": "",
+      "client": "",
+      "duration": "",
+      "categoryId": "gym"
     },
     {
       "title": "🔥 عملت أقوى فريق فيفا 26",
