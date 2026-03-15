@@ -2,193 +2,92 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const https = require('https');
-require('dotenv').config({ path: './config.env' });
+const cookieParser = require('cookie-parser'); // You might need to run: npm install cookie-parser
+require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 8000;
-const HOST = process.env.HOST || '0.0.0.0';
-
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
-const GITHUB_OWNER = process.env.GITHUB_OWNER || 'taksos1';
-const GITHUB_REPO = process.env.GITHUB_REPO || '3moj00';
-const DATA_PATH = process.env.DATA_FILE_PATH || './data/data.json';
-
-// Middleware
 app.use(express.json());
+app.use(cookieParser()); // Allows us to store the "unlocked" session
 app.use(express.static('.'));
 
-// CORS middleware
-if (process.env.CORS_ENABLED === 'true') {
-    app.use((req, res, next) => {
-        res.header('Access-Control-Allow-Origin', '*');
-        res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-        next();
-    });
-}
+const DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1482569157374509116/UoAs00F6O3JOf3rXqYoOXkFzcRCAdcecgtzljigYTSU-6w3mtWBbcRylYhG5crHIaKB3";
 
-// Logging middleware
-if (process.env.DEBUG_MODE === 'true') {
-    app.use((req, res, next) => {
-        console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
-        next();
-    });
-}
+// Temporary storage for OTP and Session
+let activeOTP = null;
+let sessionToken = null;
 
-// API endpoint to get configuration
-app.get('/api/config', (req, res) => {
-    res.json({
-        siteTitle: process.env.SITE_TITLE || '3moj00 - Video Editor Portfolio',
-        siteDescription: process.env.SITE_DESCRIPTION || 'Professional video editing and motion graphics services',
-        siteUrl: process.env.SITE_URL || `http://${HOST}:${PORT}`,
-        devPanelEnabled: process.env.DEV_PANEL_ENABLED === 'true',
-        devPanelSecretCode: process.env.DEV_PANEL_SECRET_CODE || '15987530',
-        debugMode: process.env.DEBUG_MODE === 'true'
+// 1. Request OTP
+app.post('/api/auth/request', (req, res) => {
+    activeOTP = Math.floor(100000 + Math.random() * 900000).toString(); // 6 digit code
+    
+    const data = JSON.stringify({
+        content: `🔑 **3moj00 Security Alert**\nSomeone is trying to access the Developer Panel.\n**Your OTP Code is: ${activeOTP}**\nThis code expires in 5 minutes.`,
+        username: "Studio Security"
     });
+
+    const url = new URL(DISCORD_WEBHOOK);
+    const options = {
+        hostname: url.hostname,
+        path: url.pathname,
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Content-Length': data.length
+        }
+    };
+
+    const postReq = https.request(options);
+    postReq.write(data);
+    postReq.end();
+
+    // Code expires in 5 mins
+    setTimeout(() => { activeOTP = null; }, 300000);
+
+    res.json({ success: true, message: "OTP sent to Discord" });
 });
 
-// GitHub API helper function
-function pushToGitHub(content, filePath) {
-    return new Promise((resolve, reject) => {
-        if (!GITHUB_TOKEN) {
-            console.log('No GitHub token, skipping auto-push');
-            resolve({ skipped: true });
-            return;
-        }
-
-        const data = JSON.stringify(content, null, 2);
-        const encodedData = Buffer.from(data).toString('base64');
+// 2. Verify OTP
+app.post('/api/auth/verify', (req, res) => {
+    const { code } = req.body;
+    if (activeOTP && code === activeOTP) {
+        sessionToken = Math.random().toString(36).substring(2, 15);
+        activeOTP = null; // Clear OTP after use
         
-        // First, get the current file's SHA
-        const getOptions = {
-            hostname: 'api.github.com',
-            path: `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${filePath}`,
-            method: 'GET',
-            headers: {
-                'Authorization': `token ${GITHUB_TOKEN}`,
-                'Accept': 'application/vnd.github.v3+json',
-                'User-Agent': '3moj00-Website'
-            }
-        };
-
-        const getReq = https.request(getOptions, (getRes) => {
-            let body = '';
-            getRes.on('data', chunk => body += chunk);
-            getRes.on('end', () => {
-                let sha = null;
-                if (getRes.statusCode === 200) {
-                    try {
-                        const fileInfo = JSON.parse(body);
-                        sha = fileInfo.sha;
-                    } catch (e) {
-                        console.log('Could not parse file info');
-                    }
-                }
-                
-                // Now push with SHA
-                const pushOptions = {
-                    hostname: 'api.github.com',
-                    path: `/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${filePath}`,
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `token ${GITHUB_TOKEN}`,
-                        'Accept': 'application/vnd.github.v3+json',
-                        'Content-Type': 'application/json',
-                        'User-Agent': '3moj00-Website'
-                    }
-                };
-
-                const pushData = {
-                    message: 'Auto-update data.json',
-                    content: encodedData
-                };
-                if (sha) {
-                    pushData.sha = sha;
-                }
-
-                const pushReq = https.request(pushOptions, (pushRes) => {
-                    let pushBody = '';
-                    pushRes.on('data', chunk => pushBody += chunk);
-                    pushRes.on('end', () => {
-                        if (pushRes.statusCode === 200 || pushRes.statusCode === 201) {
-                            console.log('✅ Auto-pushed to GitHub!');
-                            resolve({ success: true });
-                        } else {
-                            console.log('GitHub push failed:', pushRes.statusCode, pushBody);
-                            reject(new Error(`GitHub API error: ${pushRes.statusCode}`));
-                        }
-                    });
-                });
-
-                pushReq.on('error', reject);
-                pushReq.write(JSON.stringify(pushData));
-                pushReq.end();
-            });
-        });
-
-        getReq.on('error', reject);
-        getReq.end();
-    });
-}
-
-// API endpoint to update data.json
-app.post('/api/data', async (req, res) => {
-    try {
-        const dataPath = process.env.DATA_FILE_PATH || './data/data.json';
-        const data = req.body;
-        
-        // Add timestamp
-        data.lastUpdated = new Date().toISOString();
-        
-        // Write to local file
-        fs.writeFileSync(dataPath, JSON.stringify(data, null, 2));
-        
-        console.log('Data updated locally');
-        
-        // Auto-push to GitHub
-        if (GITHUB_TOKEN) {
-            await pushToGitHub(data, 'data/data.json');
-        }
-        
-        res.json({ success: true, message: 'Data updated and pushed to GitHub' });
-    } catch (error) {
-        console.error('Error updating data:', error);
-        res.status(500).json({ success: false, message: 'Error updating data' });
+        // Set a cookie that expires in 2 hours
+        res.cookie('dev_session', sessionToken, { maxAge: 7200000, httpOnly: true });
+        res.json({ success: true, token: sessionToken });
+    } else {
+        res.status(401).json({ success: false, message: "Invalid or expired code" });
     }
 });
 
-// API endpoint to get data.json
-app.get('/api/data', (req, res) => {
-    try {
-        const dataPath = process.env.DATA_FILE_PATH || './data/data.json';
-        const data = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
-        res.json(data);
-    } catch (error) {
-        console.error('Error reading data:', error);
-        res.status(500).json({ success: false, message: 'Error reading data' });
-    }
-});
-
-// Serve main page
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
-});
-
-// Serve developer panel
+// 3. Protected Route for Developer Page
 app.get('/developer', (req, res) => {
-    if (process.env.DEV_PANEL_ENABLED === 'true') {
+    const userCookie = req.cookies.dev_session;
+    if (sessionToken && userCookie === sessionToken) {
         res.sendFile(path.join(__dirname, 'developer.html'));
     } else {
-        res.status(403).send('Developer panel is disabled');
+        res.status(403).send(`
+            <body style="background:#0a0a0a; color:#ff6b35; display:flex; align-items:center; justify-content:center; height:100vh; font-family:sans-serif;">
+                <div style="text-align:center;">
+                    <h1>403 - Access Denied</h1>
+                    <p style="color:#666">The Developer Panel is locked. Use the key sequence on the home page.</p>
+                    <a href="/" style="color:#fff; text-decoration:none; border:1px solid #333; padding:10px 20px; border-radius:5px;">Back to Home</a>
+                </div>
+            </body>
+        `);
     }
 });
 
-// Start server
-app.listen(PORT, HOST, () => {
-    console.log('🚀 3moj00 Website Server Started');
-    console.log(`📍 Server running at http://${HOST}:${PORT}`);
-    console.log(`🔧 Developer panel: http://${HOST}:${PORT}/developer`);
-    console.log(`📊 API endpoints: http://${HOST}:${PORT}/api/`);
-    console.log(`⚙️  Configuration loaded from config.env`);
-    console.log(`🔍 Debug mode: ${process.env.DEBUG_MODE === 'true' ? 'ON' : 'OFF'}`);
-    console.log('─'.repeat(50));
+// --- Keep your existing /api/data routes below ---
+app.get('/api/data', (req, res) => {
+    const data = JSON.parse(fs.readFileSync('./data/data.json', 'utf8'));
+    res.json(data);
 });
+
+app.post('/api/data', (req, res) => {
+    fs.writeFileSync('./data/data.json', JSON.stringify(req.body, null, 2));
+    res.json({ success: true });
+});
+
+app.listen(8000, () => { console.log('Server running on port 8000'); });
