@@ -378,7 +378,10 @@ async function requestAccess() {
     document.body.appendChild(modal);
 
     // 3. Handle Verification
-    document.getElementById('verify-btn').onclick = async () => {
+document.getElementById('verify-btn').onclick = async (btn) => {
+        const originalText = btn.target.innerText;
+        btn.target.innerText = "Verifying...";
+        
         const code = document.getElementById('otp-input').value;
         const verifyRes = await fetch('/api/auth/verify', {
             method: 'POST',
@@ -390,11 +393,10 @@ async function requestAccess() {
         if (result.success) {
             window.location.href = "/developer";
         } else {
-            alert("Invalid Code. Access Denied.");
-            modal.remove();
+            alert(result.message || "Access Denied.");
+            btn.target.innerText = originalText;
         }
     };
-}
 
 function showDeveloperAccess() {
     // Create access notification
