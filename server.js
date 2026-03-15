@@ -13,30 +13,27 @@ const DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1482569157374509116/Uo
 // Middleware
 app.use(express.json());
 app.use(cookieParser());
-app.use(express.static('.'));
 
-// Security Storage (Reset on server restart)
+// Security Storage (Stored in RAM - resets on server restart for safety)
 let activeOTP = null;
 let sessionToken = null;
 
-// Ensure Data Directory Exists
-if (!fs.existsSync('./data')) {
-    fs.mkdirSync('./data');
-}
+// --- 1. SECURITY: DISCORD OTP AUTH ---
 
-// --- SECURITY: DISCORD OTP AUTH ---
-
-// 1. Request OTP (Triggered by Ctrl + 15987530)
+// Request OTP (Triggered by Ctrl + 15987530)
 app.post('/api/auth/request', (req, res) => {
     activeOTP = Math.floor(100000 + Math.random() * 900000).toString();
     console.log(`[AUTH] New OTP Generated: ${activeOTP}`);
 
     const payload = JSON.stringify({
         embeds: [{
-            title: "🔐 Studio Access Request",
+            title: "🔐 Studio Command Access Request",
             description: `A login attempt was detected on the 3moj00 Developer Panel.\n\n**OTP Code:** \`${activeOTP}\``,
             color: 16739125, // #ff6b35
-            footer: { text: "This code will expire in 5 minutes." },
+            fields: [
+                { name: "Status", value: "Pending Verification", inline: true },
+                { name: "Expires", value: "5 Minutes", inline: true }
+            ],
             timestamp: new Date().toISOString()
         }]
     });
@@ -54,16 +51,15 @@ app.post('/api/auth/request', (req, res) => {
 
     const postReq = https.request(options, (postRes) => {
         if (postRes.statusCode >= 200 && postRes.statusCode < 300) {
-            console.log("✅ OTP sent to Discord successfully.");
             res.json({ success: true });
         } else {
-            console.error(`❌ Discord Webhook failed: ${postRes.statusCode}`);
-            res.status(500).json({ success: false, message: "Discord rejected the message" });
+            console.error(`❌ Discord Error: ${postRes.statusCode}`);
+            res.status(500).json({ success: false, message: "Discord rejected webhook" });
         }
     });
 
     postReq.on('error', (err) => {
-        console.error("❌ Network error sending to Discord:", err.message);
+        console.error("❌ Network error:", err.message);
         res.status(500).json({ success: false, message: "Server network error" });
     });
 
@@ -74,52 +70,63 @@ app.post('/api/auth/request', (req, res) => {
     setTimeout(() => { activeOTP = null; }, 300000);
 });
 
-// 2. Verify OTP
+// Verify OTP
 app.post('/api/auth/verify', (req, res) => {
     const { code } = req.body;
     if (activeOTP && code === activeOTP) {
-        // Create a unique session token
-        sessionToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        // Create long unique session token
+        sessionToken = Math.random().toString(36).substring(2, 15) + Date.now();
         activeOTP = null; 
         
-        // Set an HttpOnly cookie (Lasts 4 hours)
+        // Set Secure HttpOnly cookie (Lasts 4 hours)
         res.cookie('dev_session', sessionToken, { 
             maxAge: 14400000, 
             httpOnly: true, 
             sameSite: 'Lax' 
         });
 
-        console.log("✅ OTP Verified. Session Started.");
+        console.log("✅ Security Verified. Session Cookie Set.");
         res.json({ success: true });
     } else {
         res.status(401).json({ success: false, message: "Invalid or expired code." });
     }
 });
 
-// 3. Protected Route for Developer Page
+// --- 2. ROUTE PROTECTION ---
+
+// Block direct access to the .html file
+app.get('/developer.html', (req, res) => {
+    res.redirect('/developer');
+});
+
+// Protected Route for Developer Page
 app.get('/developer', (req, res) => {
     const userCookie = req.cookies.dev_session;
-    // Check if session exists and cookie matches the current server session
+    
+    // Validate session
     if (sessionToken && userCookie === sessionToken) {
         res.sendFile(path.join(__dirname, 'developer.html'));
     } else {
-        console.warn(`[SECURITY] Blocked unauthorized access attempt to /developer`);
+        console.warn(`[SECURITY] Blocked unauthorized entry attempt to /developer`);
         res.status(403).send(`
             <body style="background:#0a0a0a; color:#ff6b35; display:flex; align-items:center; justify-content:center; height:100vh; font-family:sans-serif; text-align:center;">
                 <div>
-                    <h1 style="font-size:3rem;">🔒 403</h1>
-                    <h2>Access Denied</h2>
-                    <p style="color:#666">You must verify your identity from the Home Page.</p>
-                    <a href="/" style="color:#fff; text-decoration:none; border:1px solid #333; padding:10px 20px; border-radius:10px; display:inline-block; margin-top:20px;">Return Home</a>
+                    <h1 style="font-size:4rem; margin:0;">🔒</h1>
+                    <h2 style="font-size:2rem;">403 - Access Denied</h2>
+                    <p style="color:#666; max-width:400px;">Direct access to the Developer Panel is forbidden. Use the verification sequence on the home page.</p>
+                    <a href="/" style="color:#fff; text-decoration:none; border:1px solid #333; padding:12px 25px; border-radius:12px; display:inline-block; margin-top:20px; font-weight:700;">Back to Home</a>
                 </div>
             </body>
         `);
     }
 });
 
-// --- DATA API: UNIFIED JSON SYSTEM ---
+// Serve other static files (css, js, images) AFTER protected routes
+app.use(express.static('.'));
 
-// Get Data
+// --- 3. DATA API ---
+
+// Get Unified Data
 app.get('/api/data', (req, res) => {
     try {
         if (fs.existsSync(DATA_PATH)) {
@@ -138,7 +145,7 @@ app.post('/api/data', (req, res) => {
     try {
         let data = req.body;
 
-        // Clean Ghost Items: Only keep videos with titles and URLs
+        // Cleanup: Only keep valid projects
         if (data.projects) {
             data.projects = data.projects.filter(v => v.title && v.url);
         }
@@ -146,13 +153,7 @@ app.post('/api/data', (req, res) => {
         data.lastUpdated = new Date().toISOString();
         fs.writeFileSync(DATA_PATH, JSON.stringify(data, null, 2));
         
-        console.log(`[DATA] Database updated and cleaned.`);
-        
-        // Optional: Trigger GitHub Sync if GITHUB_TOKEN exists
-        if (process.env.GITHUB_TOKEN) {
-            pushToGitHub(data);
-        }
-
+        console.log(`[DATA] Database synced successfully.`);
         res.json({ success: true });
     } catch (error) {
         console.error("Save Error:", error);
@@ -160,25 +161,11 @@ app.post('/api/data', (req, res) => {
     }
 });
 
-// --- GITHUB AUTO-PUSH LOGIC (Optional) ---
-function pushToGitHub(content) {
-    const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
-    const GITHUB_REPO = process.env.GITHUB_REPO; // e.g., "taksos1/3moj00"
-    
-    if (!GITHUB_TOKEN || !GITHUB_REPO) return;
-
-    const filePath = "data/data.json";
-    const encodedData = Buffer.from(JSON.stringify(content, null, 2)).toString('base64');
-    
-    // Logic to get SHA and then PUT to GitHub...
-    // (This is standard GitHub API boilerplate)
-}
-
-// Start Server
+// --- 4. START SERVER ---
 app.listen(PORT, '0.0.0.0', () => {
     console.log('-------------------------------------------');
-    console.log(`🚀 3moj00 Studio Server Live`);
-    console.log(`📍 URL: http://localhost:${PORT}`);
-    console.log(`🔐 Security: Discord OTP + Session Cookie`);
+    console.log(`🚀 3moj00 Studio: Server Running`);
+    console.log(`📍 Port: ${PORT}`);
+    console.log(`🔐 Discord OTP Security: ACTIVE`);
     console.log('-------------------------------------------');
 });
