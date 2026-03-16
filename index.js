@@ -80,16 +80,30 @@ function renderPortfolio(filterCategory = 'all') {
     const grid = document.getElementById('portfolioGrid');
     if (!grid) return;
 
-    // Get projects from portfolioData in the exact order they appear (matching developer page)
+    // Get projects from portfolioData - iterate in order from portfolioTabs if available
     let allProjects = [];
     const portfolioData = data.portfolioData || {};
-    const tabOrder = Object.keys(data.portfolioTabs || {}); // Use tab order from portfolioTabs
     
-    // First add projects in tab order
-    tabOrder.forEach(cat => {
+    // Get category order from portfolioTabs (convert object to array if needed)
+    let catOrder = [];
+    if (data.portfolioTabs) {
+        if (Array.isArray(data.portfolioTabs)) {
+            catOrder = data.portfolioTabs.map(t => t.id);
+        } else {
+            catOrder = Object.keys(data.portfolioTabs);
+        }
+    }
+    
+    // If no tabs defined, use keys from portfolioData
+    if (catOrder.length === 0) {
+        catOrder = Object.keys(portfolioData);
+    }
+    
+    // Add projects in category order
+    catOrder.forEach(cat => {
         const catProjects = portfolioData[cat] || [];
         catProjects.forEach(p => {
-            if (p.title && p.url) { // Only add projects with valid titles and URLs
+            if (p.title && p.url) {
                 allProjects.push({ ...p, categoryId: cat });
             }
         });
