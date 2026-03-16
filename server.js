@@ -60,22 +60,34 @@ app.post('/api/auth/request', (req, res) => {
         }
     };
 
-    const postReq = https.request(options, (postRes) => {
-        if (postRes.statusCode >= 200 && postRes.statusCode < 300) {
-            res.json({ success: true });
-        } else {
-            console.error(`❌ Discord Error: ${postRes.statusCode}`);
-            res.status(500).json({ success: false, message: "Discord rejected webhook" });
-        }
-    });
+    const sendRequest = (attempt = 1) => {
+        const postReq = https.request(options, (postRes) => {
+            let data = '';
+            postRes.on('data', chunk => data += chunk);
+            postRes.on('end', () => {
+                if (postRes.statusCode >= 200 && postRes.statusCode < 300) {
+                    res.json({ success: true });
+                } else if (postRes.statusCode === 429 && attempt < 3) {
+                    const retryAfter = parseInt(postRes.headers['retry-after']) || 5;
+                    console.log(`⏳ Discord rate limited. Retrying in ${retryAfter}s...`);
+                    setTimeout(() => sendRequest(attempt + 1), retryAfter * 1000);
+                } else {
+                    console.error(`❌ Discord Error: ${postRes.statusCode}`);
+                    res.status(500).json({ success: false, message: "Discord rejected webhook" });
+                }
+            });
+        });
 
-    postReq.on('error', (err) => {
-        console.error("❌ Network error:", err.message);
-        res.status(500).json({ success: false, message: "Server network error" });
-    });
+        postReq.on('error', (err) => {
+            console.error("❌ Network error:", err.message);
+            res.status(500).json({ success: false, message: "Server network error" });
+        });
 
-    postReq.write(payload);
-    postReq.end();
+        postReq.write(payload);
+        postReq.end();
+    };
+
+    sendRequest();
 
     // Expire code in 5 mins
     setTimeout(() => { activeOTP = null; }, 300000);
