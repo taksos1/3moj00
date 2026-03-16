@@ -80,7 +80,20 @@ function renderPortfolio(filterCategory = 'all') {
     const grid = document.getElementById('portfolioGrid');
     if (!grid) return;
 
-    let displayList = data.projects || [];
+    // Get projects from portfolioData and flatten by category
+    let allProjects = [];
+    const portfolioData = data.portfolioData || {};
+    
+    Object.keys(portfolioData).forEach(cat => {
+        const catProjects = portfolioData[cat] || [];
+        catProjects.forEach(p => {
+            if (p.url) { // Only add projects with valid URLs
+                allProjects.push({ ...p, categoryId: cat });
+            }
+        });
+    });
+
+    let displayList = allProjects;
 
     // Filter logic
     if (filterCategory !== 'all') {
