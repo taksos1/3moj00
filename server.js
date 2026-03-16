@@ -41,6 +41,9 @@ app.post('/api/auth/discord', (req, res) => {
         code: code,
         redirect_uri: redirect_uri
     });
+    
+    console.log("[OAUTH] Exchanging Code for Token");
+    console.log("[OAUTH] Sent Redirect URI:", redirect_uri);
 
     const tokenOptions = {
         hostname: 'discord.com',
@@ -57,8 +60,8 @@ app.post('/api/auth/discord', (req, res) => {
         tokenRes.on('data', chunk => responseBody += chunk);
         tokenRes.on('end', () => {
             if (tokenRes.statusCode !== 200) {
-                console.error("Discord Token Error:", responseBody);
-                return res.status(401).json({ success: false, message: "Invalid or expired authorization code." });
+                console.error("[OAUTH] Discord Token Error:", tokenRes.statusCode, responseBody);
+                return res.status(401).json({ success: false, message: "Invalid or expired authorization code. Response: " + responseBody });
             }
 
             try {
@@ -85,9 +88,9 @@ app.post('/api/auth/discord', (req, res) => {
                         
                         try {
                             const userParsed = JSON.parse(userBody);
-                            const ALLOWED_ID = "239183213577109504"; // 3moj00 Discord ID
+                            const ALLOWED_IDS = ["239183213577109504", "409023919945809920"]; // 3moj00 Discord IDs
                             
-                            if (userParsed.id === ALLOWED_ID) {
+                            if (ALLOWED_IDS.includes(userParsed.id)) {
                                 // Create long unique session token
                                 sessionToken = Math.random().toString(36).substring(2, 15) + Date.now();
                                 
