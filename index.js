@@ -359,8 +359,21 @@ function initDeveloperAccess() {
 
 async function requestAccess() {
     // 1. Ask Server to send OTP to Discord
-    const res = await fetch('/api/auth/request', { method: 'POST' });
-    if (!res.ok) return alert("Security system failed to trigger.");
+    try {
+        const res = await fetch('/api/auth/request', { method: 'POST' });
+        if (!res.ok) {
+            let errText = "Unknown error";
+            try { 
+                const data = await res.json(); 
+                if (data.message) errText = data.message;
+            } catch(e) {
+                errText = res.statusText || await res.text();
+            }
+            return alert("Security system failed: " + errText + " (Status: " + res.status + ")\nMake sure you are running 'start.bat' and not Live Server.");
+        }
+    } catch (e) {
+        return alert("Security system failed to trigger. Network error: " + e.message + "\nAre you running start.bat?");
+    }
 
     // 2. Create the Modal UI
     const modal = document.createElement('div');
