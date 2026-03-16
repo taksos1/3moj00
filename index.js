@@ -169,66 +169,18 @@ function renderClients() {
     `).join('');
 }
 
-// --- SECURITY: DISCORD OTP ACCESS ---
+// --- SECURITY: DIRECT DEVELOPER ACCESS ---
 function initDeveloperAccess() {
     let keys = "";
     document.addEventListener('keydown', (e) => {
-        // Prevent typing keys when a modal is already open
-        if (document.querySelector('.auth-modal')) return;
-
         if (e.ctrlKey) {
             keys += e.key;
             if (keys.includes("15987530")) {
                 keys = "";
-                requestStudioAccess();
+                window.location.href = "/developer";
             }
         }
     });
-}
-
-async function requestStudioAccess() {
-    // 1. Force logout of any ghost sessions first
-    await fetch('/api/auth/logout', { method: 'POST' }).catch(() => {});
-
-    // 2. Request OTP to Discord
-    const res = await fetch('/api/auth/request', { method: 'POST' });
-    if (!res.ok) return alert("Security system offline.");
-
-    // 3. Show Verification UI
-    const modal = document.createElement('div');
-    modal.className = 'auth-modal';
-    modal.style.cssText = `position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.98); z-index:200000; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(15px); color:#fff; font-family: sans-serif;`;
-    modal.innerHTML = `
-        <div style="background:#111; padding:40px; border-radius:25px; border:1px solid #ff6b35; text-align:center; width:360px; box-shadow: 0 0 50px rgba(255,107,53,0.2);">
-            <div style="font-size:3rem; color:#ff6b35; margin-bottom:15px;"><i class="fas fa-user-shield"></i></div>
-            <h2 style="margin:0 0 10px 0; font-weight:800; letter-spacing:-1px;">Studio Access</h2>
-            <p style="color:#777; margin-bottom:25px; font-size:0.9rem;">A verification code was sent to your Discord. Enter it to unlock the command center.</p>
-            <input type="text" id="otp-input" placeholder="000000" maxlength="6" style="width:100%; padding:15px; background:#000; border:1px solid #222; color:#fff; border-radius:12px; text-align:center; font-size:1.8rem; font-weight:700; letter-spacing:8px; margin-bottom:20px;">
-            <button id="verify-btn" style="width:100%; background:#ff6b35; color:#fff; border:none; padding:16px; border-radius:12px; font-weight:800; cursor:pointer; font-size:1rem; transition: 0.3s;">Verify & Unlock</button>
-            <button onclick="this.closest('.auth-modal').remove()" style="background:none; border:none; color:#444; margin-top:15px; cursor:pointer; font-weight:600;">Cancel Request</button>
-        </div>`;
-    document.body.appendChild(modal);
-
-    document.getElementById('verify-btn').onclick = async (e) => {
-        const btn = e.target;
-        const code = document.getElementById('otp-input').value;
-        btn.innerText = "Verifying...";
-        btn.style.opacity = "0.5";
-
-        const verifyRes = await fetch('/api/auth/verify', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ code })
-        });
-
-        const result = await verifyRes.json();
-        if (result.success) {
-            window.location.href = "/developer";
-        } else {
-            alert("Invalid Code. Access Denied.");
-            modal.remove();
-        }
-    };
 }
 
 // --- MODAL & UI HELPERS ---

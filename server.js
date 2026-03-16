@@ -1,124 +1,25 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
-const https = require('https');
-const cookieParser = require('cookie-parser');
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 8000;
 const DATA_PATH = './data/data.json';
-const DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1482569157374509116/UoAs00F6O3JOf3rXqYoOXkFzcRCAdcecgtzljigYTSU-6w3mtWBbcRylYhG5crHIaKB3";
 
 // Middleware
 app.use(express.json());
-app.use(cookieParser());
 
-// Security Storage (Stored in RAM - resets on server restart for safety)
-let activeOTP = null;
-let sessionToken = null;
-
-// --- 1. SECURITY: DISCORD OTP AUTH ---
-
-// Request OTP (Triggered by Ctrl + 15987530)
-app.post('/api/auth/request', (req, res) => {
-    activeOTP = Math.floor(100000 + Math.random() * 900000).toString();
-    console.log(`[AUTH] New OTP Generated: ${activeOTP}`);
-
-    const payload = JSON.stringify({
-        embeds: [{
-            title: "🔐 Studio Command Access Request",
-            description: `A login attempt was detected on the 3moj00 Developer Panel.\n\n**OTP Code:** \`${activeOTP}\``,
-            color: 16739125, // #ff6b35
-            fields: [
-                { name: "Status", value: "Pending Verification", inline: true },
-                { name: "Expires", value: "5 Minutes", inline: true }
-            ],
-            timestamp: new Date().toISOString()
-        }]
-    });
-
-    const url = new URL(DISCORD_WEBHOOK);
-    const options = {
-        hostname: url.hostname,
-        path: url.pathname,
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Content-Length': Buffer.byteLength(payload)
-        }
-    };
-
-    const postReq = https.request(options, (postRes) => {
-        if (postRes.statusCode >= 200 && postRes.statusCode < 300) {
-            res.json({ success: true });
-        } else {
-            console.error(`❌ Discord Error: ${postRes.statusCode}`);
-            res.status(500).json({ success: false, message: "Discord rejected webhook" });
-        }
-    });
-
-    postReq.on('error', (err) => {
-        console.error("❌ Network error:", err.message);
-        res.status(500).json({ success: false, message: "Server network error" });
-    });
-
-    postReq.write(payload);
-    postReq.end();
-
-    // Expire code in 5 mins
-    setTimeout(() => { activeOTP = null; }, 300000);
-});
-
-// Verify OTP
-app.post('/api/auth/verify', (req, res) => {
-    const { code } = req.body;
-    if (activeOTP && code === activeOTP) {
-        // Create long unique session token
-        sessionToken = Math.random().toString(36).substring(2, 15) + Date.now();
-        activeOTP = null; 
-        
-        // Set Secure HttpOnly cookie (Lasts 4 hours)
-        res.cookie('dev_session', sessionToken, { 
-            maxAge: 14400000, 
-            httpOnly: true, 
-            sameSite: 'Lax' 
-        });
-
-        console.log("✅ Security Verified. Session Cookie Set.");
-        res.json({ success: true });
-    } else {
-        res.status(401).json({ success: false, message: "Invalid or expired code." });
-    }
-});
-
-// --- 2. ROUTE PROTECTION ---
+// --- 1. ROUTE PROTECTION ---
 
 // Block direct access to the .html file
 app.get('/developer.html', (req, res) => {
     res.redirect('/developer');
 });
 
-// Protected Route for Developer Page
+// Developer Page - Direct Access
 app.get('/developer', (req, res) => {
-    const userCookie = req.cookies.dev_session;
-    
-    // Validate session
-    if (sessionToken && userCookie === sessionToken) {
-        res.sendFile(path.join(__dirname, 'developer.html'));
-    } else {
-        console.warn(`[SECURITY] Blocked unauthorized entry attempt to /developer`);
-        res.status(403).send(`
-            <body style="background:#0a0a0a; color:#ff6b35; display:flex; align-items:center; justify-content:center; height:100vh; font-family:sans-serif; text-align:center;">
-                <div>
-                    <h1 style="font-size:4rem; margin:0;">🔒</h1>
-                    <h2 style="font-size:2rem;">403 - Access Denied</h2>
-                    <p style="color:#666; max-width:400px;">Direct access to the Developer Panel is forbidden. Use the verification sequence on the home page.</p>
-                    <a href="/" style="color:#fff; text-decoration:none; border:1px solid #333; padding:12px 25px; border-radius:12px; display:inline-block; margin-top:20px; font-weight:700;">Back to Home</a>
-                </div>
-            </body>
-        `);
-    }
+    res.sendFile(path.join(__dirname, 'developer.html'));
 });
 
 // Serve other static files (css, js, images) AFTER protected routes
@@ -166,6 +67,6 @@ app.listen(PORT, '0.0.0.0', () => {
     console.log('-------------------------------------------');
     console.log(`🚀 3moj00 Studio: Server Running`);
     console.log(`📍 Port: ${PORT}`);
-    console.log(`🔐 Discord OTP Security: ACTIVE`);
+    console.log(`🔐 Developer Access: Ctrl+15987530`);
     console.log('-------------------------------------------');
 });
