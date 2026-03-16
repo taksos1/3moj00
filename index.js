@@ -80,14 +80,16 @@ function renderPortfolio(filterCategory = 'all') {
     const grid = document.getElementById('portfolioGrid');
     if (!grid) return;
 
-    // Get projects from portfolioData and flatten by category
+    // Get projects from portfolioData in the exact order they appear (matching developer page)
     let allProjects = [];
     const portfolioData = data.portfolioData || {};
+    const tabOrder = Object.keys(data.portfolioTabs || {}); // Use tab order from portfolioTabs
     
-    Object.keys(portfolioData).forEach(cat => {
+    // First add projects in tab order
+    tabOrder.forEach(cat => {
         const catProjects = portfolioData[cat] || [];
         catProjects.forEach(p => {
-            if (p.url) { // Only add projects with valid URLs
+            if (p.title && p.url) { // Only add projects with valid titles and URLs
                 allProjects.push({ ...p, categoryId: cat });
             }
         });
@@ -108,12 +110,13 @@ function renderPortfolio(filterCategory = 'all') {
     // Render cards (Respects the exact index order from the master list)
     grid.innerHTML = displayList.map(video => {
         const ytId = video.url.match(/(?:youtu\.be\/|youtube\.com\/(?:shorts\/|watch\?v=))([\w-]{11})/)?.[1];
-        const thumb = `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg`;
-
+        
         return `
             <div class="portfolio-item">
                 <div class="portfolio-image">
-                    <img src="${thumb}" alt="${video.title}" onerror="this.src='icon.png'">
+                    <img src="https://img.youtube.com/vi/${ytId}/maxresdefault.jpg" 
+                         alt="${video.title}"
+                         onerror="handleThumbnailError(this)">
                     <div class="portfolio-overlay">
                         <div class="portfolio-info">
                             <h3>${video.title}</h3>
@@ -184,6 +187,26 @@ function initDeveloperAccess() {
 }
 
 // --- MODAL & UI HELPERS ---
+function getYouTubeThumbnail(ytId) {
+    return `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg`;
+}
+
+function handleThumbnailError(img) {
+    const src = img.src;
+    const ytId = src.match(/img\.youtube\.com\/vi\/([\w-]+)\//)?.[1];
+    if (!ytId) return;
+    
+    const fallbackOrder = ['hqdefault', 'sddefault', 'mqdefault', 'default'];
+    let currentSize = src.match(/\/([a-z]+)\.jpg$/)?.[1];
+    let idx = fallbackOrder.indexOf(currentSize);
+    
+    if (idx < fallbackOrder.length - 1) {
+        img.src = `https://img.youtube.com/vi/${ytId}/${fallbackOrder[idx + 1]}.jpg`;
+    } else {
+        img.src = 'icon.png';
+    }
+}
+
 function openVideoModal(url, title) {
     const ytId = url.match(/(?:youtu\.be\/|youtube\.com\/(?:shorts\/|watch\?v=))([\w-]{11})/)?.[1];
     const embedUrl = `https://www.youtube.com/embed/${ytId}?autoplay=1`;
