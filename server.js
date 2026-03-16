@@ -8,112 +8,124 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 8000;
 const DATA_PATH = './data/data.json';
-const DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1482569157374509116/UoAs00F6O3JOf3rXqYoOXkFzcRCAdcecgtzljigYTSU-6w3mtWBbcRylYhG5crHIaKB3";
 
 // Middleware
 app.use(express.json());
 app.use(cookieParser());
 
 // Security Storage (Stored in RAM - resets on server restart for safety)
-let activeOTP = null;
 let sessionToken = null;
 
-// Rate limiting for Discord webhook
-let lastOTPRequest = 0;
-const OTP_REQUEST_COOLDOWN = 60000; // 60 seconds between requests
+// --- 1. SECURITY: DISCORD OAUTH2 AUTH ---
 
-// --- 1. SECURITY: DISCORD OTP AUTH ---
-
-// Request OTP (Triggered by Ctrl + 15987530)
-app.post('/api/auth/request', (req, res) => {
-    const now = Date.now();
-    if (now - lastOTPRequest < OTP_REQUEST_COOLDOWN) {
-        const remaining = Math.ceil((OTP_REQUEST_COOLDOWN - (now - lastOTPRequest)) / 1000);
-        return res.status(429).json({ success: false, message: `Rate limited. Try again in ${remaining} seconds.` });
+app.post('/api/auth/discord', (req, res) => {
+    const { code, redirect_uri } = req.body;
+    
+    if (!code || !redirect_uri) {
+        return res.status(400).json({ success: false, message: "Missing required parameters." });
     }
-    lastOTPRequest = now;
 
-    activeOTP = Math.floor(100000 + Math.random() * 900000).toString();
-    console.log(`[AUTH] New OTP Generated: ${activeOTP}`);
+    const CLIENT_ID = "1375243488836194325";
+    const CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET;
+    
+    if (!CLIENT_SECRET) {
+        console.error("Missing DISCORD_CLIENT_SECRET in environment variables.");
+        return res.status(500).json({ success: false, message: "Server misconfiguration: Missing Discord Client Secret." });
+    }
 
-    const payload = JSON.stringify({
-        embeds: [{
-            title: "🔐 Studio Command Access Request",
-            description: `A login attempt was detected on the 3moj00 Developer Panel.\n\n**OTP Code:** \`${activeOTP}\``,
-            color: 16739125, // #ff6b35
-            fields: [
-                { name: "Status", value: "Pending Verification", inline: true },
-                { name: "Expires", value: "5 Minutes", inline: true }
-            ],
-            timestamp: new Date().toISOString()
-        }]
+    // Exchange code for token
+    const tokenData = new URLSearchParams({
+        client_id: CLIENT_ID,
+        client_secret: CLIENT_SECRET,
+        grant_type: 'authorization_code',
+        code: code,
+        redirect_uri: redirect_uri
     });
 
-    const url = new URL(DISCORD_WEBHOOK);
-    const options = {
-        hostname: url.hostname,
-        path: url.pathname,
+    const tokenOptions = {
+        hostname: 'discord.com',
+        path: '/api/oauth2/token',
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
-            'Content-Length': Buffer.byteLength(payload),
-            'User-Agent': '3moj00-DevPanel/1.0 (Node.js)'
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Length': Buffer.byteLength(tokenData.toString())
         }
     };
 
-    const sendRequest = (attempt = 1) => {
-        const postReq = https.request(options, (postRes) => {
-            let data = '';
-            postRes.on('data', chunk => data += chunk);
-            postRes.on('end', () => {
-                if (postRes.statusCode >= 200 && postRes.statusCode < 300) {
-                    res.json({ success: true });
-                } else if (postRes.statusCode === 429 && attempt < 3) {
-                    const retryAfter = parseInt(postRes.headers['retry-after']) || 5;
-                    console.log(`⏳ Discord rate limited. Retrying in ${retryAfter}s...`);
-                    setTimeout(() => sendRequest(attempt + 1), retryAfter * 1000);
-                } else {
-                    console.error(`❌ Discord Error: ${postRes.statusCode}`);
-                    res.status(500).json({ success: false, message: "Discord rejected webhook" });
-                }
-            });
+    const tokenReq = https.request(tokenOptions, (tokenRes) => {
+        let responseBody = '';
+        tokenRes.on('data', chunk => responseBody += chunk);
+        tokenRes.on('end', () => {
+            if (tokenRes.statusCode !== 200) {
+                console.error("Discord Token Error:", responseBody);
+                return res.status(401).json({ success: false, message: "Invalid or expired authorization code." });
+            }
+
+            try {
+                const tokenParsed = JSON.parse(responseBody);
+                const accessToken = tokenParsed.access_token;
+                
+                // Fetch user info
+                const userOptions = {
+                    hostname: 'discord.com',
+                    path: '/api/users/@me',
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`
+                    }
+                };
+                
+                const userReq = https.request(userOptions, (userRes) => {
+                    let userBody = '';
+                    userRes.on('data', chunk => userBody += chunk);
+                    userRes.on('end', () => {
+                        if (userRes.statusCode !== 200) {
+                            return res.status(401).json({ success: false, message: "Failed to fetch user profile." });
+                        }
+                        
+                        try {
+                            const userParsed = JSON.parse(userBody);
+                            const ALLOWED_ID = "239183213577109504"; // 3moj00 Discord ID
+                            
+                            if (userParsed.id === ALLOWED_ID) {
+                                // Create long unique session token
+                                sessionToken = Math.random().toString(36).substring(2, 15) + Date.now();
+                                
+                                // Set Secure HttpOnly cookie (Lasts 4 hours)
+                                res.cookie('dev_session', sessionToken, { 
+                                    maxAge: 14400000, 
+                                    httpOnly: true, 
+                                    sameSite: 'Lax' 
+                                });
+
+                                console.log("✅ Security Verified. Developer Logged In.");
+                                return res.json({ success: true, user: userParsed.username });
+                            } else {
+                                console.warn(`[SECURITY] Unauthorized login attempt by Discord ID: ${userParsed.id} (${userParsed.username})`);
+                                return res.status(403).json({ success: false, message: "Access Denied: You are not authorized." });
+                            }
+                        } catch (e) {
+                            return res.status(500).json({ success: false, message: "Error parsing user data." });
+                        }
+                    });
+                });
+                
+                userReq.on('error', () => {
+                    return res.status(500).json({ success: false, message: "Network error fetching Discord profile." });
+                });
+                userReq.end();
+                
+            } catch (e) {
+                return res.status(500).json({ success: false, message: "Error parsing Discord token data." });
+            }
         });
+    });
 
-        postReq.on('error', (err) => {
-            console.error("❌ Network error:", err.message);
-            res.status(500).json({ success: false, message: "Server network error" });
-        });
-
-        postReq.write(payload);
-        postReq.end();
-    };
-
-    sendRequest();
-
-    // Expire code in 5 mins
-    setTimeout(() => { activeOTP = null; }, 300000);
-});
-
-// Verify OTP
-app.post('/api/auth/verify', (req, res) => {
-    const { code } = req.body;
-    if (activeOTP && code === activeOTP) {
-        // Create long unique session token
-        sessionToken = Math.random().toString(36).substring(2, 15) + Date.now();
-        activeOTP = null; 
-        
-        // Set Secure HttpOnly cookie (Lasts 4 hours)
-        res.cookie('dev_session', sessionToken, { 
-            maxAge: 14400000, 
-            httpOnly: true, 
-            sameSite: 'Lax' 
-        });
-
-        console.log("✅ Security Verified. Session Cookie Set.");
-        res.json({ success: true });
-    } else {
-        res.status(401).json({ success: false, message: "Invalid or expired code." });
-    }
+    tokenReq.on('error', (err) => {
+        return res.status(500).json({ success: false, message: "Network error contacting Discord API." });
+    });
+    tokenReq.write(tokenData.toString());
+    tokenReq.end();
 });
 
 // --- 2. ROUTE PROTECTION ---

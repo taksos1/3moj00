@@ -1,11 +1,51 @@
-// DOM Content Loaded
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
     // Initialize all functionality
     initNavigation();
     initScrollEffects();
     initAnimations();
     initContactForm();
     initVideoBackground();
+
+    // Check for Discord OAuth code
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+    if (code) {
+        // Clean up URL
+        window.history.replaceState({}, document.title, window.location.pathname);
+        
+        // Custom loading notification
+        const notification = document.createElement('div');
+        notification.style.cssText = `position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); padding:20px; background:#141414; color:#fff; border:2px solid #ff6b35; border-radius:10px; z-index:100000; text-align:center; font-family:sans-serif; box-shadow:0 10px 30px rgba(0,0,0,0.5);`;
+        notification.innerHTML = `<h3><i class="fab fa-discord" style="color:#5865F2;"></i> Verifying with Discord...</h3>`;
+        document.body.appendChild(notification);
+        
+        try {
+            const EXACT_REDIRECT_URI = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost' 
+                ? window.location.origin
+                : "https://3moj00.com";
+
+            const res = await fetch('/api/auth/discord', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    code,
+                    redirect_uri: EXACT_REDIRECT_URI
+                })
+            });
+            
+            const data = await res.json();
+            if (data.success) {
+                notification.innerHTML = `<h3 style="color:#4CAF50;"><i class="fas fa-check-circle"></i> Access Granted! Redirecting...</h3>`;
+                setTimeout(() => window.location.href = '/developer', 1000);
+            } else {
+                notification.innerHTML = `<h3 style="color:#f44336;"><i class="fas fa-times-circle"></i> Access Denied</h3><p>${data.message || 'Unknown error'}</p>
+                <button onclick="this.parentElement.remove()" style="margin-top:10px; padding:5px 15px; background:#333; color:white; border:none; cursor:pointer; border-radius:5px;">Close</button>`;
+            }
+        } catch (e) {
+            notification.innerHTML = `<h3 style="color:#f44336;"><i class="fas fa-exclamation-triangle"></i> Network Error</h3><p>Could not connect to backend.</p>
+            <button onclick="this.parentElement.remove()" style="margin-top:10px; padding:5px 15px; background:#333; color:white; border:none; cursor:pointer; border-radius:5px;">Close</button>`;
+        }
+    }
 });
 
 // Navigation functionality
@@ -358,61 +398,28 @@ function initDeveloperAccess() {
 }
 
 async function requestAccess() {
-    // 1. Ask Server to send OTP to Discord
-    try {
-        const res = await fetch('/api/auth/request', { method: 'POST' });
-        if (!res.ok) {
-            let errText = "Unknown error";
-            try { 
-                const data = await res.json(); 
-                if (data.message) errText = data.message;
-            } catch(e) {
-                errText = res.statusText || await res.text();
-            }
-            return alert("Security system failed: " + errText + " (Status: " + res.status + ")\nMake sure you are running 'start.bat' and not Live Server.");
-        }
-    } catch (e) {
-        return alert("Security system failed to trigger. Network error: " + e.message + "\nAre you running start.bat?");
-    }
-
-    // 2. Create the Modal UI
-    const modal = document.createElement('div');
-    modal.style.cssText = `position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:100000; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(10px); color:#fff; font-family:sans-serif;`;
-    modal.innerHTML = `
-        <div style="background:#141414; padding:40px; border-radius:20px; border:2px solid #ff6b35; text-align:center; width:350px;">
-            <i class="fas fa-shield-halved" style="font-size:3rem; color:#ff6b35; margin-bottom:20px;"></i>
-            <h2 style="margin:0 0 10px 0;">Verification Required</h2>
-            <p style="color:#888; margin-bottom:20px; font-size:0.9rem;">A code has been sent to your Discord. Enter it below to unlock the studio.</p>
-            <input type="text" id="otp-input" placeholder="000000" maxlength="6" style="width:100%; padding:15px; background:#000; border:1px solid #333; color:#fff; border-radius:10px; text-align:center; font-size:1.5rem; letter-spacing:5px; margin-bottom:20px;">
-            <button id="verify-btn" style="width:100%; background:#ff6b35; color:#fff; border:none; padding:15px; border-radius:10px; font-weight:700; cursor:pointer;">Unlock Panel</button>
-            <button onclick="this.closest('div').parentElement.remove()" style="background:none; border:none; color:#555; margin-top:15px; cursor:pointer;">Cancel</button>
-        </div>
-    `;
-    document.body.appendChild(modal);
-
-    // 3. Handle Verification
-document.getElementById('verify-btn').onclick = async (btn) => {
-        const originalText = btn.target.innerText;
-        btn.target.innerText = "Verifying...";
+    // Redirect to Discord OAuth
+    const CLIENT_ID = "1375243488836194325";
+    
+    // Discord requires an EXACT match for the redirect URI configured in the Developer Portal.
+    // If you are testing locally on Live Server, change this to "http://127.0.0.1:5500"
+    // and ALSO add "http://127.0.0.1:5500" to your Discord Developer Portal Redirects!
+    const EXACT_REDIRECT_URI = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost' 
+        ? window.location.origin // e.g., http://127.0.0.1:5500
+        : "https://3moj00.com";    // Production URL
         
-        const code = document.getElementById('otp-input').value;
-        const verifyRes = await fetch('/api/auth/verify', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ code })
-        });
-
-        const result = await verifyRes.json();
-        if (result.success) {
-            window.location.href = "/developer";
-        } else {
-            alert(result.message || "Access Denied.");
-            btn.target.innerText = originalText;
-        }
-    };
-
-    // Initialize developer access
-    initDeveloperAccess();
+    const REDIRECT_URI = encodeURIComponent(EXACT_REDIRECT_URI);
+    const discordUrl = `https://discord.com/oauth2/authorize?client_id=${CLIENT_ID}&response_type=code&redirect_uri=${REDIRECT_URI}&scope=identify`;
+    
+    // Optional aesthetic loading before redirecting
+    const loading = document.createElement('div');
+    loading.style.cssText = `position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:100000; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#fff; font-family:sans-serif;`;
+    loading.innerHTML = `<i class="fab fa-discord" style="font-size:4rem; color:#5865F2; margin-bottom:20px; animation: pulse 1s infinite alternate;"></i><h2>Redirecting to Discord...</h2>`;
+    document.body.appendChild(loading);
+    
+    setTimeout(() => {
+        window.location.href = discordUrl;
+    }, 500);
 }
 
 // Create access notification
