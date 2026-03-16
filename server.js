@@ -18,10 +18,21 @@ app.use(cookieParser());
 let activeOTP = null;
 let sessionToken = null;
 
+// Rate limiting for Discord webhook
+let lastOTPRequest = 0;
+const OTP_REQUEST_COOLDOWN = 60000; // 60 seconds between requests
+
 // --- 1. SECURITY: DISCORD OTP AUTH ---
 
 // Request OTP (Triggered by Ctrl + 15987530)
 app.post('/api/auth/request', (req, res) => {
+    const now = Date.now();
+    if (now - lastOTPRequest < OTP_REQUEST_COOLDOWN) {
+        const remaining = Math.ceil((OTP_REQUEST_COOLDOWN - (now - lastOTPRequest)) / 1000);
+        return res.status(429).json({ success: false, message: `Rate limited. Try again in ${remaining} seconds.` });
+    }
+    lastOTPRequest = now;
+
     activeOTP = Math.floor(100000 + Math.random() * 900000).toString();
     console.log(`[AUTH] New OTP Generated: ${activeOTP}`);
 
