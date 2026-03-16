@@ -20,14 +20,13 @@ let sessionToken = null;
 
 app.post('/api/auth/discord', (req, res) => {
     const { code, redirect_uri } = req.body;
-    
+
     if (!code || !redirect_uri) {
         return res.status(400).json({ success: false, message: "Missing required parameters." });
     }
 
     const CLIENT_ID = "1375243488836194325";
-    // HARDCODED CLIENT SECRET AS REQUESTED
-    const CLIENT_SECRET = "FDiUYcZ-1kDpIE-BPiRZMopM-0vLzGHp"; 
+    const CLIENT_SECRET = "FDiUYcZ-1kDpIE-BPiRZMopM-0vLzGHp";
 
     // Exchange code for token
     const tokenData = new URLSearchParams({
@@ -37,7 +36,7 @@ app.post('/api/auth/discord', (req, res) => {
         code: code,
         redirect_uri: redirect_uri
     });
-    
+
     console.log("[OAUTH] Exchanging Code for Token");
     console.log("[OAUTH] Sent Redirect URI:", redirect_uri);
 
@@ -65,7 +64,7 @@ app.post('/api/auth/discord', (req, res) => {
             try {
                 const tokenParsed = JSON.parse(responseBody);
                 const accessToken = tokenParsed.access_token;
-                
+
                 // Fetch user info
                 const userOptions = {
                     hostname: 'discord.com',
@@ -76,7 +75,7 @@ app.post('/api/auth/discord', (req, res) => {
                         'User-Agent': 'DiscordBot (https://3moj00.com, 1.0)'
                     }
                 };
-                
+
                 const userReq = https.request(userOptions, (userRes) => {
                     let userBody = '';
                     userRes.on('data', chunk => userBody += chunk);
@@ -84,20 +83,20 @@ app.post('/api/auth/discord', (req, res) => {
                         if (userRes.statusCode !== 200) {
                             return res.status(401).json({ success: false, message: "Failed to fetch user profile." });
                         }
-                        
+
                         try {
                             const userParsed = JSON.parse(userBody);
-                            const ALLOWED_IDS =["239183213577109504", "409023919945809920"]; // 3moj00 Discord IDs
-                            
+                            const ALLOWED_IDS = ["239183213577109504", "409023919945809920"]; // 3moj00 Discord IDs
+
                             if (ALLOWED_IDS.includes(userParsed.id)) {
                                 // Create long unique session token
                                 sessionToken = Math.random().toString(36).substring(2, 15) + Date.now();
-                                
+
                                 // Set Secure HttpOnly cookie (Lasts 4 hours)
-                                res.cookie('dev_session', sessionToken, { 
-                                    maxAge: 14400000, 
-                                    httpOnly: true, 
-                                    sameSite: 'Lax' 
+                                res.cookie('dev_session', sessionToken, {
+                                    maxAge: 14400000,
+                                    httpOnly: true,
+                                    sameSite: 'Lax'
                                 });
 
                                 console.log("✅ Security Verified. Developer Logged In.");
@@ -111,12 +110,12 @@ app.post('/api/auth/discord', (req, res) => {
                         }
                     });
                 });
-                
+
                 userReq.on('error', () => {
                     return res.status(500).json({ success: false, message: "Network error fetching Discord profile." });
                 });
                 userReq.end();
-                
+
             } catch (e) {
                 return res.status(500).json({ success: false, message: "Error parsing Discord token data." });
             }
@@ -140,7 +139,7 @@ app.get('/developer.html', (req, res) => {
 // Protected Route for Developer Page
 app.get('/developer', (req, res) => {
     const userCookie = req.cookies.dev_session;
-    
+
     // Validate session
     if (sessionToken && userCookie === sessionToken) {
         res.sendFile(path.join(__dirname, 'developer.html'));
@@ -171,7 +170,7 @@ app.get('/api/data', (req, res) => {
             const data = JSON.parse(fs.readFileSync(DATA_PATH, 'utf8'));
             res.json(data);
         } else {
-            res.json({ projects: [], portfolioTabs: [], clients:[], showClients: true });
+            res.json({ projects: [], portfolioTabs: [], clients: [], showClients: true });
         }
     } catch (error) {
         res.status(500).json({ error: "Failed to read database" });
@@ -190,7 +189,7 @@ app.post('/api/data', (req, res) => {
 
         data.lastUpdated = new Date().toISOString();
         fs.writeFileSync(DATA_PATH, JSON.stringify(data, null, 2));
-        
+
         console.log(`[DATA] Database synced successfully.`);
         res.json({ success: true });
     } catch (error) {
