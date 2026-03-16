@@ -80,34 +80,23 @@ function renderPortfolio(filterCategory = 'all') {
     const grid = document.getElementById('portfolioGrid');
     if (!grid) return;
 
-    // Get projects from portfolioData - iterate in order from portfolioTabs if available
+    // Use projects array if available (same as developer page), otherwise build from portfolioData
     let allProjects = [];
-    const portfolioData = data.portfolioData || {};
     
-    // Get category order from portfolioTabs (convert object to array if needed)
-    let catOrder = [];
-    if (data.portfolioTabs) {
-        if (Array.isArray(data.portfolioTabs)) {
-            catOrder = data.portfolioTabs.map(t => t.id);
-        } else {
-            catOrder = Object.keys(data.portfolioTabs);
-        }
-    }
-    
-    // If no tabs defined, use keys from portfolioData
-    if (catOrder.length === 0) {
-        catOrder = Object.keys(portfolioData);
-    }
-    
-    // Add projects in category order
-    catOrder.forEach(cat => {
-        const catProjects = portfolioData[cat] || [];
-        catProjects.forEach(p => {
-            if (p.title && p.url) {
-                allProjects.push({ ...p, categoryId: cat });
-            }
+    if (data.projects && data.projects.length > 0) {
+        // Use the flat projects array (same as developer page)
+        allProjects = data.projects.filter(p => p.title && p.url);
+    } else if (data.portfolioData) {
+        // Fallback: build from portfolioData
+        Object.keys(data.portfolioData).forEach(cat => {
+            const catProjects = data.portfolioData[cat] || [];
+            catProjects.forEach(p => {
+                if (p.title && p.url) {
+                    allProjects.push({ ...p, categoryId: cat });
+                }
+            });
         });
-    });
+    }
 
     let displayList = allProjects;
 
@@ -128,9 +117,9 @@ function renderPortfolio(filterCategory = 'all') {
         return `
             <div class="portfolio-item">
                 <div class="portfolio-image">
-                    <img src="https://img.youtube.com/vi/${ytId}/maxresdefault.jpg" 
+                    <img src="https://img.youtube.com/vi/${ytId}/hqdefault.jpg" 
                          alt="${video.title}"
-                         onerror="handleThumbnailError(this)">
+                         onerror="this.onerror=null; this.src='icon.png'">
                     <div class="portfolio-overlay">
                         <div class="portfolio-info">
                             <h3>${video.title}</h3>
