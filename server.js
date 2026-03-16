@@ -47,12 +47,12 @@ app.post('/api/auth/discord', (req, res) => {
 
     const tokenOptions = {
         hostname: 'discord.com',
-        path: '/api/oauth2/token',
+        path: '/api/v10/oauth2/token', // UPDATED: Added v10 API versioning
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
             'Content-Length': Buffer.byteLength(tokenData.toString()),
-            'User-Agent': '3moj00-DevPanel/1.0 (Node.js)',
+            'User-Agent': 'DiscordBot (https://3moj00.com, 1.0)', // UPDATED: Standard Discord Bot User-Agent format
             'Accept': 'application/json'
         }
     };
@@ -73,11 +73,11 @@ app.post('/api/auth/discord', (req, res) => {
                 // Fetch user info
                 const userOptions = {
                     hostname: 'discord.com',
-                    path: '/api/users/@me',
+                    path: '/api/v10/users/@me', // UPDATED: Added v10 API versioning
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${accessToken}`,
-                        'User-Agent': '3moj00-DevPanel/1.0 (Node.js)'
+                        'User-Agent': 'DiscordBot (https://3moj00.com, 1.0)' // UPDATED: Standard Discord Bot User-Agent format
                     }
                 };
                 
@@ -91,7 +91,7 @@ app.post('/api/auth/discord', (req, res) => {
                         
                         try {
                             const userParsed = JSON.parse(userBody);
-                            const ALLOWED_IDS = ["239183213577109504", "409023919945809920"]; // 3moj00 Discord IDs
+                            const ALLOWED_IDS =["239183213577109504", "409023919945809920"]; // 3moj00 Discord IDs
                             
                             if (ALLOWED_IDS.includes(userParsed.id)) {
                                 // Create long unique session token
@@ -175,7 +175,7 @@ app.get('/api/data', (req, res) => {
             const data = JSON.parse(fs.readFileSync(DATA_PATH, 'utf8'));
             res.json(data);
         } else {
-            res.json({ projects: [], portfolioTabs: [], clients: [], showClients: true });
+            res.json({ projects: [], portfolioTabs: [], clients:[], showClients: true });
         }
     } catch (error) {
         res.status(500).json({ error: "Failed to read database" });
