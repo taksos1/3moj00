@@ -26,12 +26,8 @@ app.post('/api/auth/discord', (req, res) => {
     }
 
     const CLIENT_ID = "1375243488836194325";
-    const CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET;
-    
-    if (!CLIENT_SECRET) {
-        console.error("Missing DISCORD_CLIENT_SECRET in environment variables.");
-        return res.status(500).json({ success: false, message: "Server misconfiguration: Missing Discord Client Secret." });
-    }
+    // HARDCODED CLIENT SECRET AS REQUESTED
+    const CLIENT_SECRET = "FDiUYcZ-1kDpIE-BPiRZMopM-0vLzGHp"; 
 
     // Exchange code for token
     const tokenData = new URLSearchParams({
@@ -47,12 +43,12 @@ app.post('/api/auth/discord', (req, res) => {
 
     const tokenOptions = {
         hostname: 'discord.com',
-        path: '/api/v10/oauth2/token', // UPDATED: Added v10 API versioning
+        path: '/api/v10/oauth2/token',
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
             'Content-Length': Buffer.byteLength(tokenData.toString()),
-            'User-Agent': 'DiscordBot (https://3moj00.com, 1.0)', // UPDATED: Standard Discord Bot User-Agent format
+            'User-Agent': 'DiscordBot (https://3moj00.com, 1.0)',
             'Accept': 'application/json'
         }
     };
@@ -73,11 +69,11 @@ app.post('/api/auth/discord', (req, res) => {
                 // Fetch user info
                 const userOptions = {
                     hostname: 'discord.com',
-                    path: '/api/v10/users/@me', // UPDATED: Added v10 API versioning
+                    path: '/api/v10/users/@me',
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${accessToken}`,
-                        'User-Agent': 'DiscordBot (https://3moj00.com, 1.0)' // UPDATED: Standard Discord Bot User-Agent format
+                        'User-Agent': 'DiscordBot (https://3moj00.com, 1.0)'
                     }
                 };
                 
