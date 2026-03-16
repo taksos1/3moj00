@@ -51,7 +51,9 @@ app.post('/api/auth/discord', (req, res) => {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
-            'Content-Length': Buffer.byteLength(tokenData.toString())
+            'Content-Length': Buffer.byteLength(tokenData.toString()),
+            'User-Agent': '3moj00-DevPanel/1.0 (Node.js)',
+            'Accept': 'application/json'
         }
     };
 
@@ -74,7 +76,8 @@ app.post('/api/auth/discord', (req, res) => {
                     path: '/api/users/@me',
                     method: 'GET',
                     headers: {
-                        'Authorization': `Bearer ${accessToken}`
+                        'Authorization': `Bearer ${accessToken}`,
+                        'User-Agent': '3moj00-DevPanel/1.0 (Node.js)'
                     }
                 };
                 
