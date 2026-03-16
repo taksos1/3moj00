@@ -20,9 +20,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         document.body.appendChild(notification);
         
         try {
-            const EXACT_REDIRECT_URI = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost' 
-                ? window.location.origin
-                : "https://3moj00.com";
+            const EXACT_REDIRECT_URI = window.location.origin;
 
             const res = await fetch('/api/auth/discord', {
                 method: 'POST',
@@ -404,12 +402,10 @@ async function requestAccess() {
     // Discord requires an EXACT match for the redirect URI configured in the Developer Portal.
     // If you are testing locally on Live Server, change this to "http://127.0.0.1:5500"
     // and ALSO add "http://127.0.0.1:5500" to your Discord Developer Portal Redirects!
-    const EXACT_REDIRECT_URI = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost' 
-        ? window.location.origin // e.g., http://127.0.0.1:5500
-        : "https://3moj00.com";    // Production URL
+    const EXACT_REDIRECT_URI = window.location.origin;
         
     const REDIRECT_URI = encodeURIComponent(EXACT_REDIRECT_URI);
-    const discordUrl = `https://discord.com/oauth2/authorize?client_id=1375243488836194325&response_type=code&redirect_uri=https%3A%2F%2F3moj00-production.up.railway.app&scope=identify+email`;
+    const discordUrl = `https://discord.com/oauth2/authorize?client_id=${CLIENT_ID}&response_type=code&redirect_uri=${REDIRECT_URI}&scope=identify`;
     
     // Optional aesthetic loading before redirecting
     const loading = document.createElement('div');

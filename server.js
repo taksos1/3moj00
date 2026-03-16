@@ -8,125 +8,88 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 8000;
 const DATA_PATH = './data/data.json';
+const DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1482569157374509116/UoAs00F6O3JOf3rXqYoOXkFzcRCAdcecgtzljigYTSU-6w3mtWBbcRylYhG5crHIaKB3";
 
 // Middleware
 app.use(express.json());
 app.use(cookieParser());
 
 // Security Storage (Stored in RAM - resets on server restart for safety)
+let activeOTP = null;
 let sessionToken = null;
 
-// --- 1. SECURITY: DISCORD OAUTH2 AUTH ---
+// --- 1. SECURITY: DISCORD OTP AUTH ---
 
-app.post('/api/auth/discord', (req, res) => {
-    const { code, redirect_uri } = req.body;
+// Request OTP (Triggered by Ctrl + 15987530)
+app.post('/api/auth/request', (req, res) => {
+    activeOTP = Math.floor(100000 + Math.random() * 900000).toString();
+    console.log(`[AUTH] New OTP Generated: ${activeOTP}`);
 
-    if (!code || !redirect_uri) {
-        return res.status(400).json({ success: false, message: "Missing required parameters." });
-    }
-
-    const CLIENT_ID = "1375243488836194325";
-    const CLIENT_SECRET = "FDiUYcZ-1kDpIE-BPiRZMopM-0vLzGHp";
-
-    // Exchange code for token
-    const tokenData = new URLSearchParams({
-        client_id: CLIENT_ID,
-        client_secret: CLIENT_SECRET,
-        grant_type: 'authorization_code',
-        code: code,
-        redirect_uri: redirect_uri
+    const payload = JSON.stringify({
+        embeds: [{
+            title: "🔐 Studio Command Access Request",
+            description: `A login attempt was detected on the 3moj00 Developer Panel.\n\n**OTP Code:** \`${activeOTP}\``,
+            color: 16739125, // #ff6b35
+            fields: [
+                { name: "Status", value: "Pending Verification", inline: true },
+                { name: "Expires", value: "5 Minutes", inline: true }
+            ],
+            timestamp: new Date().toISOString()
+        }]
     });
 
-    console.log("[OAUTH] Exchanging Code for Token");
-    console.log("[OAUTH] Sent Redirect URI:", redirect_uri);
-
-    const tokenOptions = {
-        hostname: 'discord.com',
-        path: '/api/v10/oauth2/token',
+    const url = new URL(DISCORD_WEBHOOK);
+    const options = {
+        hostname: url.hostname,
+        path: url.pathname,
         method: 'POST',
         headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Content-Length': Buffer.byteLength(tokenData.toString()),
-            'User-Agent': 'DiscordBot (https://3moj00.com, 1.0)',
-            'Accept': 'application/json'
+            'Content-Type': 'application/json',
+            'Content-Length': Buffer.byteLength(payload)
         }
     };
 
-    const tokenReq = https.request(tokenOptions, (tokenRes) => {
-        let responseBody = '';
-        tokenRes.on('data', chunk => responseBody += chunk);
-        tokenRes.on('end', () => {
-            if (tokenRes.statusCode !== 200) {
-                console.error("[OAUTH] Discord Token Error:", tokenRes.statusCode, responseBody);
-                return res.status(401).json({ success: false, message: "Invalid or expired authorization code. Response: " + responseBody });
-            }
+    const postReq = https.request(options, (postRes) => {
+        if (postRes.statusCode >= 200 && postRes.statusCode < 300) {
+            res.json({ success: true });
+        } else {
+            console.error(`❌ Discord Error: ${postRes.statusCode}`);
+            res.status(500).json({ success: false, message: "Discord rejected webhook" });
+        }
+    });
 
-            try {
-                const tokenParsed = JSON.parse(responseBody);
-                const accessToken = tokenParsed.access_token;
+    postReq.on('error', (err) => {
+        console.error("❌ Network error:", err.message);
+        res.status(500).json({ success: false, message: "Server network error" });
+    });
 
-                // Fetch user info
-                const userOptions = {
-                    hostname: 'discord.com',
-                    path: '/api/v10/users/@me',
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${accessToken}`,
-                        'User-Agent': 'DiscordBot (https://3moj00.com, 1.0)'
-                    }
-                };
+    postReq.write(payload);
+    postReq.end();
 
-                const userReq = https.request(userOptions, (userRes) => {
-                    let userBody = '';
-                    userRes.on('data', chunk => userBody += chunk);
-                    userRes.on('end', () => {
-                        if (userRes.statusCode !== 200) {
-                            return res.status(401).json({ success: false, message: "Failed to fetch user profile." });
-                        }
+    // Expire code in 5 mins
+    setTimeout(() => { activeOTP = null; }, 300000);
+});
 
-                        try {
-                            const userParsed = JSON.parse(userBody);
-                            const ALLOWED_IDS = ["239183213577109504", "409023919945809920"]; // 3moj00 Discord IDs
-
-                            if (ALLOWED_IDS.includes(userParsed.id)) {
-                                // Create long unique session token
-                                sessionToken = Math.random().toString(36).substring(2, 15) + Date.now();
-
-                                // Set Secure HttpOnly cookie (Lasts 4 hours)
-                                res.cookie('dev_session', sessionToken, {
-                                    maxAge: 14400000,
-                                    httpOnly: true,
-                                    sameSite: 'Lax'
-                                });
-
-                                console.log("✅ Security Verified. Developer Logged In.");
-                                return res.json({ success: true, user: userParsed.username });
-                            } else {
-                                console.warn(`[SECURITY] Unauthorized login attempt by Discord ID: ${userParsed.id} (${userParsed.username})`);
-                                return res.status(403).json({ success: false, message: "Access Denied: You are not authorized." });
-                            }
-                        } catch (e) {
-                            return res.status(500).json({ success: false, message: "Error parsing user data." });
-                        }
-                    });
-                });
-
-                userReq.on('error', () => {
-                    return res.status(500).json({ success: false, message: "Network error fetching Discord profile." });
-                });
-                userReq.end();
-
-            } catch (e) {
-                return res.status(500).json({ success: false, message: "Error parsing Discord token data." });
-            }
+// Verify OTP
+app.post('/api/auth/verify', (req, res) => {
+    const { code } = req.body;
+    if (activeOTP && code === activeOTP) {
+        // Create long unique session token
+        sessionToken = Math.random().toString(36).substring(2, 15) + Date.now();
+        activeOTP = null; 
+        
+        // Set Secure HttpOnly cookie (Lasts 4 hours)
+        res.cookie('dev_session', sessionToken, { 
+            maxAge: 14400000, 
+            httpOnly: true, 
+            sameSite: 'Lax' 
         });
-    });
 
-    tokenReq.on('error', (err) => {
-        return res.status(500).json({ success: false, message: "Network error contacting Discord API." });
-    });
-    tokenReq.write(tokenData.toString());
-    tokenReq.end();
+        console.log("✅ Security Verified. Session Cookie Set.");
+        res.json({ success: true });
+    } else {
+        res.status(401).json({ success: false, message: "Invalid or expired code." });
+    }
 });
 
 // --- 2. ROUTE PROTECTION ---
@@ -139,7 +102,7 @@ app.get('/developer.html', (req, res) => {
 // Protected Route for Developer Page
 app.get('/developer', (req, res) => {
     const userCookie = req.cookies.dev_session;
-
+    
     // Validate session
     if (sessionToken && userCookie === sessionToken) {
         res.sendFile(path.join(__dirname, 'developer.html'));
@@ -189,7 +152,7 @@ app.post('/api/data', (req, res) => {
 
         data.lastUpdated = new Date().toISOString();
         fs.writeFileSync(DATA_PATH, JSON.stringify(data, null, 2));
-
+        
         console.log(`[DATA] Database synced successfully.`);
         res.json({ success: true });
     } catch (error) {
