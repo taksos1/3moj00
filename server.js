@@ -56,7 +56,8 @@ app.post('/api/auth/request', (req, res) => {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Content-Length': Buffer.byteLength(payload)
+            'Content-Length': Buffer.byteLength(payload),
+            'User-Agent': '3moj00-DevPanel/1.0 (Node.js)'
         }
     };
 
