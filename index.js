@@ -409,7 +409,7 @@ async function requestAccess() {
         : "https://3moj00.com";    // Production URL
         
     const REDIRECT_URI = encodeURIComponent(EXACT_REDIRECT_URI);
-    const discordUrl = `https://discord.com/oauth2/authorize?client_id=${CLIENT_ID}&response_type=code&redirect_uri=${REDIRECT_URI}&scope=identify`;
+    const discordUrl = `https://discord.com/oauth2/authorize?client_id=1375243488836194325&response_type=code&redirect_uri=https%3A%2F%2F3moj00-production.up.railway.app&scope=identify+email`;
     
     // Optional aesthetic loading before redirecting
     const loading = document.createElement('div');
